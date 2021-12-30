@@ -23,10 +23,13 @@ const validateToken = (req, res, next) => {
     })
   }
   catch(err) {
-    return res.status(403).send({
-      'success': false,
-      'msg': 'Not authorized'
-    })
+    if(req.method === 'GET')
+      return res.status(403).redirect('/login')
+    else 
+      return res.status(403).send({
+        'success': false,
+        'msg': 'Not authorized'
+      })
   }
 }
 

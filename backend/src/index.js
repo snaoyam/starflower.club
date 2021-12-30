@@ -25,12 +25,12 @@ app.get("/", (req, res) => {
 
 app.post("/register", register)
 app.post("/login", login)
-app.post("/logout", logout)
+app.use("/logout", logout)
 
 /*need validation*/
 app.use(validateToken)
 
-app.get("/public", getPublic)
+app.post("/public", getPublic)
 
 const PORT = Number(process.env.PORT) || 8080
 app.listen(PORT, () => {

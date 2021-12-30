@@ -64,8 +64,10 @@ const login = (req, res) => {
 }
 
 const logout = (req, res) => {
-  res.cookie("sfauth")
-  res.status = 204
+  if(req.method === 'GET')
+    return res.clearCookie("sfauth").status(403).redirect('/')
+  else
+    return res.clearCookie("sfauth").status(200).send({"success": true})
 }
 
 module.exports = {
