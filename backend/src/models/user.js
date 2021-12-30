@@ -98,7 +98,7 @@ UserSchema.methods.comparePassword = function (passwd, callback) {
 
 UserSchema.methods.generateToken = function (callback) {
   const user = this
-  const token = jwt.sign({id: user._id.toHexString()}, process.env.jwtsecret, {expiresIn: '3h'})
+  const token = jwt.sign({id: user._id.toHexString(), sid: user.studentid}, process.env.jwtsecret, {expiresIn: '3h'})
   user.token = token
   user.save((err) => {
     if(err) {

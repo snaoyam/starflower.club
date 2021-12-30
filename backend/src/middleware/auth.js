@@ -28,7 +28,7 @@ const register = (req, res) => {
 }
 
 const login = (req, res) => {
-  UserModel.findOne({username: req.body.username}, (err, user) => {
+  UserModel.findOne({$or: [{username: req.body.username}, {email: req.body.username}]}, (err, user) => {
     if(err || !user) {
       if(err) console.error(err)
       res.status(500).send({
@@ -54,7 +54,7 @@ const login = (req, res) => {
               })
             }
             else {
-              res.cookie("sfauth", token).status(200).json({"success": true})
+              res.cookie("sfauth", token).status(200).send({"success": true})
             }
           })
         }
@@ -63,7 +63,15 @@ const login = (req, res) => {
   })
 }
 
+const logout = (req, res) => {
+  res.cookie("sfauth")
+  res.status = 204
+}
+
 module.exports = {
   register,
   login,
+  logout,
 };
+
+
