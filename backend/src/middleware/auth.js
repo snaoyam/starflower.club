@@ -20,7 +20,7 @@ const register = (req, res) => {
           })
         }
         else {
-          res.cookie("sfauth", token).status(200).send({"success": true})
+          res.cookie("auth", token).status(200).send({"success": true})
         }
       })
     }
@@ -54,7 +54,7 @@ const login = (req, res) => {
               })
             }
             else {
-              res.cookie("sfauth", token).status(200).send({"success": true})
+              res.cookie("auth", token).status(200).send({"success": true})
             }
           })
         }
@@ -65,9 +65,9 @@ const login = (req, res) => {
 
 const logout = (req, res) => {
   if(req.method === 'GET')
-    return res.clearCookie("sfauth").status(403).redirect('/')
+    return res.clearCookie("auth").status(403).redirect('/')
   else
-    return res.clearCookie("sfauth").status(200).send({"success": true})
+    return res.clearCookie("auth").status(200).send({"success": true})
 }
 
 module.exports = {

@@ -3,7 +3,7 @@ const UserModel = require("../models/user")
 
 const validateToken = (req, res, next) => {
   try {
-    const token = req.headers.cookie.split('sfauth=')[1]
+    const token = req.headers.cookie.split('auth=')[1]
     if(!token) throw new Error('token not found')
     jwt.verify(token, process.env.jwtsecret, (err, decoded) => {
       if(err) throw new Error('token invalid')
@@ -13,12 +13,12 @@ const validateToken = (req, res, next) => {
           user.generateToken((err, token) => {
             if(err) throw new Error('error while generating token')
             else {
-              res.cookie("sfauth", token)
+              res.cookie("auth", token)
             }
           })
         })
       }
-      req.auth = decoded
+      res.header("session", JSON.stringify(decoded))
       return next()
     })
   }
