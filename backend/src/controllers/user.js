@@ -46,7 +46,7 @@ const login = (req, res) => {
           })
         }
         else {
-          user.generateToken((err, user) => {
+          user.generateToken((err, token) => {
             if(err) {
               res.status(500).json({
                 "success": false,
@@ -54,7 +54,7 @@ const login = (req, res) => {
               })
             }
             else {
-              res.cookie("sfauth", user.token).status(200).json({"success": true})
+              res.cookie("sfauth", token).status(200).json({"success": true})
             }
           })
         }
