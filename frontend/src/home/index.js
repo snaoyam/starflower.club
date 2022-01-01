@@ -1,11 +1,11 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React, {useEffect, useState} from "react";
-import axios from "axios";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import React, {useEffect, useState} from "react"
+import axios from "axios"
 
 function App() {
   return (
-    <div></div>
+    <div>Home</div>
   )
 }
 
-export default App;
+export default App

@@ -1,0 +1,26 @@
+#loginpage {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+}
+#loginmodule {
+  position: absolute;
+  top: 30%;
+  width: 300px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+#logintxt {
+  margin-bottom: 20px;
+  user-select: none;
+}
+#logininputform {
+  width: 100%;
+}
+#logintxt > span {
+  font-size: 25px;
+}
