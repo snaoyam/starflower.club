@@ -3,7 +3,6 @@ import axios from "axios"
 import "./index.css"
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-
 function Login() {
   const [inputs, setInputs] = useState({'username': '', 'password': ''})
 
@@ -60,6 +59,7 @@ function Login() {
         <div id="logintxt"><span>로그인</span></div>
         <div id="logininputform">
           <TextField
+            autoFocus
             variant="outlined"
             id="sfusername"
             label="ID"

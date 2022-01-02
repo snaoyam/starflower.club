@@ -1,0 +1,45 @@
+#signuppage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+#signupmodulep {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 80px;
+}
+#signupmodule {
+  width: 100%;
+  max-width: 390px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: center;
+}
+#signuptxt {
+  margin-bottom: 20px;
+  user-select: none;
+}
+#signuptxt > span {
+  font-size: 25px;
+  color: #fff
+}
+#signupinputform {
+  width: 100%;
+}
+.doubleformpassword {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.doubleformstartfrom {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+.MuiPaper-root ul{
+  color: black;
+}

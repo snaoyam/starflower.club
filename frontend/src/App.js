@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import React, {useEffect, useState} from "react"
-import axios from "axios"
+import React from "react"
+import { createTheme } from '@mui/material/styles'
 import TopBar from "./home/components/topbar"
 import Home from "./home"
 import Login from "./login"
@@ -10,28 +10,47 @@ import getSession from "./home/components/auth"
 
 function App() {
   const session = getSession()
-  /*
-  const [catlist, setCate] = useState([])
-  const [reported, setReport] = useState([])
-  const [catlistshow, setCateshow] = useState(catlist)
 
-  useEffect(() => {
-    const temprep = []
-    reported.forEach(v => { temprep.push(v._id) })
-    const tempshow = catlist.filter(v => !temprep.includes(v._id))
-    setCateshow(tempshow)
+  const muiTheme = {
+    "textfield": createTheme({
+      palette: {
+        type: 'light',
+        primary: {
+          main: '#ffbf2e',
+          dark: '#b2209f',
+        },
+        secondary: {
+          main: '#ffe342',
+        },
+        text: {
+          secondary: 'rgba(181,181,181,0.5)',
+          disabled: 'rgba(181,181,181,0.6)',
+          hint: 'rgba(181,181,181,0.5)',
+          primary: 'rgba(255,255,255,0.87)',
+        },
+        background: {
+          default: '#4a4a4a',
+        },
+        error: {
+          main: '#ff5b30',
+        },
+      }
+    }),
+    "select": createTheme({
+      palette: {
+        type: 'light',
+        primary: {
+          main: '#ffa500',
+          dark: '#ffa500',
+          contrastText: '#fff',
+        },
+        text: {
+          primary: '#000',
+        },
+      }
+    }),
+  }
 
-  }, [catlist])
-
-  useEffect(() => {
-    axios.get(`/api`)
-    .then(response => {
-      setCate(response.data)
-    })
-  }, [])
-
-  const catPage = catlistshow.map((v, index) => <Route exact path={"/"+v._id} key={v._id} element={<CatPage path={v._id} name={v.category}/>}/>)
-  */
   const Notfound = <span> 404 Not found </span>
 
   return (
@@ -39,8 +58,8 @@ function App() {
       <TopBar session={session}/>
       <Routes>
         <Route exact path="/" element={<Home />} />
-        <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login />} />
-        <Route exact path="/signup" element={session ? <Navigate to="/member" /> : <Signup />} />
+        <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme}/>} />
+        <Route exact path="/signup" element={session ? <Navigate to="/member" /> : <Signup muiTheme={muiTheme}/>} />
         <Route exact path="/member" element={session ? <Member /> : <Navigate to="/login" />} />
         <Route path="*" element={Notfound}/>
       </Routes>
