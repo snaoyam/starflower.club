@@ -23,7 +23,7 @@ const LoginModule = ({session}) => {
     return <></>
   }
   else {
-    const btn_txt = session.name + ' / ' + session.sid
+    const btn_txt = session.name + ' / ' + session.studentid
     return (
     <div id="loginbtnp">
       <div id="loginbtn">

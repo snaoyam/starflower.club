@@ -6,9 +6,9 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import "./index.css"
 import { ThemeProvider } from '@mui/material/styles'
 
-function Signup({muiTheme}) {
-  const [inputs, setInputs] = useState({'username': '', 'password': '', 'email': '', 'name': '', 'phone': '', 'sid': '', 'memberFrom': 2021, 'graduated': false})
-  const [focus, setFocus] = useState({'username': false, 'password': false, 'confirmpassword': false, 'email': false, 'name': false, 'phone': false, 'sid': false})
+function Register({muiTheme}) {
+  const [inputs, setInputs] = useState({'username': '', 'password': '', 'email': '', 'name': '', 'phone': '', 'studentid': '', 'memberFrom': 2021, 'graduated': false})
+  const [focus, setFocus] = useState({'username': false, 'password': false, 'confirmpassword': false, 'email': false, 'name': false, 'phone': false, 'studentid': false})
   const [passworderror, setPasswordError] = useState(false)
   const [memberFrom, setmemberFrom] = useState([new Date(), 0])
   const [confirmpassword, setConfirm] = useState('')
@@ -18,29 +18,29 @@ function Signup({muiTheme}) {
     setPasswordError(focus.password && focus.confirmpassword && inputs.password !== '' && confirmpassword !== '' && inputs.password !== confirmpassword)
   }, [inputs.password, confirmpassword, focus.password, focus.confirmpassword]);
 
-  const signup = async () => {
-    setFocus({'username': true, 'password': true, 'confirmpassword': true, 'email': true, 'name': true, 'phone': true, 'sid': true})
+  const register = async () => {
+    setFocus({'username': true, 'password': true, 'confirmpassword': true, 'email': true, 'name': true, 'phone': true, 'studentid': true})
     if(validateInput()) {
       try {
-        const { data } = await axios.post(`/api/signup`, {...inputs, 'memberFrom': memberFrom[0].getFullYear()+memberFrom[1]})
+        const { data } = await axios.post(`/api/register`, {...inputs, 'memberFrom': memberFrom[0].getFullYear()+memberFrom[1]})
         if(data.success)
           window.location.href = "/member"
         else
-          alert("Signup failed")
+          alert("Register failed")
       } catch(err) {
-        alert("Signup failed")
+        alert("Register failed")
       }
     }
   }
   const onEnter = (e) => {
     if (e.key == 'Enter') {
-      signup()
+      register()
     }
   }
 
   const validateInput = () => {
 
-    return !(inputs.username === ''||inputs.password === ''||inputs.email === ''||inputs.name === ''||inputs.phone === ''||inputs.sid === ''||confirmpassword === ''||inputs.password !== confirmpassword)
+    return !(inputs.username === ''||inputs.password === ''||inputs.email === ''||inputs.name === ''||inputs.phone === ''||inputs.studentid === ''||confirmpassword === ''||inputs.password !== confirmpassword)
   }
   /*
   const inputformsx = {
@@ -52,11 +52,11 @@ function Signup({muiTheme}) {
   }*/
 
   return (
-    <div id="signuppage" onKeyPress={(e) => onEnter(e)}>
-      <div id='signupmodulep'>
-        <div id="signupmodule">
-          <div id="signuptxt"><span>회원가입</span></div>
-          <div id="signupinputform">
+    <div id="registerpage" onKeyPress={(e) => onEnter(e)}>
+      <div id='registermodulep'>
+        <div id="registermodule">
+          <div id="registertxt"><span>회원가입</span></div>
+          <div id="registerinputform">
             <ThemeProvider theme={muiTheme.textfield}>
             <TextField
               error={focus.name && inputs.name === ''}
@@ -72,13 +72,13 @@ function Signup({muiTheme}) {
               //sx={inputformsx}
             />
             <TextField
-              error={focus.sid && inputs.sid === ''}
-              helperText={focus.sid && inputs.sid === '' ? "학번을 입력해 주세요" : null}
+              error={focus.studentid && inputs.studentid === ''}
+              helperText={focus.studentid && inputs.studentid === '' ? "학번을 입력해 주세요" : null}
               variant="filled"
               label="KAIST Student ID"
-              value={inputs.sid}
-              onChange={(e) => setInputs({...inputs, 'sid': e.target.value})}
-              onBlur={() => setFocus({...focus, 'sid': true})}
+              value={inputs.studentid}
+              onChange={(e) => setInputs({...inputs, 'studentid': e.target.value})}
+              onBlur={() => setFocus({...focus, 'studentid': true})}
               style={{width: "100%", marginBottom: 30}}
               autoComplete='off'
               size="small"
@@ -212,7 +212,7 @@ function Signup({muiTheme}) {
               variant="contained"
               color="primary"
               style={{width: '100%', height: 36, boxShadow: 'none', backgroundColor: 'orange'}}
-              onClick={() => signup()}
+              onClick={() => register()}
             >회원가입</Button>
         </div>
       </div>
@@ -220,4 +220,4 @@ function Signup({muiTheme}) {
   )
 }
 
-export default Signup
+export default Register

@@ -1,17 +1,17 @@
-#signuppage {
+#registerpage {
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
 }
-#signupmodulep {
+#registermodulep {
   width: 80%;
   display: flex;
   flex-direction: row;
   margin-top: 80px;
 }
-#signupmodule {
+#registermodule {
   width: 100%;
   max-width: 390px;
   display: flex;
@@ -19,15 +19,15 @@
   flex-direction: column;
   justify-content: center;
 }
-#signuptxt {
+#registertxt {
   margin-bottom: 20px;
   user-select: none;
 }
-#signuptxt > span {
+#registertxt > span {
   font-size: 25px;
   color: #fff
 }
-#signupinputform {
+#registerinputform {
   width: 100%;
 }
 .doubleformpassword {

@@ -7,7 +7,7 @@ const getSession = () => {
     const decode = {
       "id": result.id,
       "name": decodeURIComponent(result.name),
-      "sid": result.sid,
+      "studentid": result.studentid,
     }
     return decode
   } catch(err) {

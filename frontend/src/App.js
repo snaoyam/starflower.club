@@ -4,7 +4,7 @@ import { createTheme } from '@mui/material/styles'
 import TopBar from "./home/components/topbar"
 import Home from "./home"
 import Login from "./login"
-import Signup from "./signup"
+import Register from "./register"
 import Member from "./member"
 import getSession from "./home/components/auth"
 
@@ -59,7 +59,7 @@ function App() {
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme}/>} />
-        <Route exact path="/signup" element={session ? <Navigate to="/member" /> : <Signup muiTheme={muiTheme}/>} />
+        <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme}/>} />
         <Route exact path="/member" element={session ? <Member /> : <Navigate to="/login" />} />
         <Route path="*" element={Notfound}/>
       </Routes>
