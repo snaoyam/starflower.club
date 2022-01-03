@@ -3,31 +3,39 @@ import { Link as RouterLink } from 'react-router-dom';
 import axios from "axios"
 import "./index.css"
 import {TextField, Link, Button, CircularProgress} from '@mui/material'
+import {ThemeProvider} from '@mui/material/styles'
 
-function Login() {
+function Login({muiTheme}) {
   const [inputs, setInputs] = useState({'username': '', 'password': ''})
   const [error, setError] = useState({'username': false, 'password': false})
   const [loading, setLoading] = useState(false)
 
   const login = async () => {
-    try {
-      setLoading(true)
-      const { data } = await axios.post(`/api/login`, inputs)
-      if(data.success) {
-        window.location.href = "/member"
-      }
-      else {
+    setError({'username': true, 'password': true})
+    if(validateInput()) {
+      try {
+        setLoading(true)
+        const { data } = await axios.post(`/api/login`, inputs)
+        if(data.success) {
+          window.location.href = "/member"
+        }
+        else {
+          alert("Please check ID and password")
+        }
+      } catch(err) {
         alert("Please check ID and password")
       }
-    } catch(err) {
-      alert("Please check ID and password")
+      setLoading(false)
     }
-    setLoading(false)
   }
   const onEnter = (e) => {
     if (e.key == 'Enter') {
       login()
     }
+  }
+
+  const validateInput = () => {
+    return !(inputs.username === ''||inputs.password === '')
   }
 
   const inputformsx = {
@@ -65,26 +73,32 @@ function Login() {
       <div id="loginmodule">
         <div id="logintxt"><span>로그인</span></div>
         <div id="logininputform">
-          <TextField
-            autoFocus
-            variant="outlined"
-            id="sfusername"
-            label="ID"
-            value={inputs.username}
-            onChange={(e) => setInputs({...inputs, 'username': e.target.value})}
-            style={{width: "100%", marginBottom: 10}}
-            sx={inputformsx}
-          />
-          <TextField
-            variant="outlined"
-            id="sfpassword"
-            type="password"
-            label="Password"
-            value={inputs.password}
-            onChange={(e) => setInputs({...inputs, 'password': e.target.value})}
-            style={{width: "100%", marginBottom: 10}}
-            sx={inputformsx}
-          />
+          <ThemeProvider theme={muiTheme.textfield}>
+            <TextField
+              autoFocus
+              error={error.username && inputs.username === ''}
+              helperText={error.username && inputs.username === '' ? "아이디를 입력해 주세요" : null}
+              variant="outlined"
+              id="sfusername"
+              label="ID"
+              value={inputs.username}
+              onChange={(e) => setInputs({...inputs, 'username': e.target.value})}
+              style={{width: "100%", marginBottom: error.username && inputs.username === '' ? 5 : 10}}
+              sx={error.username && inputs.username === '' ? {} : inputformsx}
+            />
+            <TextField
+              error={error.password && inputs.password === ''}
+              helperText={error.password && inputs.password === '' ? "아이디를 입력해 주세요" : null}
+              variant="outlined"
+              id="sfpassword"
+              type="password"
+              label="Password"
+              value={inputs.password}
+              onChange={(e) => setInputs({...inputs, 'password': e.target.value})}
+              style={{width: "100%", marginBottom: error.password && inputs.password === '' ? 5 : 10}}
+              sx={error.password && inputs.password === '' ? {} : inputformsx}
+            />
+          </ThemeProvider>
         </div>
         <Button
           variant="contained"

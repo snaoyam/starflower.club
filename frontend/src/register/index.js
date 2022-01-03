@@ -20,10 +20,10 @@ function Register({muiTheme}) {
   }, [inputs.password, confirmpassword, focus.password, focus.confirmpassword]);
 
   const register = async () => {
-    setLoading(true)
     setFocus({'username': true, 'password': true, 'confirmpassword': true, 'email': true, 'name': true, 'phone': true, 'studentid': true})
     if(validateInput()) {
       try {
+        setLoading(true)
         const { data } = await axios.post(`/api/register`, {...inputs, 'memberFrom': memberFrom[0].getFullYear()+memberFrom[1]})
         if(data.success) {
           window.location.href = "/member"
@@ -39,7 +39,6 @@ function Register({muiTheme}) {
   }
 
   const validateInput = () => {
-
     return !(inputs.username === ''||inputs.password === ''||inputs.email === ''||inputs.name === ''||inputs.phone === ''||inputs.studentid === ''||confirmpassword === ''||inputs.password !== confirmpassword)
   }
   /*
