@@ -1,21 +1,28 @@
 import React, {useState} from "react"
+import { Link as RouterLink } from 'react-router-dom';
 import axios from "axios"
 import "./index.css"
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
+import {TextField, Link, Button, CircularProgress} from '@mui/material'
+
 function Login() {
   const [inputs, setInputs] = useState({'username': '', 'password': ''})
+  const [error, setError] = useState({'username': false, 'password': false})
+  const [loading, setLoading] = useState(false)
 
   const login = async () => {
     try {
+      setLoading(true)
       const { data } = await axios.post(`/api/login`, inputs)
-      if(data.success)
+      if(data.success) {
         window.location.href = "/member"
-      else
+      }
+      else {
         alert("Please check ID and password")
+      }
     } catch(err) {
       alert("Please check ID and password")
     }
+    setLoading(false)
   }
   const onEnter = (e) => {
     if (e.key == 'Enter') {
@@ -25,10 +32,10 @@ function Login() {
 
   const inputformsx = {
     "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-      borderColor: "white"
+      borderColor: "#b8b8b8"
     },
     "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-      borderColor: "white"
+      borderColor: "#b8b8b8"
     },
     "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
       borderColor: "rgb(255, 226, 66)"
@@ -80,12 +87,29 @@ function Login() {
           />
         </div>
         <Button
-          label="Password"
           variant="contained"
-          color="primary"
-          style={{width: '100%', height: 36, boxShadow: 'none', backgroundColor: 'orange'}}
+          style={{width: '100%', height: 36, boxShadow: 'none', backgroundColor: 'orange', marginBottom: 10}}
           onClick={() => login()}
-        >Starflower 회원 인증</Button>
+          sx={{
+            "& .MuiLoadingButton-loadingIndicator .MuiCircularProgress-root": {
+              color: "white",
+            }
+          }}
+          value={50}
+        >{loading ? (
+          <CircularProgress
+            variant="indeterminate"
+            disableShrink
+            sx={{ color: 'white', animationDuration: '700ms' }}
+            size={24}
+          />
+        ) : 'Starflower 회원 인증'}</Button>
+        <Link to="/register" 
+          component={RouterLink}
+          underline='none'
+          color="rgb(181, 181, 181)"
+          style={{fontSize: '13px', marginLeft: 'auto', marginRight: '6px'}}
+        >회원가입</Link>
       </div>
     </div>
   )

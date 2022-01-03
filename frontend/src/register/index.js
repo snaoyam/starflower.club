@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from "react"
 import axios from "axios"
-import {Button, MenuItem, FormControl, FormHelperText, Checkbox, TextField, Box} from '@mui/material'
+import {Button, MenuItem, FormControl, FormHelperText, Checkbox, TextField, Box, CircularProgress} from '@mui/material'
 import {DatePicker, LocalizationProvider} from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import "./index.css"
-import { ThemeProvider } from '@mui/material/styles'
+import {ThemeProvider} from '@mui/material/styles'
 
 function Register({muiTheme}) {
   const [inputs, setInputs] = useState({'username': '', 'password': '', 'email': '', 'name': '', 'phone': '', 'studentid': '', 'memberFrom': 2021, 'graduated': false})
@@ -13,28 +13,28 @@ function Register({muiTheme}) {
   const [memberFrom, setmemberFrom] = useState([new Date(), 0])
   const [confirmpassword, setConfirm] = useState('')
   const [opendate, setOpenDate] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setPasswordError(focus.password && focus.confirmpassword && inputs.password !== '' && confirmpassword !== '' && inputs.password !== confirmpassword)
   }, [inputs.password, confirmpassword, focus.password, focus.confirmpassword]);
 
   const register = async () => {
+    setLoading(true)
     setFocus({'username': true, 'password': true, 'confirmpassword': true, 'email': true, 'name': true, 'phone': true, 'studentid': true})
     if(validateInput()) {
       try {
         const { data } = await axios.post(`/api/register`, {...inputs, 'memberFrom': memberFrom[0].getFullYear()+memberFrom[1]})
-        if(data.success)
+        if(data.success) {
           window.location.href = "/member"
-        else
+        }
+        else {
           alert("Register failed")
+        }
       } catch(err) {
         alert("Register failed")
       }
-    }
-  }
-  const onEnter = (e) => {
-    if (e.key == 'Enter') {
-      register()
+      setLoading(false)
     }
   }
 
@@ -52,7 +52,7 @@ function Register({muiTheme}) {
   }*/
 
   return (
-    <div id="registerpage" onKeyPress={(e) => onEnter(e)}>
+    <div id="registerpage">
       <div id='registermodulep'>
         <div id="registermodule">
           <div id="registertxt"><span>회원가입</span></div>
@@ -66,7 +66,7 @@ function Register({muiTheme}) {
               value={inputs.name}
               onChange={(e) => setInputs({...inputs, 'name': e.target.value})}
               onBlur={() => setFocus({...focus, 'name': true})}
-              style={{width: "100%", marginBottom: 10}}
+              style={{width: "100%", marginBottom: focus.name && inputs.name === '' ? 0 : 10}}
               autoComplete='off'
               size="small"
               //sx={inputformsx}
@@ -79,7 +79,7 @@ function Register({muiTheme}) {
               value={inputs.studentid}
               onChange={(e) => setInputs({...inputs, 'studentid': e.target.value})}
               onBlur={() => setFocus({...focus, 'studentid': true})}
-              style={{width: "100%", marginBottom: 30}}
+              style={{width: "100%", marginBottom: focus.studentid && inputs.studentid === '' ? 15 : 30}}
               autoComplete='off'
               size="small"
               //sx={inputformsx}
@@ -92,7 +92,7 @@ function Register({muiTheme}) {
               value={inputs.username}
               onChange={(e) => setInputs({...inputs, 'username': e.target.value})}
               onBlur={() => setFocus({...focus, 'username': true})}
-              style={{width: "100%", marginBottom: 10}}
+              style={{width: "100%", marginBottom: focus.username && inputs.username === '' ? 0 : 10}}
               autoComplete='off'
               size="small"
               //sx={inputformsx}
@@ -107,7 +107,7 @@ function Register({muiTheme}) {
                 value={inputs.password}
                 onChange={(e) => setInputs({...inputs, 'password': e.target.value})}
                 onBlur={() => setFocus({...focus, 'password': true})}
-                style={{width: "50%", marginBottom: 30}}
+                style={{width: "50%", marginBottom: (focus.password && inputs.password === '') || passworderror ? 15 : 30}}
                 autoComplete='off'
                 size="small"
                 //sx={inputformsx}
@@ -121,7 +121,7 @@ function Register({muiTheme}) {
                 value={confirmpassword}
                 onChange={(e) => setConfirm(e.target.value)}
                 onBlur={() => setFocus({...focus, 'confirmpassword': true})}
-                style={{width: "50%", marginBottom: 30, marginLeft: 10}}
+                style={{width: "50%", marginBottom: focus.confirmpassword && confirmpassword === '' ? 15 : 30, marginLeft: 10}}
                 autoComplete='off'
                 size="small"
                 //sx={inputformsx}
@@ -135,7 +135,7 @@ function Register({muiTheme}) {
               value={inputs.email}
               onChange={(e) => setInputs({...inputs, 'email': e.target.value})}
               onBlur={() => setFocus({...focus, 'email': true})}
-              style={{width: "100%", marginBottom: 10}}
+              style={{width: "100%", marginBottom: focus.email && inputs.email === '' ? 0 : 10}}
               autoComplete='off'
               size="small"
               //sx={inputformsx}
@@ -148,14 +148,14 @@ function Register({muiTheme}) {
               value={inputs.phone}
               onChange={(e) => setInputs({...inputs, 'phone': e.target.value})}
               onBlur={() => setFocus({...focus, 'phone': true})}
-              style={{width: "100%", marginBottom: 10}}
+              style={{width: "100%", marginBottom: focus.phone && inputs.phone === '' ? 0 : 10}}
               autoComplete='off'
               size="small"
               //sx={inputformsx}
             />
             <div className="doubleformstartfrom">
-              <FormControl variant="standard" sx={{ width: 100 }} style={{ marginBottom: 30 }}>
-                <FormHelperText>활동 시작 시기</FormHelperText>
+              <FormControl variant="standard" sx={{ width: 100 }} style={{ marginBottom: 15 }}>
+                <FormHelperText style={{ marginLeft: 5 }}>활동 시작 시기</FormHelperText>
                 <LocalizationProvider sx={{ width: 30 }} dateAdapter={AdapterDateFns}>
                   <ThemeProvider theme={muiTheme.select}>
                     <DatePicker
@@ -182,13 +182,13 @@ function Register({muiTheme}) {
                 size="small"
                 value={memberFrom[1]}
                 onChange={(e) => { setmemberFrom([memberFrom[0], e.target.value]) }}
-                style={{ marginBottom: 30, marginLeft: 10}}
+                style={{ marginBottom: 15, marginLeft: 10}}
                 sx={{ width: 80 }}
                 >
                 <MenuItem value={0}>봄</MenuItem>
                 <MenuItem value={0.5}>가을</MenuItem>
               </TextField>
-              <FormControl style={{ marginBottom: 30, marginLeft: 0 }}>
+              <FormControl style={{ marginBottom: 15, marginLeft: 0 }}>
                 <FormHelperText>졸업생 여부</FormHelperText>
                 <Box style={{ marginLeft: 15 }}>
                   <Checkbox
@@ -211,7 +211,7 @@ function Register({muiTheme}) {
           <Button
               variant="contained"
               color="primary"
-              style={{width: '100%', height: 36, boxShadow: 'none', backgroundColor: 'orange'}}
+              style={{width: '120px', height: 36, boxShadow: 'none', backgroundColor: 'orange', marginLeft: 'auto'}}
               onClick={() => register()}
             >회원가입</Button>
         </div>
