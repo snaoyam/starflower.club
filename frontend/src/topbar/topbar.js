@@ -1,7 +1,7 @@
 import React from "react"
 import { Link } from "react-router-dom"
 import "./topbar.css"
-import Login from "./login_btn"
+import Login from "./components/login_btn"
 
 const Topbar = ({session}) =>
 <React.Fragment>

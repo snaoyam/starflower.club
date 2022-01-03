@@ -208,11 +208,18 @@ function Register({muiTheme}) {
             </ThemeProvider>
           </div>
           <Button
-              variant="contained"
-              color="primary"
-              style={{width: '120px', height: 36, boxShadow: 'none', backgroundColor: 'orange', marginLeft: 'auto'}}
-              onClick={() => register()}
-            >회원가입</Button>
+            variant="contained"
+            color="primary"
+            style={{width: '120px', height: 36, boxShadow: 'none', backgroundColor: 'orange', marginLeft: 'auto', marginBottom: 50}}
+            onClick={() => register()}
+            >{loading ? (
+              <CircularProgress
+                variant="indeterminate"
+                disableShrink
+                sx={{ color: 'white', animationDuration: '700ms' }}
+                size={24}
+              />
+            ) : '회원가입!'}</Button>
         </div>
       </div>
     </div>
