@@ -10,6 +10,12 @@ const validateToken = (req, res, next) => {
       if(decoded.exp*1000 - Date.now() < 1000*60*60) {
         UserModel.find({_id: decoded.id}, (err, user) => {
           if(err) throw new Error('user not found')
+          /*else if(!user.registeraccepted) {
+            return res.status(403).send({
+              'success': false,
+              'msg': 'Please wait for acception'
+            })
+          }*/
           user.generateToken((err, token) => {
             if(err) throw new Error('error while generating token')
             else {

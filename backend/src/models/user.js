@@ -53,6 +53,20 @@ const UserSchema = Schema({
   token: {
     type: String,
   },
+  permission: {
+    admin: {
+      type: Boolean,
+      default: false,
+    },
+    coadmin: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  registeraccepted: {
+    type: Boolean,
+    default: false,
+  },
   public: {
     name: {
       type: String,

@@ -27,9 +27,9 @@ app.post("/api/login", login)
 app.use("/api/logout", logout)
 
 /*need validation*/
-app.use(validateToken)
+app.use("/api/member", validateToken)
 
-app.post("/api/public", getPublic)
+app.post("/api/member/public", getPublic)
 
 const PORT = Number(process.env.PORT) || 8080
 app.listen(PORT, () => {
