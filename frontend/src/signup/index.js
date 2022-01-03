@@ -19,9 +19,7 @@ function Signup({muiTheme}) {
   }, [inputs.password, confirmpassword, focus.password, focus.confirmpassword]);
 
   const signup = async () => {
-    console.log(Object.keys(focus).reduce((a, c) => {
-      return {...a}
-    }, {}))
+    setFocus({'username': true, 'password': true, 'confirmpassword': true, 'email': true, 'name': true, 'phone': true, 'sid': true})
     if(validateInput()) {
       try {
         const { data } = await axios.post(`/api/signup`, {...inputs, 'memberFrom': memberFrom[0].getFullYear()+memberFrom[1]})
