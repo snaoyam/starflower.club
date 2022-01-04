@@ -8,7 +8,7 @@ const Topbar = ({session}) =>
   <div className="topbar">
     <Link to="/" id="SFHomep">
       <div id="SFHome">
-        <span></span>
+        <span>STARFLOWER</span>
       </div>
     </Link>
     <Login session={session}/>
