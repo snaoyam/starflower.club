@@ -1,11 +1,20 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import React, {useEffect, useState} from "react"
 import axios from "axios"
+import "./index.css"
+import GatherComponent from "./components/gather"
 
-function App() {
+function Member() {
   return (
-    <div>Member</div>
+    <div id='memberpage'>
+      <div id='gathercomponentp'>
+        <GatherComponent />
+      </div>
+      <div id='component1'>
+        
+      </div>
+    </div>
   )
 }
 
-export default App
+export default Member
