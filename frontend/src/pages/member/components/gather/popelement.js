@@ -2,10 +2,11 @@ import React, {useState, useRef} from "react"
 import {Paper, Box, Chip, Button, InputBase, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 function Popnewgather({open, setOpen}) {
-  const selected = ['안시관측', '사진촬영', '사진세미나']
+  const [selected, setSelected] = useState(['활동1 ', '활동2', '활동3'])
   const [inputs, setInputs] = useState({'title': '', 'contents': ''})
   const inputRef = useRef();
   return (
@@ -29,8 +30,20 @@ function Popnewgather({open, setOpen}) {
         />
         <Box style={{marginBottom: 10}} sx={{'overflowX': 'scroll', 'height': '32px', 'padding': '0', 'display': 'flex', 'gap': 0.5}}>
           {selected.map((value) => (
-            <Chip key={value} label={value} />
+            <Chip key={value} label={value} onDelete={() => {}} />
           ))}
+          <Chip
+            deleteIcon={<AddIcon />}
+            onDelete={() => {}}
+            sx={{
+              '& .MuiChip-label': {
+                'padding': 0
+              },
+              '& .MuiSvgIcon-root': {
+                'margin': '0 8px 0 8px'
+              }
+            }}
+          />
         </Box>
         <Box sx={{overflowY: 'scroll', height: 'calc(100% - 65px)', cursor: 'text'}} onClick={() => {inputRef.current.focus()}}>
           <InputBase
