@@ -15,12 +15,15 @@ function Popnewgather() {
       </Zoom>
       <Dialog onClose={() => setOpen(false)} open={open} 
         sx={{
-          margin: '10px',
+          'margin': '10px',
+          "& .MuiDialog-container > .MuiPaper-root": {
+            'margin': '5px',
+          },
           "& .MuiDialog-container .MuiPaper-root": {
-            width: '100%',
-            maxWidth: '500px',
-            height: '100%',
-            maxHeight: '500px',
+            'width': '100%',
+            'maxWidth': '470px',
+            'height': '100%',
+            'maxHeight': '470px',
           }
         }}
       >
