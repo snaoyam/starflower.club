@@ -5,6 +5,7 @@ import Popelement from './popelement'
 
 function Popnewgather() {
   const [open, setOpen] = useState(false)
+  const [addInputs, setAddInputs] = useState({'title': '', 'contents': ''})
 
   return (
     <React.Fragment>
@@ -27,7 +28,7 @@ function Popnewgather() {
           }
         }}
       >
-        <Popelement open={open} setOpen={setOpen} />
+        <Popelement setOpen={setOpen} addInputs={addInputs} setAddInputs={setAddInputs} />
       </Dialog>
     </React.Fragment>
   )
