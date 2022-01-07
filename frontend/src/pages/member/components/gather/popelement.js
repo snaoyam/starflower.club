@@ -12,8 +12,7 @@ const option = ['활동1', '활동2', '활동3', '활동4', '활동5', '활동6'
 function Popnewgather({open, setOpen}) {
   const inputRef = useRef();
   const [inputs, setInputs] = useState({'title': '', 'contents': ''})
-  const [selected, setSelected] = useState(new Array(option.length).fill(false))
-  const [showpicker, setShowpicker] = useState(false)
+  const [selected, setSelected] = useState([])
   const [anchorEl, setAnchorEl] = React.useState(null)
 
   return (
@@ -38,11 +37,7 @@ function Popnewgather({open, setOpen}) {
         <Box style={{marginBottom: 5}} id='tagbox'
         sx={{'overflowX': 'scroll', 'height': '32px', 'padding': '0 0 5px 0', 'display': 'flex', 'gap': 0.5, 
         'MsOverflowStyle': 'none', 'scrollbarWidth': 'none', '&::-webkit-scrollbar': {'display': 'none'}}}>
-          {selected.map((value, index) => {
-            return [value, index]
-          }).filter(value => {
-            return value[0]
-          }).map(value =>  (<Chip key={option[value[1]]} label={option[value[1]]} />))}
+          {selected.map(index =>  (<Chip key={option[index]} label={option[index]} />))}
           <Chip
             label={<AddIcon />}
             onClick={() => setAnchorEl(document.getElementById("tagbox"))}
@@ -69,20 +64,19 @@ function Popnewgather({open, setOpen}) {
             id='selectTagPopover'
             sx={{
               '& > .MuiPaper-elevation': {
-                'width': 'calc(100% - 80px)',
+                'width': 'calc(100% - 100px)',
                 'maxWidth': '300px',
               }
             }}
             >
             <Paper elevation={3}
-                style={{'maxHeight': '240px', 'maxWidth': '300px', 'width': '100%',
-                  'overflowY': 'scroll',
-                  'overflowX': 'hidden',
-                }}>
+                style={{'maxHeight': '240px', 'maxWidth': '300px', 'width': '100%', 'overflowY': 'scroll', 'overflowX': 'hidden',}}
+                sx={{'MsOverflowStyle': 'none', 'scrollbarWidth': 'none', '&::-webkit-scrollbar': {'display': 'none'}}}
+                >
                 <List>
                   {option.map((value, index) => (
-                    <MenuItem value={value} key={index} onClick={() => { setSelected(selected.map((val, ind) => {return index === ind ? !val : val})) }}>
-                      {selected[index] ? (<CheckBoxIcon sx={{'margin': '0 6px 0 0'}}/>) : (<CheckBoxOutlineIcon sx={{'margin': '0 6px 0 0'}}/>)}
+                    <MenuItem value={value} key={index} onClick={() => { setSelected(selected.includes(index) ? selected.filter(val => val !== index) : [...selected, index]) }}>
+                      {selected.includes(index) ? (<CheckBoxIcon sx={{'margin': '0 6px 0 0'}}/>) : (<CheckBoxOutlineIcon sx={{'margin': '0 6px 0 0'}}/>)}
                       {value}
                     </MenuItem>
                   ))}
