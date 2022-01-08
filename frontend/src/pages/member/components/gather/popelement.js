@@ -10,23 +10,23 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
+import PlaceIcon from '@mui/icons-material/Place';
 
 function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const inputRef = useRef()
   const [option, setOption] = useState(['활동1', '활동2', '활동3', '활동4', '활동5', '활동6', '활동7', '활동8'])
   const [selectedTag, setSelectedTag] = useState([])
-  const [tagPopoverAnchor, setTagAnchor] = useState(null)
-  const [datePopoverAnchor, setDateAnchor] = useState(null)
-  const [timePopoverAnchor, setTimeAnchor] = useState(null)
   const [customTag, setCustomTag] = useState('')
   const [hideDatePicker, setHideDate] = useState(true)
   const [date, setDate] = useState()
   const [time, setTime] = useState([null, null, 'PM'])
   const [timeSelect, setTimeSelect] = useState([false, false])
-
-  const handleTimeChange = (event) => {
-    setTime((event.target.value))
-  }
+  const [place, setPlace] = useState(null)
+  const [customPlace, setCustomPlace] = useState(null)
+  const [tagPopoverAnchor, setTagAnchor] = useState(null)
+  const [datePopoverAnchor, setDateAnchor] = useState(null)
+  const [timePopoverAnchor, setTimeAnchor] = useState(null)
+  const [placePopoverAnchor, setPlaceAnchor] = useState(null)
 
   return (
     <Paper sx={{overflow: 'hidden'}}>
@@ -47,7 +47,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
           style={{marginBottom: 5}}
           onChange={(e) => setAddInputs({...addInputs, 'title': e.target.value})}
         />
-        <Box sx={{overflowY: 'scroll', height: 'calc(100% - 165px)', cursor: 'text'}} onClick={() => {inputRef.current.focus()}}>
+        <Box sx={{overflowY: 'scroll', height: 'calc(100% - 205px)', cursor: 'text'}} onClick={() => {inputRef.current.focus()}}>
           <InputBase
             placeholder="활동 계획"
             multiline={true}
@@ -59,7 +59,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             onChange={(e) => setAddInputs({...addInputs, 'contents': e.target.value})}
           />
         </Box>
-        <Box style={{'marginBottom': '8px'}} sx={{'display': 'flex'}}>
+        <Box style={{'marginBottom': '6px'}} sx={{'display': 'flex'}}>
           <Box style={{'marginRight': '10px'}} sx={{'paddingBottom': '2px'}} id='datebox'>
             <ButtonBase sx={{'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'width': '106px', 'display': 'flex'}}
             onClick={() => {
@@ -67,7 +67,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
                 setDateAnchor(document.getElementById("datebox"))
               }}>
               <CalendarTodayIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{width: '76px', 'marginTop': '1px', 'fontSize': '14px'}}>
+              <Box sx={{width: '65px', 'marginTop': '1px', 'fontSize': '14px'}}>
                 {date ? ((date.getDate() === (new Date).getDate() && date - new Date() < 86400000) ? '오늘' : ((date.getDate() === ((new Date).getDate()+1) && date - new Date() < 172800000) ? '내일' : date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate())) : 'Add Date'}
               </Box>
             </ButtonBase>
@@ -75,23 +75,17 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
           <Popover open={Boolean(datePopoverAnchor)}
             anchorEl={datePopoverAnchor}
             onClose={() => setDateAnchor(null)}
-            anchorOrigin={hideDatePicker ? {
-              vertical: 'bottom',
-              horizontal: 'center',
-            } : {
+            anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'left',
             }}
-            transformOrigin={hideDatePicker ? {
-              vertical: 'top',
-              horizontal: 'center',
-            } : {
+            transformOrigin={{
               vertical: 'top',
               horizontal: 'left',
             }}
             sx={hideDatePicker ? {
               '& > .MuiPaper-elevation': {
-                'width': '100px',
+                'width': '106px',
                 'maxHeight': '240px',
               }
             } : {}}
@@ -137,7 +131,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
               setTimeAnchor(document.getElementById("timebox"))
             }}>
               <AccessTimeIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{width: '76px', 'marginTop': '1px', 'fontSize': '14px'}}>
+              <Box sx={{width: '65px', 'marginTop': '1px', 'fontSize': '14px'}}>
                 {time[1] ? (time[0]+':'+('0' + time[1].toString()).slice(-2)+' '+time[2]) : 'Add Time'}
               </Box>
             </ButtonBase>
@@ -162,7 +156,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             >
             <Box style={{'width': '100%', 'overflowY': 'scroll', 'overflowX': 'hidden'}}>
               {!timeSelect[0] ? (
-                <List sx={{ 'flexGrow': 1, 'width': '100%', 'padding': 0}} subheader={
+                <List sx={{ 'flexGrow': 1, 'width': '100%', 'padding': '0 0 4px 0'}} subheader={
                   <Box sx={{'padding': '8px 0 0 10%', 'fontSize': '16px', 'color': 'gray', 'cursor': 'default'}}>
                     Hour
                   </Box>
@@ -171,7 +165,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
                     {[1,2,3,4,5,6,7,8,9,10,11,12].map(val => (<Grid item key={'hourselc'+val} xs={4}><MenuItem onClick={() => {
                       setTime([val, time[1], time[2]])
                       setTimeSelect([true, false])
-                    }} sx={{'justifyContent': 'center'}}>{val}</MenuItem></Grid>))}
+                    }} sx={{'justifyContent': 'center', 'borderRadius': '2px'}}>{val}</MenuItem></Grid>))}
                   </Grid>
                 </List>
               ) : (
@@ -185,19 +179,19 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
                       {[0,5,10,15,20,25,30,35,40,45,50,55].map(val => (<Grid item key={'minselc'+val} xs={4}><MenuItem onClick={() => {
                         setTime([time[0], val, time[2]])
                         setTimeSelect([true, true])
-                      }} sx={{'justifyContent': 'center'}}>{('0' + val).slice(-2)}</MenuItem></Grid>))}
+                      }} sx={{'justifyContent': 'center', 'borderRadius': '2px'}}>{('0' + val).slice(-2)}</MenuItem></Grid>))}
                     </Grid>
                   </List>
                 ) : (
-                  <ButtonGroup disableElevation variant="contained" sx={{'width': '100%', 'height': '32px', 'backgroundColor': 'rgba(0, 0, 0, 0.05)'}}>
-                    <ButtonBase sx={{'width': 'calc(50% - 4px)', 'height': 'calc(100% - 4px)', 'borderRadius': '2px', 'margin': '2px', 'fontSize': '12px'}} disableRipple={true} 
-                    style={time[2] === 'AM' ? {'backgroundColor': 'rgba(0, 0, 0, 0.15)'} : {}}
+                  <ButtonGroup disableElevation variant="contained" sx={{'width': '100%', 'height': '32px'}}>
+                    <ButtonBase sx={{'width': 'calc(50% - 4px)', 'height': 'calc(100% - 4px)', 'borderRadius': '2px', 'margin': '2px', 'fontSize': '12px'}}
+                    style={time[2] === 'AM' ? {'backgroundColor': 'rgba(0, 0, 0, 0.12)'} : {}}
                     onClick={() => {
                       setTime([time[0], time[1], 'AM'])
                       setTimeAnchor(null)
                     }}>AM</ButtonBase>
-                    <ButtonBase sx={{'width': 'calc(50% - 4px)', 'height': 'calc(100% - 4px)', 'borderRadius': '2px', 'margin': '2px', 'fontSize': '12px'}} disableRipple={true} 
-                    style={time[2] === 'PM' ? {'backgroundColor': 'rgba(0, 0, 0, 0.15)'} : {}}
+                    <ButtonBase sx={{'width': 'calc(50% - 4px)', 'height': 'calc(100% - 4px)', 'borderRadius': '2px', 'margin': '2px', 'fontSize': '12px'}}
+                    style={time[2] === 'PM' ? {'backgroundColor': 'rgba(0, 0, 0, 0.12)'} : {}}
                     onClick={() => {
                       setTime([time[0], time[1], 'PM'])
                       setTimeAnchor(null)
@@ -208,6 +202,66 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             </Box>
           </Popover>
         </Box>
+        <Box style={{'marginBottom': '10px'}} sx={{'paddingBottom': '2px'}} id='placebox'>
+          <ButtonBase sx={{'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'minWidth': '126px', 'display': 'flex'}}
+          onClick={() => setPlaceAnchor(document.getElementById("placebox"))}>
+            <PlaceIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
+            <Box sx={{'minWidth': '85px', 'marginTop': '1px', 'fontSize': '14px'}}>
+              {place ? place : 'Add Place'}
+            </Box>
+          </ButtonBase>
+        </Box>
+        <Popover open={Boolean(placePopoverAnchor)}
+          anchorEl={placePopoverAnchor}
+          onClose={() => setPlaceAnchor(null)}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          sx={{
+            '& > .MuiPaper-elevation': {
+              'minWidth': '126px',
+              'maxHeight': '240px',
+            }
+          }}
+          >
+          <Box style={{'width': '100%', 'overflowY': 'scroll', 'overflowX': 'hidden'}}>
+            <List style={{'padding': '4px 0'}}>
+              <ListItem button style={{'padding': '0 16px'}} 
+              onClick={() => {
+                setPlace('동아리방')
+                setPlaceAnchor(null)
+              }}>
+                <ListItemText primary="동아리방" />
+              </ListItem>
+              <ListItem button style={{'padding': '0 16px'}}
+              onClick={() => {
+                setPlace('태울관 옥상')
+                setPlaceAnchor(null)
+              }}>
+                <ListItemText primary="태울관 옥상" />
+              </ListItem>
+              <ListItem button style={{'padding': '0 16px'}}
+              onClick={() => {
+                setPlace('온라인 (ZOOM)')
+                setPlaceAnchor(null)
+              }}>
+                <ListItemText primary="온라인 (ZOOM)" />
+              </ListItem>
+              <Divider light />
+              <ListItem button style={{'padding': '2px 16px 0px 16px'}} onKeyPress={(e) => {if (e.key == 'Enter') console.log(1)}}>
+                <InputBase placeholder="장소 입력하기" sx={{'padding': 0, 'width': '100%'}} value={customPlace} onChange={(e) => {
+                  setCustomPlace(e.target.value)
+                  setPlace(e.target.value)
+                }}></InputBase>
+              </ListItem>
+            </List>
+          </Box>
+        </Popover>
         <Box style={{marginBottom: 5}} id='tagbox'
         sx={{'overflowX': 'scroll', 'height': '32px', 'padding': '0 0 5px 0', 'display': 'flex', 'gap': 0.5, 
         'MsOverflowStyle': 'none', 'scrollbarWidth': 'none', '&::-webkit-scrollbar': {'display': 'none'}}}>
