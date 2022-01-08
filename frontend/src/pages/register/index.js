@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react"
 import axios from "axios"
-import {Button, MenuItem, FormControl, FormHelperText, Checkbox, TextField, Box, CircularProgress} from '@mui/material'
+import {Button, MenuItem, FormControl, FormHelperText, Checkbox, TextField, Box, CircularProgress, InputAdornment} from '@mui/material'
 import {DatePicker, LocalizationProvider} from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import "./index.css"
@@ -24,7 +24,7 @@ function Register({muiTheme}) {
     if(validateInput()) {
       try {
         setLoading(true)
-        const { data } = await axios.post(`/api/register`, {...inputs, 'memberFrom': memberFrom[0].getFullYear()+memberFrom[1]})
+        const { data } = await axios.post(`/api/register`, {...inputs, 'email': inputs.email+'@kaist.ac.kr', 'memberFrom': memberFrom[0].getFullYear()+memberFrom[1]})
         if(data.success) {
           window.location.href = "/member"
         }
@@ -127,8 +127,8 @@ function Register({muiTheme}) {
               />
             </div>
             <TextField
-              error={focus.email && inputs.email === ''}
-              helperText={focus.email && inputs.email === '' ? "이메일을 입력해 주세요" : null}
+              error={focus.email && inputs.email === '' || inputs.email.includes('@')}
+              helperText={focus.email && inputs.email === '' ? "이메일을 입력해 주세요" : (inputs.email.includes('@') ? 'KAIST 이메일의 \"@kaist.ac.kr\"을 제외한 나머지 부분을 입력해주세요' : null)}
               variant="filled"
               label="Email"
               value={inputs.email}
@@ -137,6 +137,9 @@ function Register({muiTheme}) {
               style={{width: "100%", marginBottom: focus.email && inputs.email === '' ? 0 : 10}}
               autoComplete='off'
               size="small"
+              InputProps={{
+                endAdornment: <InputAdornment position="end">@ kaist.ac.kr</InputAdornment>,
+              }}
               //sx={inputformsx}
             />
             <TextField
