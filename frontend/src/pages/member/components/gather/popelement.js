@@ -1,5 +1,6 @@
 import React, {useState, useRef} from "react"
-import {Paper, Box, Chip, Button, ButtonBase, ButtonGroup, InputBase, DialogTitle, DialogContent, DialogActions, List, MenuItem, ListItem, ListItemText, Divider, Popover, Grid} from '@mui/material'
+import axios from "axios"
+import {Paper, Box, Chip, Button, ButtonBase, ButtonGroup, InputBase, DialogTitle, DialogContent, List, MenuItem, ListItem, ListItemText, Divider, Popover, Grid, CircularProgress} from '@mui/material'
 import {LocalizationProvider, CalendarPicker} from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import IconButton from '@mui/material/IconButton'
@@ -12,14 +13,15 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import PlaceIcon from '@mui/icons-material/Place'
 import LinkIcon from '@mui/icons-material/Link'
+import CreateIcon from '@mui/icons-material/Create';
 
 function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const inputRef = useRef()
-  const [option, setOption] = useState(['활동1', '활동2', '활동3', '활동4', '활동5', '활동6', '활동7', '활동8'])
+  const [option, setOption] = useState(['안시관측', '사진촬영', '밥팟', '정모', '사진편집', '외부관측회', '견학' ])
   const [selectedTag, setSelectedTag] = useState([])
   const [customTag, setCustomTag] = useState('')
   const [hideDatePicker, setHideDate] = useState(true)
-  const [date, setDate] = useState()
+  const [date, setDate] = useState(null)
   const [time, setTime] = useState([null, null, 'PM'])
   const [timeSelect, setTimeSelect] = useState([false, false])
   const [place, setPlace] = useState('')
@@ -30,6 +32,32 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const [timePopoverAnchor, setTimeAnchor] = useState(null)
   const [placePopoverAnchor, setPlaceAnchor] = useState(null)
   const [linkPopoverAnchor, setLinkAnchor] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const upload = async () => {
+    if(validateinput()) {
+      try {
+        setLoading(true)
+        const { data } = await axios.post(`/api/member/gather/post`, {...addInputs, 'date': date, 'time': time, 'place': place, 'link': link, 'tag': selectedTag})
+        if(data.success) {
+          setOpen(false)
+        }
+        else {
+          alert("Upload failed")
+        }
+      } catch(err) {
+        alert("Upload failed")
+      }
+      setLoading(false)
+    }
+  }
+
+  const validateinput = () => {
+    if(addInputs.title === '') alert('제목을 입력해주세요')
+    else if(date === null) alert('날짜를 선택해주세요')
+    else if(time[1] === null) alert('시간을 설정해주세요')
+    return !(addInputs.title === '' || time[1] === null || date === null)
+  }
 
   return (
     <Paper sx={{overflow: 'hidden'}}>
@@ -39,7 +67,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{'padding': '30px 35px 0 35px', 'height': 'calc(100% - 79px)'}}>
+      <DialogContent sx={{'padding': '30px 35px 0 35px', 'height': 'calc(100% - 88px)'}}>
         <InputBase
           placeholder="제목"
           fullWidth
@@ -267,7 +295,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
               </List>
             </Box>
           </Popover>
-          <Box sx={{'paddingBottom': '2px', 'display': (place.includes('온라인')||place.includes('online') ? 'unset' : 'none')}} id='linkbox'>
+          <Box sx={{'paddingBottom': '2px', 'display': (['온라인', 'online', '줌', 'zoom', '사이트'].some(each => place.toLowerCase().includes(each)) ? 'unset' : 'none')}} id='linkbox'>
             <ButtonBase style={link ? {} : {'width': '37px'}} sx={{'height': '32px', 'maxWidth': '150px', 'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'minWidth': '37px', 'display': 'flex', 'justifyContent': 'left'}}
             onClick={() => setLinkAnchor(document.getElementById("linkbox"))}>
               <LinkIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
@@ -360,9 +388,16 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
           </Popover>
         </Box>
       </DialogContent>
-      <DialogActions sx={{'height': '35px', 'padding': 0}}>
-        <Button onClick={() => {}}>업로드</Button>
-      </DialogActions>
+      <Box sx={{'height': '44px', 'display': 'flex', 'justifyContent': 'flex-end'}}>
+        <Button sx={{'padding': '6px 8px 6px 2px', 'alignItem': 'center', 'color': 'orange', 'height': '34px', 'margin': '0 10px 10px 10px'}} onClick={() => upload()}>
+        {loading ? <CircularProgress
+            variant="indeterminate"
+            disableShrink
+            sx={{'color': 'orange', 'animationDuration': '700ms', 'margin': '0 6px'}}
+            size={14}/> : <CreateIcon sx={{'height': '16px'}}/>}
+          <Box sx={{'alignItem': 'center', 'marginTop': '1px', 'textTransform': 'none'}}>Upload</Box>
+        </Button>
+      </Box>
     </Paper>
   )
 }
