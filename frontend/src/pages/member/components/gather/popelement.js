@@ -39,7 +39,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{'padding': '30px 35px 0 35px', 'height': 'calc(100% - 44px)'}}>
+      <DialogContent sx={{'padding': '30px 35px 0 35px', 'height': 'calc(100% - 79px)'}}>
         <InputBase
           placeholder="제목"
           fullWidth
@@ -50,7 +50,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
           style={{marginBottom: 5}}
           onChange={(e) => setAddInputs({...addInputs, 'title': e.target.value})}
         />
-        <Box sx={{overflowY: 'scroll', height: 'calc(100% - 205px)', cursor: 'text'}} onClick={() => {inputRef.current.focus()}}>
+        <Box style={{marginBottom: 10}} sx={{overflowY: 'scroll', height: 'calc(100% - 178px)', cursor: 'text'}} onClick={() => {inputRef.current.focus()}}>
           <InputBase
             placeholder="활동 계획"
             multiline={true}
@@ -60,6 +60,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             inputRef={inputRef}
             value={addInputs.contents}
             onChange={(e) => setAddInputs({...addInputs, 'contents': e.target.value})}
+            sx={{width: 'calc(100% - 10px)'}}
           />
         </Box>
         <Box style={{'marginBottom': '6px'}} sx={{'display': 'flex'}}>
@@ -70,7 +71,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
                 setDateAnchor(document.getElementById("datebox"))
               }}>
               <CalendarTodayIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{width: '65px', 'fontSize': '14px'}}>
+              <Box sx={{width: '65px', 'fontSize': '14px'}} style={date ? {'color': '#000'} : {}}>
                 {date ? ((date.getDate() === (new Date).getDate() && date - new Date() < 86400000) ? '오늘' : ((date.getDate() === ((new Date).getDate()+1) && date - new Date() < 172800000) ? '내일' : date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate())) : 'Add Date'}
               </Box>
             </ButtonBase>
@@ -134,7 +135,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
               setTimeAnchor(document.getElementById("timebox"))
             }}>
               <AccessTimeIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{width: '65px', 'fontSize': '14px'}}>
+              <Box sx={{width: '65px', 'fontSize': '14px'}} style={time[1] ? {'color': '#000'} : {}}>
                 {time[1] ? (time[0]+':'+('0' + time[1].toString()).slice(-2)+' '+time[2]) : 'Add Time'}
               </Box>
             </ButtonBase>
@@ -205,12 +206,12 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             </Box>
           </Popover>
         </Box>
-        <Box style={{'marginBottom': '10px'}} sx={{'display': 'flex'}}>
+        <Box style={{'marginBottom': '6px'}} sx={{'display': 'flex'}}>
           <Box style={{'marginRight': '10px'}} sx={{'paddingBottom': '2px'}} id='placebox'>
-            <ButtonBase sx={{'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'minWidth': '126px', 'display': 'flex', 'justifyContent': 'left'}}
+            <ButtonBase sx={{'height': '32px', 'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'minWidth': '126px', 'display': 'flex', 'justifyContent': 'left'}}
             onClick={() => setPlaceAnchor(document.getElementById("placebox"))}>
               <PlaceIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{'minWidth': '70px', 'fontSize': '14px'}}>
+              <Box sx={{'minWidth': '70px', 'fontSize': '14px', 'whiteSpace': 'nowrap'}} style={place ? {'color': '#000'} : {}}>
                 {place ? place : 'Add Place'}
               </Box>
             </ButtonBase>
@@ -266,11 +267,11 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
               </List>
             </Box>
           </Popover>
-          <Box sx={{'paddingBottom': '2px'}} id='linkbox'>
-            <ButtonBase style={link ? {} : {'width': '37px'}} sx={{'maxWidth': '150px', 'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'minWidth': '37px', 'display': 'flex', 'justifyContent': 'left'}}
+          <Box sx={{'paddingBottom': '2px', 'display': (place.includes('온라인')||place.includes('online') ? 'unset' : 'none')}} id='linkbox'>
+            <ButtonBase style={link ? {} : {'width': '37px'}} sx={{'height': '32px', 'maxWidth': '150px', 'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'minWidth': '37px', 'display': 'flex', 'justifyContent': 'left'}}
             onClick={() => setLinkAnchor(document.getElementById("linkbox"))}>
               <LinkIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{'fontSize': '14px', 'width': 'calc(100% - 24px)', 'overflow': 'hidden', 'textOverflow': 'ellipsis'}}>
+              <Box sx={{'fontSize': '14px', 'width': 'calc(100% - 24px)', 'overflow': 'hidden', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap'}} style={link ? {'color': '#000', 'marginLeft': '2px'} : {}}>
                 {link}
               </Box>
             </ButtonBase>
@@ -297,7 +298,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             </Box>
           </Popover>
         </Box>
-        <Box style={{marginBottom: 5}} id='tagbox'
+        <Box id='tagbox'
         sx={{'overflowX': 'scroll', 'height': '32px', 'padding': '0 0 5px 0', 'display': 'flex', 'gap': 0.5, 
         'MsOverflowStyle': 'none', 'scrollbarWidth': 'none', '&::-webkit-scrollbar': {'display': 'none'}}}>
           {selectedTag.map(index =>  (<Chip key={option[index]} label={option[index]} />))}
@@ -359,7 +360,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
           </Popover>
         </Box>
       </DialogContent>
-      <DialogActions sx={{'padding': '5px', 'position': 'absolute', 'bottom': 0, 'right': 0}}>
+      <DialogActions sx={{'height': '35px', 'padding': 0}}>
         <Button onClick={() => {}}>업로드</Button>
       </DialogActions>
     </Paper>
