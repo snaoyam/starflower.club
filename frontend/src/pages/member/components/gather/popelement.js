@@ -10,7 +10,8 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
-import PlaceIcon from '@mui/icons-material/Place';
+import PlaceIcon from '@mui/icons-material/Place'
+import LinkIcon from '@mui/icons-material/Link'
 
 function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const inputRef = useRef()
@@ -21,12 +22,14 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const [date, setDate] = useState()
   const [time, setTime] = useState([null, null, 'PM'])
   const [timeSelect, setTimeSelect] = useState([false, false])
-  const [place, setPlace] = useState(null)
-  const [customPlace, setCustomPlace] = useState(null)
+  const [place, setPlace] = useState('')
+  const [customPlace, setCustomPlace] = useState('')
+  const [link, setLink] = useState('')
   const [tagPopoverAnchor, setTagAnchor] = useState(null)
   const [datePopoverAnchor, setDateAnchor] = useState(null)
   const [timePopoverAnchor, setTimeAnchor] = useState(null)
   const [placePopoverAnchor, setPlaceAnchor] = useState(null)
+  const [linkPopoverAnchor, setLinkAnchor] = useState(null)
 
   return (
     <Paper sx={{overflow: 'hidden'}}>
@@ -67,7 +70,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
                 setDateAnchor(document.getElementById("datebox"))
               }}>
               <CalendarTodayIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{width: '65px', 'marginTop': '1px', 'fontSize': '14px'}}>
+              <Box sx={{width: '65px', 'fontSize': '14px'}}>
                 {date ? ((date.getDate() === (new Date).getDate() && date - new Date() < 86400000) ? '오늘' : ((date.getDate() === ((new Date).getDate()+1) && date - new Date() < 172800000) ? '내일' : date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate())) : 'Add Date'}
               </Box>
             </ButtonBase>
@@ -131,7 +134,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
               setTimeAnchor(document.getElementById("timebox"))
             }}>
               <AccessTimeIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{width: '65px', 'marginTop': '1px', 'fontSize': '14px'}}>
+              <Box sx={{width: '65px', 'fontSize': '14px'}}>
                 {time[1] ? (time[0]+':'+('0' + time[1].toString()).slice(-2)+' '+time[2]) : 'Add Time'}
               </Box>
             </ButtonBase>
@@ -202,66 +205,98 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             </Box>
           </Popover>
         </Box>
-        <Box style={{'marginBottom': '10px'}} sx={{'paddingBottom': '2px'}} id='placebox'>
-          <ButtonBase sx={{'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'minWidth': '126px', 'display': 'flex'}}
-          onClick={() => setPlaceAnchor(document.getElementById("placebox"))}>
-            <PlaceIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-            <Box sx={{'minWidth': '85px', 'marginTop': '1px', 'fontSize': '14px'}}>
-              {place ? place : 'Add Place'}
-            </Box>
-          </ButtonBase>
-        </Box>
-        <Popover open={Boolean(placePopoverAnchor)}
-          anchorEl={placePopoverAnchor}
-          onClose={() => setPlaceAnchor(null)}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
-          }}
-          sx={{
-            '& > .MuiPaper-elevation': {
-              'minWidth': '126px',
-              'maxHeight': '240px',
-            }
-          }}
-          >
-          <Box style={{'width': '100%', 'overflowY': 'scroll', 'overflowX': 'hidden'}}>
-            <List style={{'padding': '4px 0'}}>
-              <ListItem button style={{'padding': '0 16px'}} 
-              onClick={() => {
-                setPlace('동아리방')
-                setPlaceAnchor(null)
-              }}>
-                <ListItemText primary="동아리방" />
-              </ListItem>
-              <ListItem button style={{'padding': '0 16px'}}
-              onClick={() => {
-                setPlace('태울관 옥상')
-                setPlaceAnchor(null)
-              }}>
-                <ListItemText primary="태울관 옥상" />
-              </ListItem>
-              <ListItem button style={{'padding': '0 16px'}}
-              onClick={() => {
-                setPlace('온라인 (ZOOM)')
-                setPlaceAnchor(null)
-              }}>
-                <ListItemText primary="온라인 (ZOOM)" />
-              </ListItem>
-              <Divider light />
-              <ListItem button style={{'padding': '2px 16px 0px 16px'}} onKeyPress={(e) => {if (e.key == 'Enter') console.log(1)}}>
-                <InputBase placeholder="장소 입력하기" sx={{'padding': 0, 'width': '100%'}} value={customPlace} onChange={(e) => {
-                  setCustomPlace(e.target.value)
-                  setPlace(e.target.value)
-                }}></InputBase>
-              </ListItem>
-            </List>
+        <Box style={{'marginBottom': '10px'}} sx={{'display': 'flex'}}>
+          <Box style={{'marginRight': '10px'}} sx={{'paddingBottom': '2px'}} id='placebox'>
+            <ButtonBase sx={{'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'minWidth': '126px', 'display': 'flex', 'justifyContent': 'left'}}
+            onClick={() => setPlaceAnchor(document.getElementById("placebox"))}>
+              <PlaceIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
+              <Box sx={{'minWidth': '70px', 'fontSize': '14px'}}>
+                {place ? place : 'Add Place'}
+              </Box>
+            </ButtonBase>
           </Box>
-        </Popover>
+          <Popover open={Boolean(placePopoverAnchor)}
+            anchorEl={placePopoverAnchor}
+            onClose={() => setPlaceAnchor(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            sx={{
+              '& > .MuiPaper-elevation': {
+                'minWidth': '126px',
+                'maxHeight': '240px',
+              }
+            }}
+            >
+            <Box style={{'width': '100%', 'overflowY': 'scroll', 'overflowX': 'hidden'}}>
+              <List style={{'padding': '4px 0'}}>
+                <ListItem button style={{'padding': '0 16px'}} 
+                onClick={() => {
+                  setPlace('동아리방')
+                  setPlaceAnchor(null)
+                }}>
+                  <ListItemText primary="동아리방" />
+                </ListItem>
+                <ListItem button style={{'padding': '0 16px'}}
+                onClick={() => {
+                  setPlace('태울관 옥상')
+                  setPlaceAnchor(null)
+                }}>
+                  <ListItemText primary="태울관 옥상" />
+                </ListItem>
+                <ListItem button style={{'padding': '0 16px'}}
+                onClick={() => {
+                  setPlace('온라인 (ZOOM)')
+                  setPlaceAnchor(null)
+                }}>
+                  <ListItemText primary="온라인 (ZOOM)" />
+                </ListItem>
+                <Divider light />
+                <ListItem button style={{'padding': '2px 16px 0px 16px'}} onKeyPress={(e) => {if (e.key == 'Enter') console.log(1)}}>
+                  <InputBase placeholder="장소 입력하기" sx={{'padding': 0, 'width': '100%'}} value={customPlace} onChange={(e) => {
+                    setCustomPlace(e.target.value)
+                    setPlace(e.target.value)
+                  }}></InputBase>
+                </ListItem>
+              </List>
+            </Box>
+          </Popover>
+          <Box sx={{'paddingBottom': '2px'}} id='linkbox'>
+            <ButtonBase style={link ? {} : {'width': '37px'}} sx={{'maxWidth': '150px', 'backgroundColor': 'rgba(0, 0, 0, 0.08)', 'borderRadius': '6px', 'padding': '6px 9px 6px 8px', 'color': 'rgba(0, 0, 0, 0.33)', 'minWidth': '37px', 'display': 'flex', 'justifyContent': 'left'}}
+            onClick={() => setLinkAnchor(document.getElementById("linkbox"))}>
+              <LinkIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
+              <Box sx={{'fontSize': '14px', 'width': 'calc(100% - 24px)', 'overflow': 'hidden', 'textOverflow': 'ellipsis'}}>
+                {link}
+              </Box>
+            </ButtonBase>
+          </Box>
+          <Popover open={Boolean(linkPopoverAnchor)}
+            anchorEl={linkPopoverAnchor}
+            onClose={() => setLinkAnchor(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            sx={{
+              '& > .MuiPaper-elevation': {
+                'width': '146px',
+              }
+            }}
+            >
+            <Box style={{'width': '100%', 'overflowY': 'scroll', 'overflowX': 'hidden'}}>
+              <InputBase placeholder="Add Link" sx={{'padding': '0 8px', 'width': '100%'}} value={link} onChange={(e) => setLink(e.target.value)}></InputBase>
+            </Box>
+          </Popover>
+        </Box>
         <Box style={{marginBottom: 5}} id='tagbox'
         sx={{'overflowX': 'scroll', 'height': '32px', 'padding': '0 0 5px 0', 'display': 'flex', 'gap': 0.5, 
         'MsOverflowStyle': 'none', 'scrollbarWidth': 'none', '&::-webkit-scrollbar': {'display': 'none'}}}>
