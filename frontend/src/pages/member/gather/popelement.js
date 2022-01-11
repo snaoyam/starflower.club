@@ -1,5 +1,6 @@
 import React, {useState, useRef} from "react"
-import axios from "axios"
+import axios from "../../../auth/axios"
+
 import {Paper, Box, Chip, Button, ButtonBase, ButtonGroup, InputBase, DialogTitle, DialogContent, List, MenuItem, ListItem, ListItemText, Divider, Popover, Grid, CircularProgress} from '@mui/material'
 import {LocalizationProvider, CalendarPicker} from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
@@ -13,7 +14,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
 import PlaceIcon from '@mui/icons-material/Place'
 import LinkIcon from '@mui/icons-material/Link'
-import CreateIcon from '@mui/icons-material/Create';
+import CreateIcon from '@mui/icons-material/Create'
 
 function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const inputRef = useRef()
@@ -34,36 +35,34 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const [linkPopoverAnchor, setLinkAnchor] = useState(null)
   const [loading, setLoading] = useState(false)
 
-
-  console.log(time)
   const upload = async () => {
     if(validateinput()) {
       try {
         setLoading(true)
-        const { data } = await axios.post(`/api/member/gather/post`, {...addInputs, 'date': [date.getFullYear(), date.getMonth()+1, date.getDate()], 'time': time, 'place': place, 'link': link, 'tag': selectedTag.map(v => tagOption[v])})
+        const {data} = await axios.post(`/api/member/gather/post`, {...addInputs, 'date': [date.getFullYear(), date.getMonth()+1, date.getDate()], 'time': time, 'place': place, 'link': link, 'tag': selectedTag.map(v => tagOption[v])})
         if(data.success) {
           setAddInputs({'title': '', 'contents': ''})
           setOpen(false)
         }
         else {
-          alert("Upload failed")
+          alert("Upload failed1")
         }
       } catch(err) {
-        if(err.response.status === 403) {
-          Cookie.remove("auth")
-          window.location.href = "/login"
-        }
-        alert("Upload failed")
+        console.log(err)
+        alert("Upload failed2")
       }
       setLoading(false)
     }
   }
 
   const validateinput = () => {
+    const newDate = new Date()
     if(addInputs.title === '') alert('제목을 입력해주세요')
     else if(date === null) alert('날짜를 선택해주세요')
     else if(time[1] === null) alert('시간을 설정해주세요')
-    return !(addInputs.title === '' || time[1] === null || date === null)
+    else if(newDate.getHours() > time[0]%12+12*(time[2]==='PM')) alert('시간을 현재시간 후로 설정해주세요.')
+    else if(newDate.getHours() == time[0]%12+12*(time[2]==='PM') && newDate.getMinutes() > time[1]) alert('시간을 현재시간 후로 설정해주세요.')
+    return !(addInputs.title === '' || time[1] === null || date === null || newDate.getHours() > time[0]%12+12*(time[2]==='PM') || (newDate.getHours() == time[0]%12+12*(time[2]==='PM') && newDate.getMinutes() > time[1]))
   }
 
   return (

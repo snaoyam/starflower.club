@@ -6,7 +6,7 @@ import Home from "./pages/home"
 import Login from "./pages/login"
 import Register from "./pages/register"
 import Member from "./pages/member"
-import getSession from "./auth/auth"
+import getSession from "./auth/getsession"
 
 
 function App() {
