@@ -18,12 +18,10 @@ Axios.interceptors
         window.location.href = "/login"
         return Promise.resolve({ loggedIn: false })
       }
-
       if (err.response.status === 403) {
         alert("Forbidden")
         return Promise.resolve({ loggedIn: false })
       }
-
       return Promise.reject(err)
     }
   )

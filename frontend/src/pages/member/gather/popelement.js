@@ -60,9 +60,9 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
     if(addInputs.title === '') alert('제목을 입력해주세요')
     else if(date === null) alert('날짜를 선택해주세요')
     else if(time[1] === null) alert('시간을 설정해주세요')
-    else if(newDate.getHours() > time[0]%12+12*(time[2]==='PM')) alert('시간을 현재시간 후로 설정해주세요.')
-    else if(newDate.getHours() == time[0]%12+12*(time[2]==='PM') && newDate.getMinutes() > time[1]) alert('시간을 현재시간 후로 설정해주세요.')
-    return !(addInputs.title === '' || time[1] === null || date === null || newDate.getHours() > time[0]%12+12*(time[2]==='PM') || (newDate.getHours() == time[0]%12+12*(time[2]==='PM') && newDate.getMinutes() > time[1]))
+    else if(date.getDate() == newDate.getDate() && newDate.getHours() > time[0]%12+12*(time[2]==='PM')) alert('시간을 현재시간 후로 설정해주세요.')
+    else if(date.getDate() == newDate.getDate() && newDate.getHours() == time[0]%12+12*(time[2]==='PM') && newDate.getMinutes() > time[1]) alert('시간을 현재시간 후로 설정해주세요.')
+    return !(addInputs.title === '' || time[1] === null || date === null || (date.getDate() == newDate.getDate() && newDate.getHours() > time[0]%12+12*(time[2]==='PM')) || (date.getDate() == newDate.getDate() && newDate.getHours() == time[0]%12+12*(time[2]==='PM') && newDate.getMinutes() > time[1]))
   }
 
   return (
