@@ -17,7 +17,7 @@ import CreateIcon from '@mui/icons-material/Create';
 
 function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const inputRef = useRef()
-  const [option, setOption] = useState(['안시관측', '사진촬영', '밥팟', '정모', '사진편집', '외부관측회', '견학' ])
+  const [tagOption, setTagOption] = useState(['안시관측', '사진촬영', '밥팟', '정모', '사진편집', '외부관측회', '견학'])
   const [selectedTag, setSelectedTag] = useState([])
   const [customTag, setCustomTag] = useState('')
   const [hideDatePicker, setHideDate] = useState(true)
@@ -34,18 +34,25 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
   const [linkPopoverAnchor, setLinkAnchor] = useState(null)
   const [loading, setLoading] = useState(false)
 
+
+  console.log(time)
   const upload = async () => {
     if(validateinput()) {
       try {
         setLoading(true)
-        const { data } = await axios.post(`/api/member/gather/post`, {...addInputs, 'date': date, 'time': time, 'place': place, 'link': link, 'tag': selectedTag})
+        const { data } = await axios.post(`/api/member/gather/post`, {...addInputs, 'date': [date.getFullYear(), date.getMonth()+1, date.getDate()], 'time': time, 'place': place, 'link': link, 'tag': selectedTag.map(v => tagOption[v])})
         if(data.success) {
+          setAddInputs({'title': '', 'contents': ''})
           setOpen(false)
         }
         else {
           alert("Upload failed")
         }
       } catch(err) {
+        if(err.response.status === 403) {
+          Cookie.remove("auth")
+          window.location.href = "/login"
+        }
         alert("Upload failed")
       }
       setLoading(false)
@@ -163,8 +170,8 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
               setTimeAnchor(document.getElementById("timebox"))
             }}>
               <AccessTimeIcon color="disabled" fontSize='small' sx={{'marginRight': '4px'}}/>
-              <Box sx={{width: '65px', 'fontSize': '14px'}} style={time[1] ? {'color': '#000'} : {}}>
-                {time[1] ? (time[0]+':'+('0' + time[1].toString()).slice(-2)+' '+time[2]) : 'Add Time'}
+              <Box sx={{width: '65px', 'fontSize': '14px'}} style={time[1] !== null ? {'color': '#000'} : {}}>
+                {time[1] !== null ? (time[0]+':'+('0' + time[1].toString()).slice(-2)+' '+time[2]) : 'Add Time'}
               </Box>
             </ButtonBase>
           </Box>
@@ -329,7 +336,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
         <Box id='tagbox'
         sx={{'overflowX': 'scroll', 'height': '32px', 'padding': '0 0 5px 0', 'display': 'flex', 'gap': 0.5, 
         'MsOverflowStyle': 'none', 'scrollbarWidth': 'none', '&::-webkit-scrollbar': {'display': 'none'}}}>
-          {selectedTag.map(index =>  (<Chip key={option[index]} label={option[index]} />))}
+          {selectedTag.map(index =>  (<Chip key={tagOption[index]} label={tagOption[index]} />))}
           <Chip
             label={<AddIcon />}
             onClick={() => setTagAnchor(document.getElementById("tagbox"))}
@@ -367,7 +374,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
             >
             <Box style={{'width': '100%', 'overflowY': 'scroll', 'overflowX': 'hidden',}}>
               <List>
-                {option.map((value, index) => (
+                {tagOption.map((value, index) => (
                   <MenuItem value={value} key={index} onClick={() => { setSelectedTag(selectedTag.includes(index) ? selectedTag.filter(val => val !== index) : [...selectedTag, index]) }}>
                     {selectedTag.includes(index) ? (<CheckBoxIcon sx={{'margin': '0 6px 0 0'}}/>) : (<CheckBoxOutlineIcon sx={{'margin': '0 6px 0 0'}}/>)}
                     {value}
@@ -377,7 +384,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
                   <InputBase placeholder="+ Add Tag" sx={{'padding': 0, 'width': 'calc(100% - 32px)'}} value={customTag} onChange={(e) => setCustomTag(e.target.value)}></InputBase>
                   <Box sx={{'width':'24px', 'display': 'flex', 'alignItems': 'center', 'cursor': 'pointer', 'padding': '4px'}} 
                   onClick={() => {
-                    setOption([...option, customTag])
+                    setTagOption([...tagOption, customTag])
                     setCustomTag('')
                   }}>
                     {customTag ? (<AddCircleOutlineIcon color="action"/>) : null}

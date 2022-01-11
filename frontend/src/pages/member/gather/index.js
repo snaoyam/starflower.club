@@ -1,6 +1,5 @@
 import React, {useState} from "react"
-import {Box, Grow, Fab} from '@mui/material'
-import AddIcon from '@mui/icons-material/Add';
+import {Box, Grow} from '@mui/material'
 import GatherElement from './element'
 import "./index.css"
 import Addnewicon from './addnewicon'

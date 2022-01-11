@@ -8,7 +8,6 @@ import Register from "./pages/register"
 import Member from "./pages/member"
 import getSession from "./auth/auth"
 
-import Test from "./test"
 
 function App() {
   const session = getSession()
@@ -63,7 +62,6 @@ function App() {
         <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme}/>} />
         <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme}/>} />
         <Route exact path="/member" element={session ? <Member /> : <Navigate to="/login" />} />
-        <Route exact path="/test" element={<div style={{'backgroundColor': 'white'}}><Test /></div>} />
         <Route path="*" element={Notfound}/>
       </Routes>
     </BrowserRouter>

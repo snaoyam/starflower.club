@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import React, {useEffect, useState} from "react"
 import axios from "axios"
 import "./index.css"
-import GatherComponent from "./components/gather"
+import GatherComponent from "./gather"
 
 function Member() {
   return (
