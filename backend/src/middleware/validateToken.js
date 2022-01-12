@@ -11,7 +11,7 @@ const validateToken = (req, res, next) => {
         UserModel.find({_id: decoded.id}, (err, user) => {
           if(err) throw new Error('user not found')
           /*else if(!user.registeraccepted) {
-            return res.status(403).send({
+            return res.status(401).send({
               'success': false,
               'msg': 'Please wait for acception'
             })
@@ -24,18 +24,15 @@ const validateToken = (req, res, next) => {
           })
         })
       }
-      res.header("session", JSON.stringify(decoded))
+      res["session"] = decoded
       return next()
     })
   }
   catch(err) {
-    if(req.method === 'GET')
-      return res.status(403).redirect('/login')
-    else 
-      return res.status(403).send({
-        'success': false,
-        'msg': 'Not authorized'
-      })
+    return res.status(401).send({
+      'success': false,
+      'msg': 'Not authorized'
+    })
   }
 }
 

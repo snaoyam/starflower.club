@@ -5,7 +5,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error!'));
 db.once('open', () => console.log('Connected to MongoDB'));
 
 const HOST = process.env.HOST ?? 'localhost'
-mongoose.connect(`mongodb://${HOST}/sf_user_test`, {
+mongoose.connect(`mongodb://${HOST}/sf_user_test1`, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

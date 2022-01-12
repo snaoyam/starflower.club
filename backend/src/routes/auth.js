@@ -64,10 +64,7 @@ const login = (req, res) => {
 }
 
 const logout = (req, res) => {
-  if(req.method === 'GET')
-    return res.clearCookie("auth").status(403).redirect('/')
-  else
-    return res.clearCookie("auth").status(200).send({"success": true})
+  return res.clearCookie("auth").status(401).send({"success": true})
 }
 
 module.exports = {
