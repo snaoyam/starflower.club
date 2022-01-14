@@ -7,8 +7,9 @@ const validateToken = (req, res, next) => {
     if(!token) throw new Error('token not found')
     jwt.verify(token, process.env.jwtsecret, (err, decoded) => {
       if(err) throw new Error('token invalid')
+      res["session"] = decoded
       if(decoded.exp*1000 - Date.now() < 1000*60*60) {
-        UserModel.find({_id: decoded.id}, (err, user) => {
+        UserModel.findOne({_id: decoded.id}, (err, user) => {
           if(err) throw new Error('user not found')
           /*else if(!user.registeraccepted) {
             return res.status(401).send({
@@ -20,12 +21,13 @@ const validateToken = (req, res, next) => {
             if(err) throw new Error('error while generating token')
             else {
               res.cookie("auth", token)
+              return next()
             }
           })
         })
       }
-      res["session"] = decoded
-      return next()
+      else
+        return next()
     })
   }
   catch(err) {
