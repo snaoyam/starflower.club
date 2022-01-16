@@ -2,9 +2,27 @@ const { Schema, model } = require("mongoose")
 
 const GatherSchema = Schema({
   author: {
-    type: String,
-    required: true,
+    id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    }
   },
+  member : [
+    {
+      id: {
+        type: String,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      }
+    }
+  ],
   title: {
     type: String,
     trim: true,
