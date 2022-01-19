@@ -12,13 +12,18 @@ const theme = createTheme({
   }
 })
 
-
-const GatherElement = React.forwardRef((props, ref) => {
+const GatherElement = React.forwardRef(({style, value}, ref) => {
   return (
-  <div {...props} ref={ref}>
+  <div style={style} ref={ref}>
     <ThemeProvider theme={theme}>
-      <Paper sx={{ margin: '10px' }} elevation={5}>
-        <Box sx={{ width: 280, height: 280 }}>
+      <Paper sx={{'margin': '10px', 'width': 260, 'height': 260, 'padding': '10px'}} elevation={5}>
+        <Box sx={{'width': '100%', 'height': 44, 'display': 'flex', 'alignItems': 'center'}}>
+          {value.title}
+        </Box>
+        <Box sx={{'width': '100%', 'height': 100, 'whiteSpace': 'pre-line', 'overflow': 'hidden'}}>
+          {value.contents}
+        </Box>
+        <Box>
           
         </Box>
       </Paper>

@@ -39,17 +39,16 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
     if(validateinput()) {
       try {
         setLoading(true)
-        const {data} = await axios.post(`/api/member/gather/post`, {...addInputs, 'date': [date.getFullYear(), date.getMonth()+1, date.getDate()], 'time': time, 'place': place, 'link': link, 'tag': selectedTag.map(v => tagOption[v])})
+        const {data} = await axios.post(`/api/member/gather/post`, {...addInputs, 'time': new Date(`${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()} ${time[0]%12+12*(time[2]==='PM')}:${time[1]}`), 'place': place, 'link': link, 'tag': selectedTag.map(v => tagOption[v])})
         if(data.success) {
           setAddInputs({'title': '', 'contents': ''})
           setOpen(false)
         }
         else {
-          alert("Upload failed1")
+          alert("Upload failed")
         }
       } catch(err) {
-        console.log(err)
-        alert("Upload failed2")
+        alert("Upload failed")
       }
       setLoading(false)
     }
