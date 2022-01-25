@@ -1,6 +1,14 @@
 @font-face {
   font-family: 'Mapo';
-  src:url('/public/fonts/MapoDPP.otf') format('woff');
+  src: url('/public/fonts/MapoDPP.otf') format('woff');
+}
+@font-face {
+  font-family: 'Azonix';
+  src: url('/public/fonts/AzonixRegular.woff') format('woff');
+}
+@font-face {
+  font-family: 'Nanum';
+  src: url('/public/fonts/NanumGothic.woff2') format('woff');
 }
 html {
   font-family: 'Mapo', sans-serif; font-weight: 390; 
@@ -11,4 +19,7 @@ html {
 * { 
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); 
   text-decoration: none;
+}
+body {
+  margin: 0
 }
