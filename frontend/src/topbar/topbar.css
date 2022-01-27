@@ -16,9 +16,6 @@
   transition-timing-function: ease, ease, ease;
   transition-delay: 0s, 0s, 0s;
 }
-.blank {
-  height: 65px;
-}
 #SFHomep {
   height: 100%;
 }

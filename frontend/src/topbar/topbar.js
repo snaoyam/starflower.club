@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import "./topbar.css"
 import Login from "./components/login_btn"
 
+
 const Topbar = ({session}) =>
 <React.Fragment>
   <div className="topbar">
@@ -13,7 +14,6 @@ const Topbar = ({session}) =>
     </Link>
     <Login session={session}/>
   </div>
-  <div className="blank"></div>
 </React.Fragment>
 
 export default Topbar
