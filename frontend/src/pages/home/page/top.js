@@ -8,8 +8,7 @@ function Top() {
     <React.Fragment>
       <Box sx={{
         'position': 'relative',
-        'height': '720px',
-        'maxHeight': '80vh',
+        'height': '100vh',
       }}>
         <Box sx={{
           'width': '100%',
