@@ -14,7 +14,8 @@
 }
 #loginbtn > span {
   color: #fff;
-  font-size: 15px;
+  font-size: min(4vw, 15px);
+  text-shadow: 0 0 4px black;
 }
 #loginbtnp:hover .login_dropdown {
   display: block;

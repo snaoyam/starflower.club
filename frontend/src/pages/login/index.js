@@ -1,14 +1,18 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import { Link as RouterLink } from 'react-router-dom';
 import axios from "axios"
 import "./index.css"
 import {TextField, Link, Button, CircularProgress} from '@mui/material'
 import {ThemeProvider} from '@mui/material/styles'
 
-function Login({muiTheme}) {
+function Login({muiTheme, setTopBarCss}) {
   const [inputs, setInputs] = useState({'username': '', 'password': ''})
   const [error, setError] = useState({'username': false, 'password': false})
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setTopBarCss(0.8)
+  }, [])
 
   const login = async () => {
     setError({'username': true, 'password': true})

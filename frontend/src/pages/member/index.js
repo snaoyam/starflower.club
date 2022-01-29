@@ -4,7 +4,12 @@ import {Box} from '@mui/material'
 import "./index.css"
 import GatherComponent from "./gather"
 
-function Member() {
+function Member({setTopBarCss}) {
+
+  useEffect(() => {
+    setTopBarCss(0.8)
+  }, [])
+
   return (
     <React.Fragment>
       <Box className='blank' sx={{'height': '65px'}}></Box>

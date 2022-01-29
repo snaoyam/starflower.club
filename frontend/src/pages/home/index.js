@@ -1,15 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
 import React, {useEffect, useState, useRef} from "react"
 import {css} from '@emotion/css'
 import Top from './page/top'
 import Content from './page/content'
 
-function Home() {
+function Home({setTopBarCss}) {
   const fullpagecss = css({
     'overflowY': 'hidden',
     'height': '100vh',
   })
-  document.body.classList.add(fullpagecss)
   const divRef = useRef()
 
   const prevDeltaY = useRef(0)
@@ -22,26 +20,27 @@ function Home() {
   pageRef.current = page
   const prev = () => {
     setPage(0)
+    setTopBarCss(0)
+    window.scrollTo(0,0)
     document.body.classList.add(fullpagecss)
     scrollLock.current = true
   }
   const next = () => {
     setPage(1)
+    setTopBarCss(0.8)
     window.setTimeout(() => {
       if(pageRef.current === 1) {
         document.body.classList.remove(fullpagecss)
         scrollLock.current = false
       }
-    }, 800)
+    }, 1000)
   }
   useEffect(() => {
+    setTopBarCss(0)
+    document.body.classList.add(fullpagecss)
     document.getElementById('SFHomep').addEventListener("click", prev)
-    /*window.addEventListener("scroll", () => {
-      if(!fullScrolling.current && Math.abs(scrolledHeight.current) >= Math.abs(document.documentElement.scrollTop))
-      window.scrollTo(0, 0)
-      scrolledHeight.current = document.documentElement.scrollTop
-    })*/
     return () => {
+      document.body.classList.remove(fullpagecss)
       document.getElementById('SFHomep').removeEventListener("click", prev)
     }
   }, [])
@@ -64,13 +63,14 @@ function Home() {
       if((deltaY < 0 && deltaY > prevDeltaY.current) || (deltaY > 0 && deltaY < prevDeltaY.current)) {
         deltaYDupCheck.current = true
       }
-      prevDeltaY.current = deltaY
+      window.setTimeout(() => {
+        prevDeltaY.current = deltaY
+      }, 10)
     }
 
     const touchStart = (e) => {
       touchInit.current = e.touches[0].clientY
       deltaYDupCheck.current = true
-      console.log('start')
     }
     const touchMove = (e) => {
       const deltaY = touchInit.current - e.touches[0].clientY
@@ -107,7 +107,7 @@ function Home() {
 
   return (
     <div ref={divRef} className={fullpagescroll}>
-      <Top />
+      <Top page={page}/>
       <Content />
     </div>
   )

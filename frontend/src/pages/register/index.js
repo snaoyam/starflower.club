@@ -6,7 +6,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import "./index.css"
 import {ThemeProvider} from '@mui/material/styles'
 
-function Register({muiTheme}) {
+function Register({muiTheme, setTopBarCss}) {
   const [inputs, setInputs] = useState({'username': '', 'password': '', 'email': '', 'name': '', 'phone': '', 'studentid': '', 'memberFrom': 2021, 'graduated': false})
   const [focus, setFocus] = useState({'username': false, 'password': false, 'confirmpassword': false, 'email': false, 'name': false, 'phone': false, 'studentid': false})
   const [passworderror, setPasswordError] = useState(false)
@@ -15,6 +15,10 @@ function Register({muiTheme}) {
   const [opendate, setOpenDate] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    setTopBarCss(0.8)
+    window.scrollTo(0,0)
+  }, [])
   useEffect(() => {
     setPasswordError(focus.password && focus.confirmpassword && inputs.password !== '' && confirmpassword !== '' && inputs.password !== confirmpassword)
   }, [inputs.password, confirmpassword, focus.password, focus.confirmpassword]);

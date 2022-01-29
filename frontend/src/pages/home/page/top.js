@@ -1,14 +1,20 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
 import React, {useEffect, useState} from "react"
-import Gradient from 'rgt'
 import {Box} from '@mui/material'
 
-function Top() {
+function Top({page}) {
   return (
     <React.Fragment>
       <Box sx={{
         'position': 'relative',
         'height': '100vh',
+        '-webkit-touch-callout': 'none',
+        '-webkit-user-select': 'none',
+        '-khtml-user-select': 'none',
+        '-moz-user-select': 'none',
+        '-ms-user-select': 'none',
+        'user-select': 'none',
+        'opacity': page === 1 ? 0 : 1,
+        'transition': page === 1 ? 'opacity 1s' : '',
       }}>
         <Box sx={{
           'width': '100%',
@@ -31,17 +37,17 @@ function Top() {
               <Box sx={{
                 'fontFamily': 'Nanum',
                 'fontWeight': 100,
-                'letterSpacing': '10px',
+                'letterSpacing': 'min(2.5vw, 10px)',
                 'color': 'white',
-                'fontSize': '20px',
+                'fontSize': 'min(4vw, 20px)',
               }}>
                 KAIST 천체관측 동아리
               </Box>
               <Box sx={{
                 'marginTop': '20px',
                 'fontFamily': 'Azonix',
-                'color': 'white',
-                'fontSize': '60px',
+                'color': 'rgb(255, 226, 66)',
+                'fontSize': 'min(12vw, 60px)',
               }}>
                 Starflower
               </Box>

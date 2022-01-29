@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import React from "react"
+import React, {useState} from "react"
 import { createTheme } from '@mui/material/styles'
-import TopBar from "./topbar/topbar"
+import TopBar from "./topbar"
 import Home from "./pages/home"
 import Login from "./pages/login"
 import Register from "./pages/register"
@@ -11,7 +11,8 @@ import getSession from "./auth/getsession"
 
 function App() {
   const session = getSession()
-
+  const [topBarCss, setTopBarCss] = useState(0.8)
+  
   const muiTheme = {
     "textfield": createTheme({
       palette: {
@@ -56,12 +57,12 @@ function App() {
 
   return (
     <BrowserRouter> 
-      <TopBar session={session}/>
+      <TopBar session={session} topBarCss={topBarCss}/>
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme}/>} />
-        <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme}/>} />
-        <Route exact path="/member" element={session ? <Member /> : <Navigate to="/login" />} />
+        <Route exact path="/" element={<Home setTopBarCss={setTopBarCss}/>} />
+        <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
+        <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
+        <Route exact path="/member" element={session ? <Member setTopBarCss={setTopBarCss}/> : <Navigate to="/login" />} />
         <Route path="*" element={Notfound}/>
       </Routes>
     </BrowserRouter>
