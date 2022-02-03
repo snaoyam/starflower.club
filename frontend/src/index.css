@@ -14,6 +14,10 @@
   font-family: 'NanumBarun';
   src: url('/public/fonts/NanumBarunGothic.woff2') format('woff');
 }
+@font-face {
+  font-family: 'NanumSquare';
+  src: url('/public/fonts/NanumSquareOTF_acEB.otf') format('otf');
+}
 html {
   font-family: 'Mapo', sans-serif; font-weight: 390; 
   overflow-x: hidden;

@@ -19,8 +19,6 @@ function GatherComponent() {
     })
   }, [])
 
-  console.log(gatherposts)
-
   return (
     <React.Fragment>
       <Box sx={{display: 'flex'}}>

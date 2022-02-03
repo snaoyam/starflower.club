@@ -10,7 +10,10 @@ import getSession from "./auth/getsession"
 
 
 function App() {
-  const session = getSession()
+  const [session, setSession] = useState(getSession())
+  const newSession = () => {
+    setSession(getSession())
+  }
   const [topBarCss, setTopBarCss] = useState(0.8)
   
   const muiTheme = {
@@ -62,7 +65,7 @@ function App() {
         <Route exact path="/" element={<Home setTopBarCss={setTopBarCss}/>} />
         <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
         <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
-        <Route exact path="/member" element={session ? <Member setTopBarCss={setTopBarCss}/> : <Navigate to="/login" />} />
+        <Route exact path="/member" element={session ? <Member setTopBarCss={setTopBarCss} newSession={newSession}/> : <Navigate to="/login" />} />
         <Route path="*" element={Notfound}/>
       </Routes>
     </BrowserRouter>

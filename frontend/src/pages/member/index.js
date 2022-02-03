@@ -1,12 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom"
 import React, {useEffect, useState} from "react"
 import {Box} from '@mui/material'
 import "./index.css"
 import GatherComponent from "./gather"
 
-function Member({setTopBarCss}) {
+function Member({setTopBarCss, newSession}) {
 
   useEffect(() => {
+    newSession()
     setTopBarCss(0.8)
   }, [])
 

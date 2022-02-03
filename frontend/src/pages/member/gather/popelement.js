@@ -382,6 +382,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
                   <InputBase placeholder="+ Add Tag" sx={{'padding': 0, 'width': 'calc(100% - 32px)'}} value={customTag} onChange={(e) => setCustomTag(e.target.value)}></InputBase>
                   <Box sx={{'width':'24px', 'display': 'flex', 'alignItems': 'center', 'cursor': 'pointer', 'padding': '4px'}} 
                   onClick={() => {
+                    setSelectedTag([...selectedTag, tagOption.length])
                     setTagOption([...tagOption, customTag])
                     setCustomTag('')
                   }}>

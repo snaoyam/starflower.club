@@ -7,12 +7,12 @@ function Top({page}) {
       <Box sx={{
         'position': 'relative',
         'height': '100vh',
-        '-webkit-touch-callout': 'none',
-        '-webkit-user-select': 'none',
-        '-khtml-user-select': 'none',
-        '-moz-user-select': 'none',
-        '-ms-user-select': 'none',
-        'user-select': 'none',
+        'WebkitTouchCallout': 'none',
+        'WebkitUserSelect': 'none',
+        'KhtmlUserSelect': 'none',
+        'MozUserSelect': 'none',
+        'msUserSelect': 'none',
+        'userSelect': 'none',
         'opacity': page === 1 ? 0 : 1,
         'transition': page === 1 ? 'opacity 1s' : '',
       }}>
@@ -28,7 +28,7 @@ function Top({page}) {
             'width': '100%',
           },
           }}>
-            <video playsInline autoPlay muted loop src="img/2-4-intro.mp4"></video>
+            <video playsInline autoPlay muted loop src="home/main/2-4-intro.mp4"></video>
             <Box sx={{
               'position': "absolute",
               'top': '38%',
