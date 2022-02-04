@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from "react"
 import {css} from '@emotion/css'
-import Top from './page/top'
-import Content from './page/content'
+import Top from './components/top'
+import Content from './components/content'
 
 function Home({setTopBarCss}) {
   const fullpagecss = css({

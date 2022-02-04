@@ -7,6 +7,7 @@ import Login from "./pages/login"
 import Register from "./pages/register"
 import Member from "./pages/member"
 import getSession from "./auth/getsession"
+import NotFound from "./pages/notFound"
 
 
 function App() {
@@ -56,8 +57,6 @@ function App() {
     }),
   }
 
-  const Notfound = <span> 404 Not found </span>
-
   return (
     <BrowserRouter> 
       <TopBar session={session} topBarCss={topBarCss}/>
@@ -66,7 +65,7 @@ function App() {
         <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
         <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
         <Route exact path="/member" element={session ? <Member setTopBarCss={setTopBarCss} newSession={newSession}/> : <Navigate to="/login" />} />
-        <Route path="*" element={Notfound}/>
+        <Route path="*" element={<NotFound />}/>
       </Routes>
     </BrowserRouter>
   )

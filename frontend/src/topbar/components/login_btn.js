@@ -9,20 +9,7 @@ const logout = () => {
 }
 const LoginModule = ({session}) => {
   const location = useLocation()
-  if(location.pathname === '/') {
-    return (
-      <Link to={session ? "/member/" : "/login"} id="loginbtnp">
-        <div id="loginbtn">
-          <span>Members</span>
-        </div>
-        <div id="loginbtn_hover" className="login_dropdown"></div>
-      </Link>
-      )
-  }
-  else if(location.pathname === '/login' || !session) {
-    return <></>
-  }
-  else {
+  if(location.pathname === '/member') {
     const btn_txt = session.name + ' / ' + session.studentid
     return (
     <div id="loginbtnp">
@@ -38,6 +25,19 @@ const LoginModule = ({session}) => {
         </div>
       </div>
     </div>
+    )
+  }
+  else if(location.pathname === '/login' || location.pathname === '/register') {
+    return <></>
+  }
+  else {
+    return (
+      <Link to={session ? "/member/" : "/login"} id="loginbtnp">
+        <div id="loginbtn">
+          <span>Members</span>
+        </div>
+        <div id="loginbtn_hover" className="login_dropdown"></div>
+      </Link>
     )
   }
 }

@@ -13,7 +13,7 @@ function Member({setTopBarCss, newSession}) {
 
   return (
     <React.Fragment>
-      <Box className='blank' sx={{'height': '65px'}}></Box>
+      <Box sx={{'height': '65px'}}></Box>
       <div id='memberpage'>
         <div id='gathercomponentp'>
           <GatherComponent />
