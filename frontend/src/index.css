@@ -3,10 +3,6 @@
   src: url('/public/fonts/MapoDPP.otf') format('woff');
 }
 @font-face {
-  font-family: 'Azonix';
-  src: url('/public/fonts/AzonixRegular.woff') format('woff');
-}
-@font-face {
   font-family: 'NanumGothic';
   src: url('/public/fonts/NanumGothic.woff2') format('woff');
 }

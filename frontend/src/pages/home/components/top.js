@@ -1,16 +1,9 @@
 import React, {useEffect, useRef} from "react"
 import {Box} from '@mui/material'
 import Video from './video'
+import {ReactComponent as MainText} from './mainText.svg'
 
 function Top({page}) {
-
-  const videoRef = useRef(null);
-  useEffect(() => {
-    if (!videoRef.current)
-      return
-    videoRef.current.defaultMuted = true
-    videoRef.current.muted = true
-  }, [])
 
   return (
     <React.Fragment>
@@ -41,26 +34,13 @@ function Top({page}) {
             <Video />
             <Box sx={{
               'position': "absolute",
-              'top': '38%',
+              'top': navigator.userAgent.includes('iPhone') ? '37%' : '40%',
               'textAlign': 'center',
+              '& svg': {
+                'height': 'min(16vw, 85px)'
+              }
             }}>
-              <Box sx={{
-                'fontFamily': 'NanumGothic',
-                'fontWeight': 100,
-                'letterSpacing': 'min(2.5vw, 10px)',
-                'color': 'white',
-                'fontSize': 'min(4vw, 20px)',
-              }}>
-                KAIST 천체관측 동아리
-              </Box>
-              <Box sx={{
-                'marginTop': '20px',
-                'fontFamily': 'Azonix',
-                'color': 'rgb(255, 226, 66)',
-                'fontSize': 'min(12vw, 60px)',
-              }}>
-                Starflower
-              </Box>
+              <MainText />
             </Box>
         </Box>
       </Box>
