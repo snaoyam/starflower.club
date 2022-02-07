@@ -15,6 +15,12 @@ function NotFound() {
         'justifyContent': 'center',
         'alignItems': 'center',
         'position': 'relative',
+        'WebkitTouchCallout': 'none',
+        'WebkitUserSelect': 'none',
+        'KhtmlUserSelect': 'none',
+        'MozUserSelect': 'none',
+        'msUserSelect': 'none',
+        'userSelect': 'none',
       }}>
         <Spaceout />
         <Box sx={{
@@ -30,7 +36,7 @@ function NotFound() {
           },
         }}>
           <Box sx={{
-            'fontFamily': 'Nanum',
+            'fontFamily': 'NanumGothic',
             'fontSize': 'min(18vw, 100px)',
             'color': 'rgba(191, 191, 191, 0.8)',
             'marginBottom': 'min(9vw, 40px)',

@@ -1,7 +1,17 @@
-import React, {useEffect, useState} from "react"
+import React, {useEffect, useRef} from "react"
 import {Box} from '@mui/material'
+import Video from './video'
 
 function Top({page}) {
+
+  const videoRef = useRef(null);
+  useEffect(() => {
+    if (!videoRef.current)
+      return
+    videoRef.current.defaultMuted = true
+    videoRef.current.muted = true
+  }, [])
+
   return (
     <React.Fragment>
       <Box sx={{
@@ -28,14 +38,14 @@ function Top({page}) {
             'width': '100%',
           },
           }}>
-            <video playsInline autoPlay muted loop src="home/main/2-4-intro.mp4"></video>
+            <Video />
             <Box sx={{
               'position': "absolute",
               'top': '38%',
               'textAlign': 'center',
             }}>
               <Box sx={{
-                'fontFamily': 'Nanum',
+                'fontFamily': 'NanumGothic',
                 'fontWeight': 100,
                 'letterSpacing': 'min(2.5vw, 10px)',
                 'color': 'white',

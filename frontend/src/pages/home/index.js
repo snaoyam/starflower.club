@@ -3,12 +3,11 @@ import {css} from '@emotion/css'
 import Top from './components/top'
 import Content from './components/content'
 
-function Home({setTopBarCss}) {
+function Home({setTopBarCss, divRef}) {
   const fullpagecss = css({
     'overflowY': 'hidden',
     'height': '100vh',
   })
-  const divRef = useRef()
 
   const prevDeltaY = useRef(0)
   const deltaYDupCheck = useRef(true)
@@ -106,7 +105,7 @@ function Home({setTopBarCss}) {
   })
 
   return (
-    <div ref={divRef} className={fullpagescroll}>
+    <div className={fullpagescroll}>
       <Top page={page}/>
       <Content />
     </div>

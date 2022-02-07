@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import React, {useState} from "react"
+import React, {useState, useRef} from "react"
 import { createTheme } from '@mui/material/styles'
 import TopBar from "./topbar"
 import Home from "./pages/home"
@@ -16,6 +16,7 @@ function App() {
     setSession(getSession())
   }
   const [topBarCss, setTopBarCss] = useState(0.8)
+  const divRef = useRef()
   
   const muiTheme = {
     "textfield": createTheme({
@@ -58,15 +59,17 @@ function App() {
   }
 
   return (
-    <BrowserRouter> 
-      <TopBar session={session} topBarCss={topBarCss}/>
-      <Routes>
-        <Route exact path="/" element={<Home setTopBarCss={setTopBarCss}/>} />
-        <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
-        <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
-        <Route exact path="/member" element={session ? <Member setTopBarCss={setTopBarCss} newSession={newSession}/> : <Navigate to="/login" />} />
-        <Route path="*" element={<NotFound />}/>
-      </Routes>
+    <BrowserRouter>
+      <div ref={divRef}>
+        <TopBar session={session} topBarCss={topBarCss}/>
+        <Routes>
+          <Route exact path="/" element={<Home setTopBarCss={setTopBarCss} divRef={divRef}/>} />
+          <Route exact path="/login" element={session ? <Navigate to="/member" /> : <Login muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
+          <Route exact path="/register" element={session ? <Navigate to="/member" /> : <Register muiTheme={muiTheme} setTopBarCss={setTopBarCss}/>} />
+          <Route exact path="/member" element={session ? <Member setTopBarCss={setTopBarCss} newSession={newSession}/> : <Navigate to="/login" />} />
+          <Route path="*" element={<NotFound />}/>
+        </Routes>
+      </div>
     </BrowserRouter>
   )
 }
