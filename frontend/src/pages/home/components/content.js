@@ -16,23 +16,21 @@ function Content() {
     'WebkitTextFillColor': 'transparent',
     'WebkitAnimation': 'shine 10s infinite linear',
     '@keyframes shine' : {
-      'from': {
+      '0%': {
         'WebkitFilter': 'hue-rotate(0deg)',
       },
-      'to': {
-        'WebkitFilter': 'hue-rotate(-360deg)',
-      }
+      '50%': {
+        'WebkitFilter': 'hue-rotate(-100deg)',
+      },
+      '100%': {
+        'WebkitFilter': 'hue-rotate(0deg)',
+      },
     },
   })
-  
 
   return (
     <React.Fragment>
-      <Box sx={{'height': '65px'}}></Box>
       <Box sx={{
-        'width': 'calc(100% - min(6vw, 60px) + 10px)',
-        'maxWidth': '1300px',
-        'margin': '20px auto 0px auto',
         'WebkitTouchCallout': 'none',
         'WebkitUserSelect': 'none',
         'KhtmlUserSelect': 'none',
@@ -44,35 +42,16 @@ function Content() {
           'width': '100%',
         }}>
           <Box sx={{
-            'width': '100%',
-            'height': '40px',
-            '& span': {
-              'fontFamily': 'NanumBarun',
-              'fontSize': 'min(8vw, 30px)',
-              'backgroundImage': 'linear-gradient(170deg, rgb(255,234,125), rgb(231,127,53))',
-              'WebkitTextFillColor': 'transparent',
-              'textFillColor': 'transparent',
-              'WebkitBackgroundClip': 'text',
-              'backgroundClip': 'text',
-            },
-            'marginBottom': '4px',
-          }}>
-            <span>
-              최근 전시회
-            </span>
-          </Box>
-          <Box sx={{
             'backgroundColor': '#262626',
             'width': '100%',
             'height': '550px',
-            'maxHeight': 'max(55vh, 70vw)',
+            'maxHeight': 'min(55vh, 60vw)',
             'position': 'relative',
           }}>
             <Box sx={{
               'width': '100%',
               'height': '100%',
               'position': 'absolute',
-              'borderRadius': '5px',
               'overflow': 'hidden',
               '&:before': {
                 'content': '""',
@@ -88,6 +67,26 @@ function Content() {
               }
             }}>
               <img src='home/exhibition/253213594_2017028065123230_4876617960639262668_n.jpg'></img>
+              {/*<Box sx={{
+                'position': 'absolute',
+                'top': '10%',
+                'left': '5%',
+                'height': '40px',
+                '& span': {
+                  'fontFamily': 'NanumBarun',
+                  'fontSize': 'min(8vw, 30px)',
+                  'backgroundImage': 'linear-gradient(170deg, rgb(255,234,125), rgb(231,127,53))',
+                  'WebkitTextFillColor': 'transparent',
+                  'textFillColor': 'transparent',
+                  'WebkitBackgroundClip': 'text',
+                  'backgroundClip': 'text',
+                },
+                'marginBottom': '4px',
+              }}>
+                <span>
+                  최근 전시회
+                </span>
+              </Box>*/}
               <Box sx={{
                 'position': "absolute",
                 'width': 'calc(100% - min(80px, 10vw))',
@@ -156,7 +155,9 @@ function Content() {
           </Box>
         </Box>
         <Box sx={{
-          'margin': '50px 100px 20px 100px',
+          'width': 'calc(100% - min(6vw, 60px) + 10px)',
+          'maxWidth': '1000px',
+          'margin': '50px auto 0px auto',
         }}>
           <Box sx={{
             'margin': '0 0 4px 0',

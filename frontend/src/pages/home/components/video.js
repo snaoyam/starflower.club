@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {Component} from 'react'
+import {Box} from '@mui/material'
 
 export default class Video extends Component {
   componentDidMount() {
@@ -15,6 +16,6 @@ export default class Video extends Component {
     this.videoContainer.appendChild(video)
   }
   render() {
-    return (<div ref={(ref) => { this.videoContainer = ref }} />)
+    return (<Box sx={{'width': '100%', 'height': '100%'}} ref={(ref) => { this.videoContainer = ref }} />)
   }
 }

@@ -9,7 +9,7 @@ function Top({page}) {
     <React.Fragment>
       <Box sx={{
         'position': 'relative',
-        'height': '100vh',
+        'height': 'calc(100vh + 65px)',
         'WebkitTouchCallout': 'none',
         'WebkitUserSelect': 'none',
         'KhtmlUserSelect': 'none',
