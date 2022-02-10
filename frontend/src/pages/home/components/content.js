@@ -2,14 +2,36 @@ import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import {Box} from '@mui/material'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import {css} from '@emotion/css'
 
 function Content() {
+  const hueCss = css({
+    'background': 'linear-gradient(to right, #FFF 2%, #FF0 30%, #FF0 50%, #FFF 80%)',
+    'backgroundSize': '200% auto',
+    'backgroundClip': 'text',
+    'textFillColor': 'transparent',
+    'WebkitBackgroundClip': 'text',
+    'WebkitTextFillColor': 'transparent',
+    'WebkitBackgroundClip': 'text',
+    'WebkitTextFillColor': 'transparent',
+    'WebkitAnimation': 'shine 10s infinite linear',
+    '@keyframes shine' : {
+      'from': {
+        'WebkitFilter': 'hue-rotate(0deg)',
+      },
+      'to': {
+        'WebkitFilter': 'hue-rotate(-360deg)',
+      }
+    },
+  })
+  
+
   return (
     <React.Fragment>
       <Box sx={{'height': '65px'}}></Box>
       <Box sx={{
         'width': 'calc(100% - min(6vw, 60px) + 10px)',
-        'maxWidth': '1000px',
+        'maxWidth': '1300px',
         'margin': '20px auto 0px auto',
         'WebkitTouchCallout': 'none',
         'WebkitUserSelect': 'none',
@@ -133,6 +155,74 @@ function Content() {
             </Box>
           </Box>
         </Box>
+        <Box sx={{
+          'margin': '50px 100px 20px 100px',
+        }}>
+          <Box sx={{
+            'margin': '0 0 4px 0',
+            '& span': {
+              'fontFamily': 'NanumBarun',
+              'fontSize': 'min(16vw, 60px)',
+            },
+          }}>
+            <span className={hueCss}>
+              We Are Starflower
+            </span>
+          </Box>
+          <Box sx={{
+            'fontFamily': 'NanumBarun',
+            'color': 'white',
+            'marginBottom': '12px',
+          }}>
+            별바라기는 1978년부터 활동을 시작한 KAIST 천체관측 동아리입니다. 천문학과가 따로 존재하지 않는 KAIST에서 별바라기는 천문학 또는 천체 관측에 관심이 있는 사람들의 모임의 장이었습니다. 별바라기 사람들은 언제나 맑은 날이면 천체 관측을 하고, 더 좋은 하늘을 찾아 학교 밖으로 관측회를 떠나곤 합니다.
+          </Box>
+
+
+          <Box sx={{
+            '&:before': {
+              'width': '100%',
+              'paddingBottom': '62%',
+              'content': '""',
+              'display': 'block'
+            },
+            'width': '100%',
+            'display': 'flex',
+            'position': 'relative',
+          }}>
+            <Box sx={{
+              'position': 'absolute',
+              'left': 0,
+              'top': 0,
+              'width': '100%',
+              'height': '100%',
+              'display': 'flex',
+              'flexWrap': 'wrap',
+              'justifyContent': 'space-between',
+              'alignContent': 'space-between',
+              '& > div': {
+                'width': '32%',
+                'height': '48.4%',
+                'borderRadius': '5px',
+                'backgroundColor': 'rgb(30, 30, 30)',
+              }
+            }}>
+              <Box></Box>
+              <Box></Box>
+              <Box></Box>
+              <Box></Box>
+              <Box></Box>
+              <Box></Box>
+            </Box>
+          </Box>
+
+
+
+        </Box>
+        
+
+
+
+        
       </Box>
     </React.Fragment>
   )
