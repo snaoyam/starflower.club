@@ -3,14 +3,14 @@ import {Fab, Dialog, Zoom} from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import Popelement from './popelement'
 
-function Popnewgather() {
+function Popnewgather({refreshposts}) {
   const [open, setOpen] = useState(false)
   const [addInputs, setAddInputs] = useState({'title': '', 'contents': ''})
 
   return (
     <React.Fragment>
       <Zoom in={true} timeout={500}>
-        <Fab color="secondary" sx={{'position': 'absolute', 'right': 'calc(35% + 40px)', 'top': '310px'}} onClick={() => setOpen(!open)}>
+        <Fab color="secondary" sx={{'position': 'absolute', 'right': '10px', 'bottom': '10px'}} onClick={() => setOpen(!open)}>
           <AddIcon />
         </Fab>
       </Zoom>
@@ -28,7 +28,7 @@ function Popnewgather() {
           }
         }}
       >
-        <Popelement setOpen={setOpen} addInputs={addInputs} setAddInputs={setAddInputs} />
+        <Popelement setOpen={setOpen} addInputs={addInputs} setAddInputs={setAddInputs} refreshposts={refreshposts}/>
       </Dialog>
     </React.Fragment>
   )

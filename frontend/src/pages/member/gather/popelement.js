@@ -16,7 +16,7 @@ import PlaceIcon from '@mui/icons-material/Place'
 import LinkIcon from '@mui/icons-material/Link'
 import CreateIcon from '@mui/icons-material/Create'
 
-function Popnewgather({setOpen, addInputs, setAddInputs}) {
+function Popnewgather({setOpen, addInputs, setAddInputs, refreshposts}) {
   const inputRef = useRef()
   const [tagOption, setTagOption] = useState(['안시관측', '사진촬영', '밥팟', '정모', '사진편집', '외부관측회', '견학'])
   const [selectedTag, setSelectedTag] = useState([])
@@ -43,6 +43,7 @@ function Popnewgather({setOpen, addInputs, setAddInputs}) {
         if(data.success) {
           setAddInputs({'title': '', 'contents': ''})
           setOpen(false)
+          refreshposts()
         }
         else {
           alert("Upload failed")

@@ -4,6 +4,8 @@ import axios from "axios"
 import "./index.css"
 import {TextField, Link, Button, CircularProgress} from '@mui/material'
 import {ThemeProvider} from '@mui/material/styles'
+import {Box} from '@mui/material'
+import {ReactComponent as Cat2} from './cat2.svg'
 
 function Login({muiTheme, setTopBarCss}) {
   const [inputs, setInputs] = useState({'username': '', 'password': ''})
@@ -75,7 +77,19 @@ function Login({muiTheme, setTopBarCss}) {
   return (
     <div id="loginpage" onKeyPress={(e) => onEnter(e)}>
       <div id="loginmodule">
-        <div id="logintxt"><span>로그인</span></div>
+        <Box id="logintxt" sx={{
+          '& > svg': {
+            'width': '70px',
+            'color': 'white',
+            'margin': '0 12px 0 8px',
+          },
+          '& > span': {
+            'font-size': '16px',
+          }
+        }}>
+          <Cat2 />
+          <span >로그인을 해주세요 </span>
+        </Box>
         <div id="logininputform">
           <ThemeProvider theme={muiTheme.textfield}>
             <TextField
@@ -121,7 +135,7 @@ function Login({muiTheme, setTopBarCss}) {
             sx={{ color: 'white', animationDuration: '700ms' }}
             size={24}
           />
-        ) : 'Starflower 회원 인증'}</Button>
+        ) : 'Members 로그인'}</Button>
         <Link to="/register" 
           component={RouterLink}
           underline='none'

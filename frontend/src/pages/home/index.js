@@ -21,7 +21,7 @@ function Home({setTopBarCss, divRef}) {
     setPage(0)
     setTopBarCss(0)
     window.scrollTo(0,0)
-    document.body.classList.add(fullpagecss)
+    document.getElementById('root').classList.add(fullpagecss)
     scrollLock.current = true
   }
   const next = () => {
@@ -29,17 +29,17 @@ function Home({setTopBarCss, divRef}) {
     setTopBarCss(0.8)
     window.setTimeout(() => {
       if(pageRef.current === 1) {
-        document.body.classList.remove(fullpagecss)
+        document.getElementById('root').classList.remove(fullpagecss)
         scrollLock.current = false
       }
     }, 1000)
   }
   useEffect(() => {
     setTopBarCss(0)
-    document.body.classList.add(fullpagecss)
+    document.getElementById('root').classList.add(fullpagecss)
     document.getElementById('SFHomep').addEventListener("click", prev)
     return () => {
-      document.body.classList.remove(fullpagecss)
+      document.getElementById('root').classList.remove(fullpagecss)
       document.getElementById('SFHomep').removeEventListener("click", prev)
     }
   }, [])
@@ -99,8 +99,8 @@ function Home({setTopBarCss, divRef}) {
   }, [])
 
   const fullpagescroll = css({
-    'transform': `translateY(${-page * 100}vh)`,
-    'transition': 'transform 0.5s ease',
+    'marginTop': `${-page * 100}vh`,
+    'transition': 'margin 0.5s ease',
     'willChange': 'transform',
   })
 

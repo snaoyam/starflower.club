@@ -5,6 +5,8 @@ import {DatePicker, LocalizationProvider} from '@mui/lab'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import "./index.css"
 import {ThemeProvider} from '@mui/material/styles'
+import {ReactComponent as Cat3} from './cat3.svg'
+import {css} from '@emotion/css'
 
 function Register({muiTheme, setTopBarCss}) {
   const [inputs, setInputs] = useState({'username': '', 'password': '', 'email': '', 'name': '', 'phone': '', 'studentid': '', 'memberFrom': 2021, 'graduated': false})
@@ -58,7 +60,30 @@ function Register({muiTheme, setTopBarCss}) {
     <div id="registerpage">
       <div id='registermodulep'>
         <div id="registermodule">
-          <div id="registertxt"><span>회원가입</span></div>
+          <Box id="registertxt" sx={{
+            'height': '15vh',
+            'width': '100%',
+            'display': 'flex',
+            'alignItems': 'center',
+            'color': 'white',
+            'margin': '30px 0 0 0',
+            'fontFamily': 'NanumBarun',
+            'fontSize': '30px',
+          }}>
+            <Box sx={{
+              '& > svg': {
+                'width': '140px',
+                'color': 'white',
+                'margin': '0 16px 0 8px',
+              },
+              '& span': {
+
+              }
+            }}>
+              <Cat3 />
+              <span>환영합니다</span><span className={css({ 'fontFamily': 'Arial', })}>{' >_<'}</span>
+            </Box>
+          </Box>
           <div id="registerinputform">
             <ThemeProvider theme={muiTheme.textfield}>
             <TextField

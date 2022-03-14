@@ -20,6 +20,7 @@ const Topbar = ({session, topBarCss}) => {
       'MozUserSelect': 'none',
       'msUserSelect': 'none',
       'userSelect': 'none',
+      'fontFamily': 'Mapo',
       'position': 'fixed',
       'top': 0, 'right': 0,
       'height': '65px',

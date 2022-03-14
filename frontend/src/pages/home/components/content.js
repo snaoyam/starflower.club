@@ -28,6 +28,52 @@ function Content() {
     },
   })
 
+  const tilecss = css({
+    'backgroundColor': '#262626',
+    'height': '350px',
+    'maxHeight': 'min(55vh, 60vw)',
+    'position': 'relative',
+    'overflow': 'hidden',
+    'borderRadius': '5px',
+    'width': 'calc(50% - min(30px, 1.4vw))',
+    'margin': 'min(15px, 0.7vw)',
+    '& > img': {
+      'width': '100%',
+      'height': '100%',
+      'objectFit': 'cover',
+      'transition': 'transform 0.7s ease',
+      'position': 'absolute',
+    },
+    '& > a': {
+      'fontFamily': 'NanumBarun',
+      'width': '100%',
+      'height': '100%',
+      'position': 'absolute',
+      'display': 'flex',
+      'justifyContent': 'center',
+      'alignItems': 'center',
+      'zIndex': 10,
+      'cursor': 'pointer',
+      'textAlign': 'center',
+      'color': 'white',
+      '&:hover + img': {
+        'transform': 'scale(1.3)',
+        'transition': 'transform 2s',
+      },
+      '& > div': {
+        'width': '80%',
+        'maxWidth': '290px',
+        'textShadow': '0 0 12px rgb(0 0 0)',
+        '& > span': {
+          'fontSize': 'min(6vw, 36px)',
+        },
+        '& > p': {
+          'fontSize': 'min(2.4vw, 18px)',
+        }
+      },
+    },
+  })
+
   return (
     <React.Fragment>
       <Box sx={{
@@ -37,56 +83,122 @@ function Content() {
         'MozUserSelect': 'none',
         'msUserSelect': 'none',
         'userSelect': 'none',
+        'color': 'white',
       }}>
         <Box sx={{
           'width': '100%',
+          'maxHeight': '70vh',
+          'minHeight': '60vh',
+          'height': '60vw',
+          'overflow': 'hidden',
+          'position': 'relative',
         }}>
           <Box sx={{
-            'backgroundColor': '#262626',
             'width': '100%',
+            'height': '100%',
+            '& img': {
+              'width': '100%',
+              'height': '100%',
+              'objectFit': 'cover',
+            },
+          }}>
+            <img src='home/content/nebula.jpg'></img>
+          </Box>
+          <Box sx={{
+            'position': 'absolute',
+            'top': '0',
+            'right': '10vw',
+            'marginLeft': '20vw',
+            'height': '100%',
+            'display': 'flex',
+            'alignItems': 'center',
+          }}>
+            <Box>
+              <Box className={hueCss} sx={{
+                'fontFamily': 'sans-serif',
+                'fontWeight': 900,
+                'fontSize': 'min(12vw, 80px)',
+                'textAlign': 'right',
+              }}>
+                We are Starflower
+              </Box>
+              <Box sx={{
+                'fontFamily': 'NanumBarun',
+                'fontSize': 'min(4vw, 20px)',
+                'textAlign': 'right',
+                'marginRight': '4px',
+              }}>
+                KAIST 천체관측 동아리 별바라기입니다
+              </Box>
+              <Link to="/about">
+                <Box sx={{
+                  'fontFamily': 'NanumBarun',
+                  'fontSize': 'min(3vw, 15px)',
+                  'textAlign': 'right',
+                  'margin': '4px -4px 0 0',
+                  'color': 'rgb(150, 150, 150)',
+                  'alignItems': 'center',
+                  'display': 'flex',
+                  'justifyContent': 'flex-end',
+                }}>
+                  더 알아보기
+                  <ArrowForwardIosIcon sx={{
+                    'height': 'min(4vw, 12px)'
+                  }}/>
+                </Box>
+              </Link>
+            </Box>
+          </Box>
+        </Box>
+        <Box sx={{
+          'width': 'calc(100% - min(6vw, 60px) + 10px)',
+          'maxWidth': '900px',
+          'margin': '0 auto',
+          'padding': '15px 0',
+          'display': 'flex',
+          'flexWrap': 'wrap',
+        }}>
+          {/*<Box sx={{
+            'margin': '10px 0 10px calc(40px - min(40px, 3vw))',
+            '& span': {
+              'fontFamily': 'Raleway, sans-serif',
+              'fontSize': 'min(12vw, 40px)',
+              'fontWeight': 400,
+              'color': 'white',
+            },
+          }}>
+            <span>
+              Exhibitions
+            </span>
+          </Box>*/}
+          <Box sx={{
+            'backgroundColor': '#262626',
             'height': '550px',
             'maxHeight': 'min(55vh, 60vw)',
             'position': 'relative',
+            'overflow': 'hidden',
+            'borderRadius': '5px',
+            'width': 'calc(100% - min(30px, 1.4vw))',
+            'margin': 'min(15px, 0.7vw)',
           }}>
             <Box sx={{
               'width': '100%',
               'height': '100%',
               'position': 'absolute',
-              'overflow': 'hidden',
               '&:before': {
                 'content': '""',
                 'width': '100%',
                 'height': '100%',
                 'position': 'absolute',
-                'background': 'rgba(0,0,0,0.2)',
+                'background': 'rgba(0,0,0,0.3)',
               },
               '& img': {
                 'width': '100%',
                 'height': '100%',
                 'objectFit': 'cover',
-              }
+              },
             }}>
               <img src='home/exhibition/253213594_2017028065123230_4876617960639262668_n.jpg'></img>
-              {/*<Box sx={{
-                'position': 'absolute',
-                'top': '10%',
-                'left': '5%',
-                'height': '40px',
-                '& span': {
-                  'fontFamily': 'NanumBarun',
-                  'fontSize': 'min(8vw, 30px)',
-                  'backgroundImage': 'linear-gradient(170deg, rgb(255,234,125), rgb(231,127,53))',
-                  'WebkitTextFillColor': 'transparent',
-                  'textFillColor': 'transparent',
-                  'WebkitBackgroundClip': 'text',
-                  'backgroundClip': 'text',
-                },
-                'marginBottom': '4px',
-              }}>
-                <span>
-                  최근 전시회
-                </span>
-              </Box>*/}
               <Box sx={{
                 'position': "absolute",
                 'width': 'calc(100% - min(80px, 10vw))',
@@ -121,7 +233,7 @@ function Content() {
                     <br/>
                     2021년 11월 8일 ~
                   </Box>
-                  <Link to="/exhibition/11">
+                  <Link to="/exhibition/2021kaistist">
                     <Box sx={{
                       'marginTop': 'auto',
                       'padding': '8px 0 8px 8px',
@@ -153,77 +265,43 @@ function Content() {
               </Box>
             </Box>
           </Box>
+          <Box className={tilecss}>
+            <Link to="/astrophotography">
+              <Box>
+                <span>천문 사진</span>
+                <p>별바라기에서 과거에 촬영한 <br/>천문 사진 작품을 모아두었습니다.</p>
+              </Box>
+            </Link>
+            <img src='home/content/A1_01_Perseus-Double-Cluster.jpg'></img>
+          </Box>
+          <Box className={tilecss}>
+            <Link to="/exhibition">
+              <Box>
+                <span>최근 전시회</span>
+                <p>별바라기에서 과거에 촬영한<br/>천문 사진 작품을 모아두었습니다.</p>
+              </Box>
+            </Link>
+            <img src='home/content/A1_10_Horsehead.jpg'></img>
+          </Box>
+          <Box className={tilecss}>
+            <Link to="/news">
+              <Box>
+                <span>뉴스/이벤트</span>
+                <p>별바라기의 활동 소식도 여기서!<br/>진행중인 이벤트도 확인해보세요!</p>
+              </Box>
+            </Link>
+            <img src='home/content/A3_06_Northern-Sky-Trails.jpg'></img>
+          </Box>
+          <Box className={tilecss}>
+            <Link to="/apply">
+              <Box>
+                <span>리크루팅</span>
+                <p>별바라기의 회원이 되고 싶으신가요?</p>
+              </Box>
+            </Link>
+            <img src='home/content/star-1.jpg'></img>
+          </Box>
         </Box>
-        <Box sx={{
-          'width': 'calc(100% - min(6vw, 60px) + 10px)',
-          'maxWidth': '1000px',
-          'margin': '50px auto 0px auto',
-        }}>
-          <Box sx={{
-            'margin': '0 0 4px 0',
-            '& span': {
-              'fontFamily': 'NanumBarun',
-              'fontSize': 'min(16vw, 60px)',
-            },
-          }}>
-            <span className={hueCss}>
-              We Are Starflower
-            </span>
-          </Box>
-          <Box sx={{
-            'fontFamily': 'NanumBarun',
-            'color': 'white',
-            'marginBottom': '12px',
-          }}>
-            별바라기는 1978년부터 활동을 시작한 KAIST 천체관측 동아리입니다. 천문학과가 따로 존재하지 않는 KAIST에서 별바라기는 천문학 또는 천체 관측에 관심이 있는 사람들의 모임의 장이었습니다. 별바라기 사람들은 언제나 맑은 날이면 천체 관측을 하고, 더 좋은 하늘을 찾아 학교 밖으로 관측회를 떠나곤 합니다.
-          </Box>
-
-
-          <Box sx={{
-            '&:before': {
-              'width': '100%',
-              'paddingBottom': '62%',
-              'content': '""',
-              'display': 'block'
-            },
-            'width': '100%',
-            'display': 'flex',
-            'position': 'relative',
-          }}>
-            <Box sx={{
-              'position': 'absolute',
-              'left': 0,
-              'top': 0,
-              'width': '100%',
-              'height': '100%',
-              'display': 'flex',
-              'flexWrap': 'wrap',
-              'justifyContent': 'space-between',
-              'alignContent': 'space-between',
-              '& > div': {
-                'width': '32%',
-                'height': '48.4%',
-                'borderRadius': '5px',
-                'backgroundColor': 'rgb(30, 30, 30)',
-              }
-            }}>
-              <Box></Box>
-              <Box></Box>
-              <Box></Box>
-              <Box></Box>
-              <Box></Box>
-              <Box></Box>
-            </Box>
-          </Box>
-
-
-
-        </Box>
-        
-
-
-
-        
       </Box>
     </React.Fragment>
   )

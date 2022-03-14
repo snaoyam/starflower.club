@@ -16,7 +16,7 @@ const GatherElement = React.forwardRef(({style, value}, ref) => {
   return (
   <div style={style} ref={ref}>
     <ThemeProvider theme={theme}>
-      <Paper sx={{'margin': '10px', 'width': 260, 'height': 260, 'padding': '10px'}} elevation={5}>
+      <Paper sx={{'margin': '0 min(calc(0.3vw + 5px), 15px)', 'width': 260, 'height': 260, 'padding': '10px'}} elevation={5}>
         <Box sx={{'width': '100%', 'height': 44, 'display': 'flex', 'alignItems': 'center'}}>
           {value.title}
         </Box>
