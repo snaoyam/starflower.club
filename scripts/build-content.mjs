@@ -28,8 +28,8 @@ export function photoMetadata(info, { dateFallback = true } = {}) {
 }
 
 
-export function parseFAQ(text = '{}') {
-  const info = validateContentRecord('FAQ.json', text);
+export function parseFAQ(text = '') {
+  const info = validateContentRecord('FAQ.md', text);
   return (info.항목 || []).map(item => ({question: item.질문, answer: item.답변}));
 }
 function date(value, label) {
@@ -79,8 +79,9 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
     for (const file of await entries(dir)) {
       if (!file.isFile() || !imageExtensions.has(path.extname(file.name).toLowerCase())) continue;
       const stem = path.parse(file.name).name;
-      const info = parsePhotoMarkdown(await textFile(path.join(dir, stem + '.md')));
-      items.push({ id: stem, title: info.title || stem.replace(/^\d+[-_ ]*/, ''), category: info.category || '사진', description: stripEmoji(info.description || fallback.description), metadata: info.hasAdditionalInfo ? info.metadata : fallback.metadata || [], image: await picture(path.join(dir, file.name)) });
+      const sidecar = await textFile(path.join(dir, stem + '.md'), null);
+      const info = parsePhotoMarkdown(sidecar ?? '');
+      items.push({ id: stem, title: info.title || stem.replace(/^\d+[-_ ]*/, ''), category: info.category || '사진', description: stripEmoji(info.description || fallback.description), metadata: sidecar !== null ? info.metadata : fallback.metadata || [], image: await picture(path.join(dir, file.name)) });
     }
     return items;
   }
@@ -88,17 +89,17 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
     const file = (await entries(dir)).find(e => e.isFile() && isCoverFilename(e.name));
     return file ? picture(path.join(dir, file.name)) : null;
   }
-  async function jsonFile(file) {
-    return validateContentRecord(path.relative(root,file), await textFile(file, '{}'));
+  async function contentFile(file) {
+    return validateContentRecord(path.relative(root,file), await textFile(file, ''));
   }
-  const settings = await jsonFile(path.join(content, '설정', '사이트정보.json'));
-  const recruitmentUrl = validateRecruitmentURL((await jsonFile(path.join(content, '설정', '모집링크.json'))).url);
+  const settings = await contentFile(path.join(content, '설정', '사이트정보.md'));
+  const recruitmentUrl = validateRecruitmentURL((await contentFile(path.join(content, '설정', '모집링크.md'))).url);
   const exhibitions = [];
   for (const folder of await entries(path.join(content, '전시'))) {
     if (!folder.isDirectory()) continue;
     const dir = path.join(content, '전시', folder.name);
-    const info = await jsonFile(path.join(dir, '전시정보.json'));
-    if (!info.제목) throw new Error(`전시/${folder.name}/전시정보.json에 제목 속성을 입력해 주세요.`);
+    const info = await contentFile(path.join(dir, '전시정보.md'));
+    if (!info.제목) throw new Error(`전시/${folder.name}/전시정보.md에 제목 속성을 입력해 주세요.`);
     const artworks = await photos(path.join(dir, '작품'));
     exhibitions.push({ sortNumber: exhibitionSortNumber(info), id: folder.name, title: info.제목, category: info.분류 || '전시', date: date(info.날짜, `전시/${folder.name}`), period: info.기간 || '', location: info.장소 || '', description: info.소개 || '', source: sourceURL(info.링크, `전시/${folder.name}`), cover: await cover(dir) || artworks[0]?.image || null, artworks });
   }
@@ -107,8 +108,8 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
   for (const folder of await entries(path.join(content, '소식'))) {
     if (!folder.isDirectory()) continue;
     const dir = path.join(content, '소식', folder.name);
-    const info = await jsonFile(path.join(dir, '소식.json'));
-    if (!info.제목 || !info.내용) throw new Error(`소식/${folder.name}/소식.json에 제목과 내용을 입력해 주세요.`);
+    const info = await contentFile(path.join(dir, '소식.md'));
+    if (!info.제목 || !info.내용) throw new Error(`소식/${folder.name}/소식.md에 제목과 내용을 입력해 주세요.`);
     const metadata = photoMetadata(info, { dateFallback: false });
     const source = sourceURL(info.링크, `소식/${folder.name}`);
     if (source) metadata.push(['링크', `[${source}](${source})`]);
@@ -116,10 +117,10 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
     news.push({ id: folder.name, title: info.제목, date: date(info.날짜, `소식/${folder.name}`), category: info.분류 || '소식', body: stripEmoji(info.내용), metadata, source, cover: await cover(dir) || gallery[0]?.image || null, photos: gallery });
   }
   news.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title, 'ko'));
-  const footer = await jsonFile(path.join(content, '설정', '하단영역.json'));
-  const homeCopy = homeSettings(await jsonFile(path.join(content, '설정', '홈.json')), settings);
+  const footer = await contentFile(path.join(content, '설정', '하단영역.md'));
+  const homeCopy = homeSettings(await contentFile(path.join(content, '설정', '홈.md')), settings);
   homeCopy.활동링크 = homeCopy.활동링크.trim() ? linkURL(homeCopy.활동링크,{webOnly:true}) : '';
-  const data = { settings, footerText: footer.내용 || '', footerLinks: footerLinks(footer, settings).map(item => ({...item, 주소:linkURL(item.주소)})), recruitmentUrl, introduction: (await jsonFile(path.join(content, '소개.json'))).내용 || '', faqs: parseFAQ(await textFile(path.join(content, 'FAQ.json'), '{}')), exhibitions, activities: await photos(path.join(content, '활동사진')), news };
+  const data = { settings, footerText: footer.내용 || '', footerLinks: footerLinks(footer, settings).map(item => ({...item, 주소:linkURL(item.주소)})), recruitmentUrl, introduction: (await contentFile(path.join(content, '소개.md'))).내용 || '', faqs: parseFAQ(await textFile(path.join(content, 'FAQ.md'), '')), exhibitions, activities: await photos(path.join(content, '활동사진')), news };
   data.introductionImage = await cover(path.join(content, '소개')) || data.activities[0]?.image || null;
   data.recruitmentImage = await cover(path.join(content, '모집')) || data.activities.find(item=>item.id==='02-천체사진-촬영장비')?.image || data.activities[0]?.image || null;
   // Lists stay small; bodies and photo metadata are fetched only on detail pages.

@@ -18,7 +18,7 @@ export function parsePhotoMarkdown(text = '') {
     if (active === 'metadata') {
       const entry = line.match(/^(?: {2}|\t)-[ \t]*(.*)$/);
       if (entry) {
-        const parts = /^(?:https?:\/\/|\[)/.test(entry[1]) ? null : entry[1].match(/^([^:：]+)[:：][ \t]*(.*)$/);
+        const parts = /^(?:https?:\/\/|\[|\([^()\n]*\)\[)/.test(entry[1]) ? null : entry[1].match(/^([^:：]+)[:：][ \t]*(.*)$/);
         result.metadata.push(parts ? [parts[1].trim(), parts[2]] : ['', entry[1]]);
       } else if (result.metadata.length) {
         result.metadata.at(-1)[1] += '\n' + line.replace(/^(?: {4}|\t)/, '');

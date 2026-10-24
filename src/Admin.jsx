@@ -30,11 +30,11 @@ function PhotoFields({ path, text, stage }) {
   return <div className="admin-photo-fields"><Field label="사진 제목" value={info.title} onChange={title=>update({...info,title})}/><Field label="사진 설명" multiline value={info.description} onChange={description=>update({...info,description})}/><div className="admin-meta-heading"><strong>촬영정보·링크</strong><button type="button" onClick={()=>update({...info,hasAdditionalInfo:true,metadata:[...info.metadata,['','']]})}>항목 추가 +</button></div>{info.metadata.map(([label,value],i)=><div className="admin-meta-row" key={i}><input aria-label={`항목 ${i+1} 이름`} placeholder="예: 촬영자" value={label} onChange={e=>update({...info,metadata:info.metadata.map((r,j)=>j===i?[e.target.value,value]:r)})}/><textarea rows={2} aria-label={`항목 ${i+1} 내용`} value={value} onChange={e=>update({...info,metadata:info.metadata.map((r,j)=>j===i?[label,e.target.value]:r)})}/><button type="button" aria-label={`항목 ${i+1} 삭제`} onClick={()=>update({...info,hasAdditionalInfo:true,metadata:info.metadata.filter((_,j)=>j!==i)})}>×</button></div>)}</div>;
 }
 function RecruitmentEditor({ all, stage, open, setOpen, preview, upload }) {
-  const path='content/설정/사이트정보.json';
+  const path='content/설정/사이트정보.md';
   const settings=parseFields(all[path]?.text);
-  const [url,setURL]=useState(()=>parseFields(all['content/설정/모집링크.json']?.text).url || '');
-  function changeURL(value) {setURL(value);stage('content/설정/모집링크.json',{text:updateContentField(all['content/설정/모집링크.json']?.text,'url',open?value:'')});}
-  function toggle(value) {setOpen(value);stage('content/설정/모집링크.json',{text:updateContentField(all['content/설정/모집링크.json']?.text,'url',value?url:'')});}
+  const [url,setURL]=useState(()=>parseFields(all['content/설정/모집링크.md']?.text).url || '');
+  function changeURL(value) {setURL(value);stage('content/설정/모집링크.md',{text:updateContentField(all['content/설정/모집링크.md']?.text,'url',open?value:'')});}
+  function toggle(value) {setOpen(value);stage('content/설정/모집링크.md',{text:updateContentField(all['content/설정/모집링크.md']?.text,'url',value?url:'')});}
   return <><h2>신입부원 모집</h2><label className="admin-check"><input type="checkbox" checked={open} onChange={e=>toggle(e.target.checked)}/>모집 중으로 표시</label><Field label="모집 링크" type="url" placeholder="https://example.com/apply" value={url} disabled={!open} onChange={changeURL}/>{open && !url && <p className="admin-warning">모집 중으로 표시하려면 모집 링크를 입력해 주세요.</p>}<Field label="모집 안내 문구" multiline value={settings.모집안내 || ''} onChange={value=>stage(path,{text:updateContentField(all[path]?.text,'모집안내',value)})}/><p className="muted">모집을 닫으면 지원서 링크가 숨겨집니다.</p><PagePhotoEditor label="모집 사진" path={recruitmentImagePath(all)} directory="content/모집/" preview={preview} upload={upload}/></>;
 }
 function PagePhotoEditor({ label, path, directory, preview, upload, fallback }) {
@@ -48,13 +48,13 @@ function AboutEditor({ all, stage, preview, upload }) {
   const imagePath=aboutImagePath(all);
   return <>
     <h2>동아리 소개</h2>
-    <div className="admin-about-fields"><Field label="소개 글" multiline className="admin-about-body" value={parseFields(all['content/소개.json']?.text).내용 || ''} onChange={value=>stage('content/소개.json',{text:updateContentField(all['content/소개.json']?.text,'내용',value)})}/></div>
+    <div className="admin-about-fields"><Field label="소개 글" multiline className="admin-about-body" value={parseFields(all['content/소개.md']?.text).내용 || ''} onChange={value=>stage('content/소개.md',{text:updateContentField(all['content/소개.md']?.text,'내용',value)})}/></div>
     <PagePhotoEditor label="소개 사진" path={imagePath} directory="content/소개/" preview={preview} upload={upload}/>
   </>;
 }
 export function HomeEditor({ all, stage, preview, upload, home }) {
-  const path='content/설정/홈.json';
-  const copy=homeSettings(parseFields(all[path]?.text),parseFields(all['content/설정/사이트정보.json']?.text));
+  const path='content/설정/홈.md';
+  const copy=homeSettings(parseFields(all[path]?.text),parseFields(all['content/설정/사이트정보.md']?.text));
   const edit=(key,value)=>stage(path,{text:updateContentField(all[path]?.text,key,value)});
   const fields=(items)=>items.map(([key,label,multiline=false])=><Field key={key} label={label} value={copy[key]} multiline={multiline} rows={3} onChange={value=>edit(key,value)}/>);
   return <><h2>홈 편집</h2><p className="muted">문구의 줄바꿈과 선택한 사진은 저장 및 배포 후 홈에 반영됩니다.</p>
@@ -74,10 +74,10 @@ export function HomeEditor({ all, stage, preview, upload, home }) {
   </>;
 }
 export function FooterEditor({ all, stage }) {
-  const path='content/설정/하단영역.json';
+  const path='content/설정/하단영역.md';
   const info=parseFields(all[path]?.text);
   const text=info.내용 || '';
-  const links=footerLinks(info,parseFields(all['content/설정/사이트정보.json']?.text));
+  const links=footerLinks(info,parseFields(all['content/설정/사이트정보.md']?.text));
   const changeLinks=next=>stage(path,{text:updateContentField(all[path]?.text,'링크',next)});
   const editLink=(index,key,value)=>changeLinks(links.map((item,i)=>i===index?{...item,[key]:value}:item));
   return <><h2>하단영역 편집</h2><p className="muted">모든 페이지의 하단에 표시됩니다. 줄바꿈도 그대로 반영됩니다.</p><Field label="하단영역 안내 문구" multiline rows={8} value={text} onChange={value=>stage(path,{text:updateContentField(all[path]?.text,'내용',value)})}/>
@@ -122,7 +122,7 @@ function Login({ busy, error, onLogin }) {
 function Review({ changes, snapshot, busy, close, save }) {
   const dialog=useRef(null);
   useEffect(()=>{const previous=document.activeElement;dialog.current.showModal();return()=>{dialog.current?.close();previous?.focus();};},[]);
-  return <dialog ref={dialog} className="admin-review admin-page" aria-labelledby="admin-review-title" onCancel={e=>{e.preventDefault();if(!busy)close();}}><h2 id="admin-review-title">변경사항 저장</h2><p>지금까지 수정사항을 저장하고 배포하시겠습니까?</p><ul>{Object.entries(changes).map(([p,v])=><li key={p}><span>{v===null?'삭제':snapshot.files[p]?'수정':'추가'}</span> {p===ADMIN_ACCOUNTS_PATH?'사이트 관리자':p==='content/설정/하단영역.json'?'하단영역 문구·링크':p==='content/설정/홈.json'?'홈 문구':p.startsWith('content/홈/')?'홈 배경 사진':p==='content/소개.json'?'동아리 소개 글':p.startsWith('content/소개/')?'동아리 소개 사진':p.startsWith('content/모집/')?'신입부원 모집 사진':p.replace('content/','')}</li>)}</ul><div className="admin-actions"><button disabled={busy} onClick={close}>취소</button><button className="primary" disabled={busy} onClick={save}>배포하기</button></div></dialog>;
+  return <dialog ref={dialog} className="admin-review admin-page" aria-labelledby="admin-review-title" onCancel={e=>{e.preventDefault();if(!busy)close();}}><h2 id="admin-review-title">변경사항 저장</h2><p>지금까지 수정사항을 저장하고 배포하시겠습니까?</p><ul>{Object.entries(changes).map(([p,v])=><li key={p}><span>{v===null?'삭제':snapshot.files[p]?'수정':'추가'}</span> {p===ADMIN_ACCOUNTS_PATH?'사이트 관리자':p==='content/설정/하단영역.md'?'하단영역 문구·링크':p==='content/설정/홈.md'?'홈 문구':p.startsWith('content/홈/')?'홈 배경 사진':p==='content/소개.md'?'동아리 소개 글':p.startsWith('content/소개/')?'동아리 소개 사진':p.startsWith('content/모집/')?'신입부원 모집 사진':p.replace('content/','')}</li>)}</ul><div className="admin-actions"><button disabled={busy} onClick={close}>취소</button><button className="primary" disabled={busy} onClick={save}>배포하기</button></div></dialog>;
 }
 
 export default function Admin({ home }) {
@@ -154,7 +154,7 @@ export default function Admin({ home }) {
       const token=await decryptAdmin(readAccounts(accountText),id,password);
       if(!active.current)return false;
       credentials.current={...ADMIN_TARGET,token};
-      setRecruitOpen(!!parseFields(data.files['content/설정/모집링크.json']?.text).url?.trim());setSnapshot(data);setSession({...ADMIN_TARGET,userId:normalizeAdminId(id)});setStatus('');
+      setRecruitOpen(!!parseFields(data.files['content/설정/모집링크.md']?.text).url?.trim());setSnapshot(data);setSession({...ADMIN_TARGET,userId:normalizeAdminId(id)});setStatus('');
       return true;
     });
   }
@@ -183,7 +183,7 @@ export default function Admin({ home }) {
   }
   function addRecord() {
     const id=`${today()}-${crypto.randomUUID().slice(0,8)}`;
-    const path=`content/${tab}/${id}/${tab==='전시'?'전시정보':'소식'}.json`;
+    const path=`content/${tab}/${id}/${tab==='전시'?'전시정보':'소식'}.md`;
     stage(path,{text:serializeFields(tab==='전시'?{제목:'새 전시',날짜:today(),정렬숫자:today().replaceAll('-',''),분류:'전시',기간:'',장소:'온라인',소개:''}:{제목:'새 소식',날짜:today(),분류:'소식',내용:''})});setSelected(path);
   }
   function removeRecord(path) {
@@ -216,7 +216,7 @@ export default function Admin({ home }) {
       for(const [path,value,title]of prepared){stage(path,value);if(!cover)stage(path.replace(/\.[^.]+$/,'.md'),{text:serializePhoto({title,description:'',category:'',metadata:[],hasAdditionalInfo:false})});}
     });
   }
-  function prepareSave(){setError('');try{validateEdits(snapshot.files,changes);const r=parseFields(all['content/설정/모집링크.json']?.text).url?.trim();if(recruitOpen&&!r)throw Error('모집 중으로 표시하려면 지원서 주소를 입력해 주세요.');setReview(true);}catch(e){setError(e.message);}}
+  function prepareSave(){setError('');try{validateEdits(snapshot.files,changes);const r=parseFields(all['content/설정/모집링크.md']?.text).url?.trim();if(recruitOpen&&!r)throw Error('모집 중으로 표시하려면 지원서 주소를 입력해 주세요.');setReview(true);}catch(e){setError(e.message);}}
   function deploymentRequested(message,files=snapshot.files) {
     setDispatchPending(false);
     if(!readAccounts(files[ADMIN_ACCOUNTS_PATH].text).accounts.some(account=>account.id===session.userId)){
@@ -254,7 +254,7 @@ export default function Admin({ home }) {
     {tab==='사용자'&&!accountView&&<section className="admin-panel"><Members database={readAccounts(all[ADMIN_ACCOUNTS_PATH].text)} currentId={session.userId} busy={busy} onAdd={addMember} onRemove={removeMember} onEditPassword={()=>setAccountView(true)}/></section>}
     {tab==='사용자'&&accountView&&<section className="admin-panel"><OwnAccount currentId={session.userId} busy={busy} onChangePassword={changePassword} onBack={()=>setAccountView(false)}/></section>}
     </fieldset>
-    {count>0&&<div className="admin-bottom"><span>저장하지 않은 파일 {count}개</span><button disabled={busy||dispatchPending} onClick={()=>{if(window.confirm('이 탭의 편집 내용을 모두 되돌릴까요?')){setChanges({});setRecruitOpen(!!parseFields(snapshot.files['content/설정/모집링크.json']?.text).url?.trim());setSelected('');setReview(false);setTab('전시');setAccountView(false);}}}>변경사항 되돌리기</button></div>}
+    {count>0&&<div className="admin-bottom"><span>저장하지 않은 파일 {count}개</span><button disabled={busy||dispatchPending} onClick={()=>{if(window.confirm('이 탭의 편집 내용을 모두 되돌릴까요?')){setChanges({});setRecruitOpen(!!parseFields(snapshot.files['content/설정/모집링크.md']?.text).url?.trim());setSelected('');setReview(false);setTab('전시');setAccountView(false);}}}>변경사항 되돌리기</button></div>}
     {review&&<Review changes={changes} snapshot={snapshot} busy={busy} close={()=>setReview(false)} save={save}/>}
   </div>;
 }

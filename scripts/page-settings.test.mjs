@@ -1,3 +1,4 @@
+import {serializeFields, parseFields} from '../src/content-format.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -13,11 +14,11 @@ import { generateContent } from './build-content.mjs';
 test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌드와 재편집 자료에 반영된다', async t => {
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'starflower-pages-'));
   t.after(()=>fs.rm(root,{recursive:true,force:true}));
-  const homePath='content/설정/홈.json', footerPath='content/설정/하단영역.json';
+  const homePath='content/설정/홈.md', footerPath='content/설정/하단영역.md';
   const files={
-    [homePath]:{text:JSON.stringify({대표문구:'기존',추가값:{보존:true}})},
-    [footerPath]:{text:JSON.stringify({내용:'주소\n연락처',추가값:42})},
-    'content/설정/사이트정보.json':{text:JSON.stringify({인스타그램:'https://instagram.com/test',유튜브:'https://youtube.com/test'})},
+    [homePath]:{text:serializeFields({대표문구:'기존',추가값:{보존:true}})},
+    [footerPath]:{text:serializeFields({내용:'주소\n연락처',추가값:42})},
+    'content/설정/사이트정보.md':{text:serializeFields({인스타그램:'https://instagram.com/test',유튜브:'https://youtube.com/test'})},
   };
   const changes={};
   changes[homePath]={text:updateContentField(files[homePath].text,'대표문구','새 첫 문장\n두 번째 줄')};
@@ -48,8 +49,8 @@ test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌�
   assert.notEqual(catalog.home.hero.image.src,catalog.home.activity.image.src);
   assert.deepEqual(catalog.footerLinks,links.map(item=>({...item,주소:linkURL(item.주소)})));
   const snapshot=JSON.parse(await fs.readFile(path.join(root,'public/data/admin.json'),'utf8'));
-  assert.deepEqual(JSON.parse(snapshot.files[homePath].text).추가값,{보존:true});
-  assert.equal(JSON.parse(snapshot.files[footerPath].text).추가값,42);
+  assert.deepEqual(parseFields(snapshot.files[homePath].text).추가값,{보존:true});
+  assert.equal(parseFields(snapshot.files[footerPath].text).추가값,42);
   for(const folder of ['대표','활동']) {
     const p=coverImagePaths(all,`content/홈/${folder}/`)[0];
     assert.ok(snapshot.files[p]);await fs.access(path.join(root,'public',snapshot.files[p].preview));
@@ -74,14 +75,14 @@ test('기존 설정을 유지하면서 빈 링크 배열과 빈 홈 문구는 �
   assert.equal(homeSettings({},settings).활동링크,settings.인스타그램);
   assert.equal(homeSettings({},settings).활동링크아이콘,'instagram');
   assert.equal(homeSettings({활동링크아이콘:'none'},settings).활동링크아이콘,'none');
-  assert.doesNotThrow(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크아이콘":"none"}'}}));
+  assert.doesNotThrow(()=>validateEdits({}, {'content/설정/홈.md':{text:"- 활동링크아이콘: none\n"}}));
 });
 
 test('관리자 저장에서 잘못된 링크·아이콘·홈 값과 허용 범위 밖 사진 경로를 거부한다',()=>{
-  for(const 주소 of ['javascript:alert(1)','data:text/html,test','https://user:pass@example.com','https://example.com/\nfoo']) assert.throws(()=>validateEdits({}, {'content/설정/하단영역.json':{text:JSON.stringify({링크:[{이름:'링크',주소,아이콘:'link'}]})}}));
-  for(const 링크 of [null,[{이름:'',주소:'https://example.com',아이콘:'link'}],[{이름:'링크',주소:'https://example.com',아이콘:'unknown'}]]) assert.throws(()=>validateEdits({}, {'content/설정/하단영역.json':{text:JSON.stringify({링크})}}));
-  assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"대표문구":42}'}}));
-  assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크":"mailto:test@example.com"}'}}));
-  assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크아이콘":"unknown"}'}}));
+  for(const 주소 of ['javascript:alert(1)','data:text/html,test','https://user:pass@example.com','https://example.com/\nfoo']) assert.throws(()=>validateEdits({}, {'content/설정/하단영역.md':{text:serializeFields({링크:[{이름:'링크',주소,아이콘:'link'}]})}}));
+  for(const 링크 of [null,[{이름:'',주소:'https://example.com',아이콘:'link'}],[{이름:'링크',주소:'https://example.com',아이콘:'unknown'}]]) assert.throws(()=>validateEdits({}, {'content/설정/하단영역.md':{text:serializeFields({링크})}}));
+  assert.throws(()=>validateEdits({}, {'content/설정/홈.md':{text:"- 대표문구: 42\n"}}));
+  assert.throws(()=>validateEdits({}, {'content/설정/홈.md':{text:"- 활동링크: mailto:test@example.com\n"}}));
+  assert.throws(()=>validateEdits({}, {'content/설정/홈.md':{text:"- 활동링크아이콘: unknown\n"}}));
   for(const p of ['content/홈/대표/커버.svg','content/홈/활동/../커버.jpg','content/홈/임의/커버.png','content/설정/홈.txt']) assert.equal(isContentPath(p),false,p);
 });
