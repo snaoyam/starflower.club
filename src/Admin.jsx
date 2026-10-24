@@ -116,7 +116,7 @@ function OwnAccount({ currentId, busy, onChangePassword, onBack }) {
 function Login({ busy, error, onLogin }) {
   const [id,setId]=useState(''),[password,setPassword]=useState('');
   async function submit(e){e.preventDefault();const result=await onLogin(id,password);setPassword('');if(result)setId('');}
-  return <div className="wrap page admin-page"><div className="admin-login"><span className="eyebrow">STARFLOWER ADMIN</span><h1>관리자 로그인</h1><p>관리자 아이디와 비밀번호를 입력하세요.</p><form onSubmit={submit}><Field label="아이디" value={id} onChange={setId} autoComplete="username" required disabled={busy}/><Field label="비밀번호" type="password" value={password} onChange={setPassword} autoComplete="off" required disabled={busy}/><button type="submit" className="primary admin-login-submit" disabled={busy}>{busy?'로그인 중…':'로그인'}</button></form>{error&&<p role="alert" className="admin-error">{error}</p>}</div></div>;
+  return <div className="wrap page admin-page"><div className="admin-login"><span className="eyebrow">STARFLOWER ADMIN</span><h1>관리자 로그인</h1><p>관리자 아이디와 비밀번호를 입력하세요.</p><form onSubmit={submit}><Field label="아이디" value={id} onChange={setId} autoComplete="username" required disabled={busy}/><Field label="비밀번호" type="password" value={password} onChange={setPassword} autoComplete="off" required disabled={busy}/><button type="submit" className="primary admin-login-submit" disabled={busy}>{busy?'로그인 및 저장소 확인 중…':'로그인'}</button></form>{error&&<p role="alert" className="admin-error">{error}</p>}</div></div>;
 }
 
 function Review({ changes, snapshot, busy, close, save }) {
@@ -153,7 +153,10 @@ export default function Admin({ home }) {
       if(!accountText)throw Error('관리자 계정 설정을 찾을 수 없습니다. 최신 버전을 배포해 주세요.');
       const token=await decryptAdmin(readAccounts(accountText),id,password);
       if(!active.current)return false;
-      credentials.current={...ADMIN_TARGET,token};
+      const connection={...ADMIN_TARGET,token};
+      await createGitHubClient(connection).checkCurrent(data.files);
+      if(!active.current)return false;
+      credentials.current=connection;
       setRecruitOpen(!!parseFields(data.files['content/설정/모집링크.md']?.text).url?.trim());setSnapshot(data);setSession({...ADMIN_TARGET,userId:normalizeAdminId(id)});setStatus('');
       return true;
     });

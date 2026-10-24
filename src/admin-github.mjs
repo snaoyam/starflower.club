@@ -16,12 +16,12 @@ export function isContentPath(path) {
 export function assertContentPath(path) {
   if (!isContentPath(path)) throw Error('허용된 콘텐츠 파일만 저장할 수 있습니다.');
 }
-export function assertUnchanged(files, tree) {
-  if (tree.truncated) throw Error('저장소 목록이 너무 큽니다. 저장하지 않았습니다.');
+export function assertUnchanged(files, tree, phase = 'save') {
+  if (tree.truncated) throw Error(phase === 'login' ? '저장소 파일 목록을 모두 확인할 수 없어 편집을 시작할 수 없습니다.' : '저장소 목록이 너무 큽니다. 저장하지 않았습니다.');
   const remote = Object.fromEntries(tree.tree.filter(f => isContentPath(f.path)).map(f => [f.path, f]));
   const paths = new Set([...Object.keys(files), ...Object.keys(remote)]);
   for (const path of paths) {
-    if (files[path]?.sha !== remote[path]?.sha || (remote[path] && remote[path].mode !== '100644')) throw Error('다른 변경사항이 먼저 저장되었습니다. 편집 내용을 복사해 둔 뒤 배포 완료 후 새로고침해 주세요. 덮어쓰지 않았습니다.');
+    if (files[path]?.sha !== remote[path]?.sha || (remote[path] && remote[path].mode !== '100644')) throw Error(phase === 'login' ? '현재 편집 자료와 GitHub 저장소의 파일 상태가 달라 편집을 시작할 수 없습니다. 최신 변경사항의 배포가 완료된 뒤 새로고침하고 다시 로그인해 주세요. 로컬 미리보기에서는 로컬 파일과 GitHub 저장소가 같은 상태인지 확인해 주세요.' : '다른 변경사항이 먼저 저장되었습니다. 편집 내용을 복사해 둔 뒤 배포 완료 후 새로고침해 주세요. 덮어쓰지 않았습니다.');
   }
 }
 export function createGitHubClient({ token }, fetcher = fetch) {
@@ -43,8 +43,19 @@ export function createGitHubClient({ token }, fetcher = fetch) {
     return response.status === 204 ? null : response.json();
   }
   const branchPath = credentials.branch.split('/').map(encodeURIComponent).join('/');
+  async function repositoryState() {
+    const ref = await request(`/git/ref/heads/${branchPath}`);
+    const head = ref.object.sha;
+    const commit = await request(`/git/commits/${head}`);
+    const tree = await request(`/git/trees/${commit.tree.sha}?recursive=1`);
+    return {head, commit, tree};
+  }
   return {
     actionsURL: `https://github.com/${credentials.repository}/actions/workflows/deploy.yml`,
+    async checkCurrent(files) {
+      const {tree} = await repositoryState();
+      assertUnchanged(files, tree, 'login');
+    },
     async publish(files, changes, progress = () => {}) {
       const entries = Object.entries(changes);
       if (!entries.length) throw Error('변경사항이 없습니다.');
@@ -61,10 +72,7 @@ export function createGitHubClient({ token }, fetcher = fetch) {
       }
       if (size > 50 * 1024 * 1024) throw Error('한 번에 50MB 이하로 저장해 주세요.');
       progress('저장소의 변경사항을 확인하고 있습니다…');
-      const ref = await request(`/git/ref/heads/${branchPath}`);
-      const head = ref.object.sha;
-      const commit = await request(`/git/commits/${head}`);
-      const tree = await request(`/git/trees/${commit.tree.sha}?recursive=1`);
+      const {head, commit, tree} = await repositoryState();
       assertUnchanged(files, tree);
       const edits = [];
       for (const [path, value] of entries) {

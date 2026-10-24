@@ -11,7 +11,7 @@ import { generateContent } from './build-content.mjs';
 const credentials = { repository:'snaoyam/starflower.club', branch:'main', token:'dummy-test-only' };
 const sourcePath='content/소식/event/소식.md';
 const baseline={ [sourcePath]:{ sha:'old-file',text:"- 제목: 기존 소식\n- 내용: 본문\n" } };
-function fixture({ conflict=false, status=200 }={}) {
+function fixture({ conflict=false, status=200, remoteTree }={}) {
   const calls=[];
   const fetcher=async(url,options)=>{
     const body=options.body&&JSON.parse(options.body);calls.push({url,...options,body});
@@ -19,7 +19,7 @@ function fixture({ conflict=false, status=200 }={}) {
     const answers={
       '/git/ref/heads/main':{object:{sha:'head'}},
       '/git/commits/head':{tree:{sha:'base-tree'}},
-      '/git/trees/base-tree?recursive=1':{tree:[{path:sourcePath,type:'blob',mode:'100644',sha:conflict?'remote-change':'old-file'}]},
+      '/git/trees/base-tree?recursive=1':remoteTree ?? {tree:[{path:sourcePath,type:'blob',mode:'100644',sha:conflict?'remote-change':'old-file'}]},
       '/git/blobs':{sha:'new-blob'},'/git/trees':{sha:'new-tree'},'/git/commits':{sha:'new-commit'},'/git/refs/heads/main':{},
     };
     return {ok:status<300,status:route.endsWith('/dispatches')?204:status,json:async()=>answers[route]??{}};
@@ -273,4 +273,54 @@ test('관리자 배포 요청은 사용자 지정 키를 포함한 Markdown 파�
   assert.equal(treeCall.body.tree[0].path,sourcePath);
   assert.ok(sourcePath.endsWith('.md'));
   assert.deepEqual(parseFields(saved.files[sourcePath].text),custom);
+});
+
+test('로그인 사전 확인은 현재 GitHub 파일을 읽어 비교하고 저장·배포를 실행하지 않는다',async()=>{
+  const {client,calls}=fixture();
+  await client.checkCurrent(baseline);
+  assert.equal(calls.length,3);
+  assert.ok(calls.every(c=>c.method==='GET'&&c.cache==='no-store'&&c.body===undefined));
+  assert.ok(calls.at(-1).url.endsWith('/git/trees/base-tree?recursive=1'));
+});
+
+test('로그인 사전 확인은 수정·추가·삭제·계정 변경·불완전한 목록을 차단한다',async()=>{
+  const original={path:sourcePath,type:'blob',mode:'100644',sha:'old-file'};
+  const trees=[
+    {tree:[{...original,sha:'new-file'}]},
+    {tree:[original,{path:'content/소식/event/사진/new.jpg',type:'blob',mode:'100644',sha:'new-photo'}]},
+    {tree:[]},
+    {tree:[original,{path:'public/admin/accounts.json',type:'blob',mode:'100644',sha:'new-accounts'}]},
+    {tree:[{...original,mode:'120000'}]},
+    {tree:[original],truncated:true},
+  ];
+  for(const remoteTree of trees){
+    const {client,calls}=fixture({remoteTree});
+    await assert.rejects(client.checkCurrent(baseline),/편집을 시작할 수 없습니다/);
+    assert.ok(calls.every(c=>c.method==='GET'));
+  }
+});
+
+test('로그인 사전 확인은 권한·통신 오류를 통과시키지 않고 재시도할 수 있다',async()=>{
+  for(const status of [401,403,404]){
+    const {client,calls}=fixture({status});
+    await assert.rejects(client.checkCurrent(baseline),new RegExp(`GitHub ${status}`));
+    assert.equal(calls.length,1);
+  }
+  const fail=createGitHubClient(credentials,async()=>{throw Error(credentials.token);});
+  await assert.rejects(fail.checkCurrent(baseline),e=>e.message.includes('연결')&&!e.message.includes(credentials.token));
+  const remoteTree={tree:[]};
+  const {client}=fixture({remoteTree});
+  await assert.rejects(client.checkCurrent(baseline));
+  remoteTree.tree.push({path:sourcePath,type:'blob',mode:'100644',sha:'old-file'});
+  await client.checkCurrent(baseline);
+});
+
+test('로그인 확인 후 변경된 파일도 저장 직전에 다시 확인해 덮어쓰지 않는다',async()=>{
+  const remoteTree={tree:[{path:sourcePath,type:'blob',mode:'100644',sha:'old-file'}]};
+  const {client,calls}=fixture({remoteTree});
+  await client.checkCurrent(baseline);
+  remoteTree.tree[0].sha='later-change';
+  await assert.rejects(client.publish(baseline,{[sourcePath]:{text:'편집 내용'}}),/덮어쓰지/);
+  assert.equal(calls.length,6);
+  assert.ok(calls.every(c=>c.method==='GET'));
 });
