@@ -69,8 +69,8 @@ test('고유 파일명 커버·작품·첨부사진이 공개 빌드와 관리�
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'starflower-upload-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const write = async (p, bytes) => { await fs.mkdir(path.dirname(path.join(root,p)), { recursive: true }); await fs.writeFile(path.join(root,p), bytes); };
-  await write('content/전시/test/전시정보.txt', '제목: 테스트 전시\n정렬숫자: 1\n');
-  await write('content/소식/test/소식.txt', '제목: 테스트 소식\n내용: 본문\n날짜: 2026-10-24\n');
+  await write('content/전시/test/전시정보.json', "{\"제목\":\"테스트 전시\",\"정렬숫자\":\"1\"}");
+  await write('content/소식/test/소식.json', "{\"제목\":\"테스트 소식\",\"내용\":\"본문\",\"날짜\":\"2026-10-24\"}");
   const images = [];
   for (const [i,folder] of ['소개', '모집', '전시/test', '소식/test'].entries()) {
     const name = await createUploadName('같은 사진.PNG', { selectedAt, cover: true });

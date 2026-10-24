@@ -9,13 +9,13 @@ export async function generateAdminSnapshot(root) {
   async function walk(relative) {
     for (const entry of await fs.readdir(path.join(root, relative), { withFileTypes: true })) {
       if (/^[._]/.test(entry.name)) continue;
-      const name = `${relative}/${entry.name}`;
+      const name = `${relative}/${entry.name.normalize('NFC')}`;
       if (entry.isSymbolicLink()) throw Error('관리자 자료에 바로가기 파일을 넣을 수 없습니다.');
       if (entry.isDirectory()) await walk(name);
       else if (isContentPath(name)) {
         const bytes = await fs.readFile(path.join(root, name));
         const sha = crypto.createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
-        files[name] = /\.(md|txt)$/.test(name) ? { sha, text: bytes.toString('utf8') } : { sha, preview: `media/${crypto.createHash('sha256').update(bytes).digest('hex').slice(0,20)}-thumb.webp` };
+        files[name] = /\.(md|json)$/.test(name) ? { sha, text: bytes.toString('utf8') } : { sha, preview: `media/${crypto.createHash('sha256').update(bytes).digest('hex').slice(0,20)}-thumb.webp` };
       }
     }
   }

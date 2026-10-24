@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createGitHubClient, ADMIN_TARGET } from './admin-github.mjs';
 import { createUploadName, coverImagePaths } from './upload-files.mjs';
 import { ADMIN_ACCOUNTS_PATH, readAccounts, serializeAccounts, decryptAdmin, addAdmin, removeAdmin, normalizeAdminId, changeAdminPassword } from './admin-auth.mjs';
-import { isImage, aboutImagePath, recruitmentImagePath, assertRasterImage, mergedFiles, recordPaths, parseFields, serializeFields, parsePhotoMarkdown, serializePhoto, meaningfulText, validateEdits, exhibitionSortNumber } from './admin-model.mjs';
+import { isImage, aboutImagePath, recruitmentImagePath, assertRasterImage, mergedFiles, recordPaths, parseFields, serializeFields, parsePhotoMarkdown, serializePhoto, validateContentRecord, updateContentField, validateEdits, exhibitionSortNumber } from './admin-model.mjs';
 import './admin.css';
 
 const asset = value => new URL(`${import.meta.env.BASE_URL}${value}`, document.baseURI).href;
 const today = () => new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
-const titleOf = (files,path) => parseFields(files[path]?.text || '').제목 || path.split('/').at(-2);
+const titleOf = (files,path) => parseFields(files[path]?.text).제목 || path.split('/').at(-2);
 function orderLabel(text) { try { return String(exhibitionSortNumber(parseFields(text))); } catch { return '정렬숫자 확인'; } }
 function Field({ label, value = '', onChange, multiline = false, required = false, ...props }) {
   return <label className="admin-field"><span>{label}{required&&<span className="admin-required" aria-hidden="true"> *</span>}</span>{multiline ? <textarea rows={6} value={value} required={required} onChange={e=>onChange(e.target.value)} {...props}/> : <input value={value} required={required} onChange={e=>onChange(e.target.value)} {...props}/>}</label>;
@@ -28,12 +28,12 @@ function PhotoFields({ path, text, stage }) {
   return <div className="admin-photo-fields"><Field label="사진 제목" value={info.title} onChange={title=>update({...info,title})}/><Field label="사진 설명" multiline value={info.description} onChange={description=>update({...info,description})}/><div className="admin-meta-heading"><strong>촬영정보·링크</strong><button type="button" onClick={()=>update({...info,hasAdditionalInfo:true,metadata:[...info.metadata,['','']]})}>항목 추가 +</button></div>{info.metadata.map(([label,value],i)=><div className="admin-meta-row" key={i}><input aria-label={`항목 ${i+1} 이름`} placeholder="예: 촬영자" value={label} onChange={e=>update({...info,metadata:info.metadata.map((r,j)=>j===i?[e.target.value,value]:r)})}/><textarea rows={2} aria-label={`항목 ${i+1} 내용`} value={value} onChange={e=>update({...info,metadata:info.metadata.map((r,j)=>j===i?[label,e.target.value]:r)})}/><button type="button" aria-label={`항목 ${i+1} 삭제`} onClick={()=>update({...info,hasAdditionalInfo:true,metadata:info.metadata.filter((_,j)=>j!==i)})}>×</button></div>)}</div>;
 }
 function RecruitmentEditor({ all, stage, open, setOpen, preview, upload }) {
-  const path='content/설정/사이트정보.txt';
-  const [settings,setSettings]=useState(()=>parseFields(all[path]?.text));
-  const [url,setURL]=useState(()=>meaningfulText(all['content/설정/모집링크.txt']?.text || ''));
-  function changeURL(value) {setURL(value);stage('content/설정/모집링크.txt',{text:open?value+'\n':''});}
-  function toggle(value) {setOpen(value);stage('content/설정/모집링크.txt',{text:value?url+'\n':''});}
-  return <><h2>신입부원 모집</h2><label className="admin-check"><input type="checkbox" checked={open} onChange={e=>toggle(e.target.checked)}/>모집 중으로 표시</label><Field label="모집 링크" type="url" placeholder="https://example.com/apply" value={url} disabled={!open} onChange={changeURL}/>{open && !url && <p className="admin-warning">모집 중으로 표시하려면 모집 링크를 입력해 주세요.</p>}<Field label="모집 안내 문구" multiline value={settings.모집안내 || ''} onChange={value=>{const next={...settings,모집안내:value};setSettings(next);stage(path,{text:serializeFields(next)});}}/><p className="muted">모집을 닫으면 지원서 링크가 숨겨집니다.</p><PagePhotoEditor label="모집 사진" path={recruitmentImagePath(all)} directory="content/모집/" preview={preview} upload={upload}/></>;
+  const path='content/설정/사이트정보.json';
+  const settings=parseFields(all[path]?.text);
+  const [url,setURL]=useState(()=>parseFields(all['content/설정/모집링크.json']?.text).url || '');
+  function changeURL(value) {setURL(value);stage('content/설정/모집링크.json',{text:updateContentField(all['content/설정/모집링크.json']?.text,'url',open?value:'')});}
+  function toggle(value) {setOpen(value);stage('content/설정/모집링크.json',{text:updateContentField(all['content/설정/모집링크.json']?.text,'url',value?url:'')});}
+  return <><h2>신입부원 모집</h2><label className="admin-check"><input type="checkbox" checked={open} onChange={e=>toggle(e.target.checked)}/>모집 중으로 표시</label><Field label="모집 링크" type="url" placeholder="https://example.com/apply" value={url} disabled={!open} onChange={changeURL}/>{open && !url && <p className="admin-warning">모집 중으로 표시하려면 모집 링크를 입력해 주세요.</p>}<Field label="모집 안내 문구" multiline value={settings.모집안내 || ''} onChange={value=>stage(path,{text:updateContentField(all[path]?.text,'모집안내',value)})}/><p className="muted">모집을 닫으면 지원서 링크가 숨겨집니다.</p><PagePhotoEditor label="모집 사진" path={recruitmentImagePath(all)} directory="content/모집/" preview={preview} upload={upload}/></>;
 }
 function PagePhotoEditor({ label, path, directory, preview, upload }) {
   return <div className="admin-page-photo">
@@ -46,15 +46,37 @@ function AboutEditor({ all, stage, preview, upload }) {
   const imagePath=aboutImagePath(all);
   return <>
     <h2>동아리 소개</h2>
-    <div className="admin-about-fields"><Field label="소개 글" multiline className="admin-about-body" value={all['content/소개.txt']?.text || ''} onChange={text=>stage('content/소개.txt',{text})}/></div>
+    <div className="admin-about-fields"><Field label="소개 글" multiline className="admin-about-body" value={parseFields(all['content/소개.json']?.text).내용 || ''} onChange={value=>stage('content/소개.json',{text:updateContentField(all['content/소개.json']?.text,'내용',value)})}/></div>
     <PagePhotoEditor label="소개 사진" path={imagePath} directory="content/소개/" preview={preview} upload={upload}/>
   </>;
 }
 function FooterEditor({ all, stage }) {
-  const path='content/설정/푸터.txt';
-  const text=all[path]?.text || '';
-  return <><h2>푸터 안내</h2><p className="muted">모든 페이지의 하단 로고 아래에 표시됩니다. 줄바꿈도 그대로 반영됩니다.</p><Field label="푸터 안내 문구" multiline rows={8} value={text} onChange={text=>stage(path,{text})}/><h3>미리보기</h3><p className="footer-details">{text}</p></>;
+  const path='content/설정/푸터.json';
+  const text=parseFields(all[path]?.text).내용 || '';
+  return <><h2>푸터 안내</h2><p className="muted">모든 페이지의 하단 로고 아래에 표시됩니다. 줄바꿈도 그대로 반영됩니다.</p><Field label="푸터 안내 문구" multiline rows={8} value={text} onChange={value=>stage(path,{text:updateContentField(all[path]?.text,'내용',value)})}/><h3>미리보기</h3><p className="footer-details">{text}</p></>;
 }
+function JSONFileEditor({ path, text, stage, onInvalid }) {
+  const [draft,setDraft]=useState(text || '{}\n');
+  const [error,setError]=useState('');
+  useEffect(()=>()=>onInvalid(false),[onInvalid]);
+  function edit(value, format = false) {
+    setDraft(value);
+    try {
+      const info=validateContentRecord(path,value);
+      const formatted=serializeFields(info);
+      stage(path,{text:formatted});if(format)setDraft(formatted);setError('');onInvalid(false);
+    } catch(e) {setError(e.message);onInvalid(true);}
+  }
+  return <><Field label="JSON 내용" multiline rows={18} spellCheck={false} value={draft} onChange={edit}/><p className="muted">키를 자유롭게 추가할 수 있습니다. 기존 화면에 쓰이는 제목·내용 등의 키는 유지해 주세요. 올바른 JSON은 편집 내용에 반영되며, 상단의 저장 및 배포로 저장합니다.</p><button type="button" onClick={()=>edit(draft,true)}>들여쓰기 정리</button>{error&&<p className="admin-error" role="alert">{error}</p>}</>;
+}
+
+function JSONEditor({ all, stage, invalid, onInvalid }) {
+  const paths=Object.keys(all).filter(path=>path.startsWith('content/')&&path.endsWith('.json')).sort((a,b)=>a.localeCompare(b,'ko'));
+  const [selected,setSelected]=useState('content/설정/사이트정보.json');
+  const path=paths.includes(selected)?selected:paths[0];
+  return <><h2>JSON 편집</h2><label className="admin-field"><span>콘텐츠 파일</span><select value={path || ''} onChange={e=>{if(!invalid||window.confirm('JSON 오류가 있는 편집 내용을 버리고 다른 파일을 열까요?'))setSelected(e.target.value);}}>{paths.map(p=><option key={p} value={p}>{p.replace('content/','')}</option>)}</select></label>{path&&<JSONFileEditor key={path} path={path} text={all[path]?.text} stage={stage} onInvalid={onInvalid}/>}</>;
+}
+
 function Members({ database, currentId, busy, onAdd, onRemove, onEditPassword }) {
   const [username,setUsername]=useState(''),[password,setPassword]=useState('');
   async function submit(e) {
@@ -86,25 +108,25 @@ function Login({ busy, error, onLogin }) {
 function Review({ changes, snapshot, busy, close, save }) {
   const dialog=useRef(null);
   useEffect(()=>{const previous=document.activeElement;dialog.current.showModal();return()=>{dialog.current?.close();previous?.focus();};},[]);
-  return <dialog ref={dialog} className="admin-review admin-page" aria-labelledby="admin-review-title" onCancel={e=>{e.preventDefault();if(!busy)close();}}><h2 id="admin-review-title">변경사항 저장</h2><p>지금까지 수정사항을 저장하고 배포하시겠습니까?</p><ul>{Object.entries(changes).map(([p,v])=><li key={p}><span>{v===null?'삭제':snapshot.files[p]?'수정':'추가'}</span> {p===ADMIN_ACCOUNTS_PATH?'사이트 관리자':p==='content/설정/푸터.txt'?'푸터 안내 문구':p==='content/소개.txt'?'동아리 소개 글':p.startsWith('content/소개/')?'동아리 소개 사진':p.startsWith('content/모집/')?'신입부원 모집 사진':p.replace('content/','')}</li>)}</ul><div className="admin-actions"><button disabled={busy} onClick={close}>취소</button><button className="primary" disabled={busy} onClick={save}>배포하기</button></div></dialog>;
+  return <dialog ref={dialog} className="admin-review admin-page" aria-labelledby="admin-review-title" onCancel={e=>{e.preventDefault();if(!busy)close();}}><h2 id="admin-review-title">변경사항 저장</h2><p>지금까지 수정사항을 저장하고 배포하시겠습니까?</p><ul>{Object.entries(changes).map(([p,v])=><li key={p}><span>{v===null?'삭제':snapshot.files[p]?'수정':'추가'}</span> {p===ADMIN_ACCOUNTS_PATH?'사이트 관리자':p==='content/설정/푸터.json'?'푸터 안내 문구':p==='content/소개.json'?'동아리 소개 글':p.startsWith('content/소개/')?'동아리 소개 사진':p.startsWith('content/모집/')?'신입부원 모집 사진':p.replace('content/','')}</li>)}</ul><div className="admin-actions"><button disabled={busy} onClick={close}>취소</button><button className="primary" disabled={busy} onClick={save}>배포하기</button></div></dialog>;
 }
 
 export default function Admin() {
   const credentials=useRef(null), urls=useRef(new Set()), active=useRef(true);
-  const [session,setSession]=useState(null),[snapshot,setSnapshot]=useState(null),[changes,setChanges]=useState({}),[tab,setTab]=useState('전시'),[selected,setSelected]=useState(''),[status,setStatus]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[review,setReview]=useState(false),[dispatchPending,setDispatchPending]=useState(false),[recruitOpen,setRecruitOpen]=useState(false),[accountView,setAccountView]=useState(false);
+  const [session,setSession]=useState(null),[snapshot,setSnapshot]=useState(null),[changes,setChanges]=useState({}),[tab,setTab]=useState('전시'),[selected,setSelected]=useState(''),[status,setStatus]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[review,setReview]=useState(false),[dispatchPending,setDispatchPending]=useState(false),[recruitOpen,setRecruitOpen]=useState(false),[accountView,setAccountView]=useState(false),[jsonInvalid,setJSONInvalid]=useState(false);
   const count=Object.keys(changes).length;
   const all=useMemo(()=>mergedFiles(snapshot?.files || {},changes),[snapshot,changes]);
   useEffect(()=>{ active.current=true;return()=>{active.current=false;credentials.current=null;for(const url of urls.current)URL.revokeObjectURL(url);};},[]);
-  useEffect(()=>{function warn(e){if(count||dispatchPending||busy){e.preventDefault();e.returnValue='';}}window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[count,dispatchPending,busy]);
+  useEffect(()=>{function warn(e){if(count||dispatchPending||busy||jsonInvalid){e.preventDefault();e.returnValue='';}}window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[count,dispatchPending,busy,jsonInvalid]);
   useEffect(()=>{
     function guard(e) {
       const link=e.target.closest('a[href]');
-      if(!link||!link.getAttribute('href')?.startsWith('#/')||link.getAttribute('href')==='#/admin'||!(count||dispatchPending||busy))return;
+      if(!link||!link.getAttribute('href')?.startsWith('#/')||link.getAttribute('href')==='#/admin'||!(count||dispatchPending||busy||jsonInvalid))return;
       if(busy){e.preventDefault();e.stopPropagation();setError('저장 요청이 끝난 뒤 이동해 주세요.');}
       else if(!window.confirm('저장하지 않은 편집 내용 또는 배포 대기 상태가 있습니다. 관리 화면을 나갈까요?')){e.preventDefault();e.stopPropagation();}
     }
     document.addEventListener('click',guard,true);return()=>document.removeEventListener('click',guard,true);
-  },[count,dispatchPending,busy]);
+  },[count,dispatchPending,busy,jsonInvalid]);
   async function run(task) {setBusy(true);setError('');try{return await task();}catch(e){if(active.current)setError(e.message);}finally{if(active.current)setBusy(false);}}
   function stage(path,value) {setStatus('');setReview(false);setChanges(previous=>{const next={...previous};if(value?.text!==undefined && value.text===snapshot?.files[path]?.text)delete next[path];else if(value===null&&!snapshot?.files[path])delete next[path];else next[path]=value;return next;});}
   async function login(id,password) {
@@ -118,7 +140,7 @@ export default function Admin() {
       const token=await decryptAdmin(readAccounts(accountText),id,password);
       if(!active.current)return false;
       credentials.current={...ADMIN_TARGET,token};
-      setRecruitOpen(!!meaningfulText(data.files['content/설정/모집링크.txt']?.text||''));setSnapshot(data);setSession({...ADMIN_TARGET,userId:normalizeAdminId(id)});setStatus('');
+      setRecruitOpen(!!parseFields(data.files['content/설정/모집링크.json']?.text).url?.trim());setSnapshot(data);setSession({...ADMIN_TARGET,userId:normalizeAdminId(id)});setStatus('');
       return true;
     });
   }
@@ -142,12 +164,12 @@ export default function Admin() {
     });
   }
   function logout() {
-    if((count||dispatchPending)&&!window.confirm('저장하지 않은 변경사항 또는 배포 대기 상태가 있습니다. 로그아웃할까요?'))return;
+    if((count||dispatchPending||jsonInvalid)&&!window.confirm('저장하지 않은 변경사항 또는 배포 대기 상태가 있습니다. 로그아웃할까요?'))return;
     credentials.current=null;for(const url of urls.current)URL.revokeObjectURL(url);urls.current.clear();setSession(null);setSnapshot(null);setChanges({});setSelected('');setStatus('');setError('');setReview(false);setDispatchPending(false);setAccountView(false);
   }
   function addRecord() {
     const id=`${today()}-${crypto.randomUUID().slice(0,8)}`;
-    const path=`content/${tab}/${id}/${tab==='전시'?'전시정보':'소식'}.txt`;
+    const path=`content/${tab}/${id}/${tab==='전시'?'전시정보':'소식'}.json`;
     stage(path,{text:serializeFields(tab==='전시'?{제목:'새 전시',날짜:today(),정렬숫자:today().replaceAll('-',''),분류:'전시',기간:'',장소:'온라인',소개:''}:{제목:'새 소식',날짜:today(),분류:'소식',내용:''})});setSelected(path);
   }
   function removeRecord(path) {
@@ -180,7 +202,7 @@ export default function Admin() {
       for(const [path,value,title]of prepared){stage(path,value);if(!cover)stage(path.replace(/\.[^.]+$/,'.md'),{text:serializePhoto({title,description:'',category:'',metadata:[],hasAdditionalInfo:false})});}
     });
   }
-  function prepareSave(){setError('');try{validateEdits(snapshot.files,changes);const r=meaningfulText(all['content/설정/모집링크.txt']?.text||'');if(recruitOpen&&!r)throw Error('모집 중으로 표시하려면 지원서 주소를 입력해 주세요.');setReview(true);}catch(e){setError(e.message);}}
+  function prepareSave(){setError('');try{validateEdits(snapshot.files,changes);const r=parseFields(all['content/설정/모집링크.json']?.text).url?.trim();if(recruitOpen&&!r)throw Error('모집 중으로 표시하려면 지원서 주소를 입력해 주세요.');setReview(true);}catch(e){setError(e.message);}}
   function deploymentRequested(message,files=snapshot.files) {
     setDispatchPending(false);
     if(!readAccounts(files[ADMIN_ACCOUNTS_PATH].text).accounts.some(account=>account.id===session.userId)){
@@ -208,16 +230,17 @@ export default function Admin() {
   const cover=path?coverImagePaths(all,prefix)[0]:null;
   const preview=p=>all[p]?.preview?.startsWith('blob:')?all[p].preview:all[p]?.preview?asset(all[p].preview):'';
   if(!session)return <Login busy={busy} error={error} onLogin={login}/>;
-  return <div className="wrap page admin-page"><header className="admin-header"><div><span className="eyebrow">STARFLOWER ADMIN</span><h1>사이트 관리</h1></div><div className="admin-actions"><button disabled={busy} onClick={logout}>로그아웃</button><button className="primary" disabled={busy||!count||dispatchPending} onClick={prepareSave}>저장 및 배포{count?` (${count})`:''}</button></div></header><div className="admin-feedback" aria-live="polite">{status&&<p role="status">{status} {status.includes('완료')&&<a href={client.actionsURL} target="_blank" rel="noreferrer">배포 상태 보기 ↗</a>}</p>}{error&&<p className="admin-error" role="alert">{error}</p>}{dispatchPending&&<button disabled={busy} onClick={()=>run(async()=>{await client.dispatch();deploymentRequested('GitHub Actions에 배포를 다시 요청했습니다. 배포 상태를 확인해 주세요.');})}>배포 다시 요청</button>}</div><nav className="admin-tabs" aria-label="관리 항목">{[['전시','전시'],['소식','소식'],['소개','동아리 소개'],['모집','신입부원 모집'],['푸터','푸터'],['사용자','관리자 관리']].map(([key,label])=><button key={key} aria-current={tab===key?'page':undefined} disabled={busy} onClick={()=>{setTab(key);setSelected('');setAccountView(false);}}>{label}</button>)}</nav>
+  return <div className="wrap page admin-page"><header className="admin-header"><div><span className="eyebrow">STARFLOWER ADMIN</span><h1>사이트 관리</h1></div><div className="admin-actions"><button disabled={busy} onClick={logout}>로그아웃</button><button className="primary" disabled={busy||!count||dispatchPending||jsonInvalid} onClick={prepareSave}>저장 및 배포{count?` (${count})`:''}</button></div></header><div className="admin-feedback" aria-live="polite">{status&&<p role="status">{status} {status.includes('완료')&&<a href={client.actionsURL} target="_blank" rel="noreferrer">배포 상태 보기 ↗</a>}</p>}{error&&<p className="admin-error" role="alert">{error}</p>}{dispatchPending&&<button disabled={busy} onClick={()=>run(async()=>{await client.dispatch();deploymentRequested('GitHub Actions에 배포를 다시 요청했습니다. 배포 상태를 확인해 주세요.');})}>배포 다시 요청</button>}</div><nav className="admin-tabs" aria-label="관리 항목">{[['전시','전시'],['소식','소식'],['소개','동아리 소개'],['모집','신입부원 모집'],['푸터','푸터'],['JSON','JSON 편집'],['사용자','관리자 관리']].map(([key,label])=><button key={key} aria-current={tab===key?'page':undefined} disabled={busy} onClick={()=>{if(jsonInvalid&&!window.confirm('JSON 오류가 있는 편집 내용을 버리고 이동할까요?'))return;setTab(key);setSelected('');setAccountView(false);}}>{label}</button>)}</nav>
     <fieldset className="admin-workspace" disabled={busy||dispatchPending}>
     {(tab==='전시'||tab==='소식')&&<div className="admin-columns"><aside className="admin-list"><button className="admin-add" onClick={addRecord}>{tab==='전시'?'전시':'뉴스'} 추가 +</button>{paths.map(p=><button key={p} className={path===p?'selected':''} onClick={()=>setSelected(p)}><strong>{titleOf(all,p)}</strong><small>{tab==='전시'?orderLabel(all[p].text):parseFields(all[p].text).날짜 || '날짜 없음'}{changes[p]?' · 편집 중':''}</small></button>)}</aside><section className="admin-editor">{path?<><div className="admin-editor-title"><h2>{tab==='전시'?'전시 편집':'뉴스 편집'}</h2><button className="admin-danger" onClick={()=>removeRecord(path)}>삭제</button></div><FieldsForm key={path} path={path} text={all[path].text} stage={stage} kind={tab}/><h3>커버·포스터</h3>{cover&&<div className="admin-cover"><img src={preview(cover)} alt="커버 미리보기"/><button onClick={()=>stage(cover,null)}>커버 삭제</button></div>}<label className="admin-file">커버 사진 선택<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={e=>{upload(e.target.files,prefix,true);e.target.value='';}}/></label><div className="admin-editor-title"><h3>{tab==='전시'?'전시 작품':'뉴스 사진'} <small>{photos.length}장</small></h3><label className="admin-file">사진 추가 +<input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" onChange={e=>{upload(e.target.files,photoPrefix);e.target.value='';}}/></label></div>{photos.map(p=>{const md=p.replace(/\.[^.]+$/,'.md');return <details className="admin-photo" key={p}><summary><img src={preview(p)} alt=""/><span>{parsePhotoMarkdown(all[md]?.text||'').title||p.split('/').at(-1)}</span></summary><PhotoFields path={md} text={all[md]?.text||''} stage={stage}/><button className="admin-danger" onClick={()=>{if(window.confirm('이 사진과 설명을 삭제할까요?')){stage(p,null);if(all[md])stage(md,null);}}}>사진 삭제</button></details>;})}</>:<div className="admin-empty"><span>✦</span><h2>편집할 {tab==='전시'?'전시':'뉴스'}를 선택하세요</h2><p>새 항목을 추가하거나 왼쪽 목록에서 선택할 수 있습니다.</p></div>}</section></div>}
+    {tab==='JSON'&&<section className="admin-panel"><JSONEditor all={all} invalid={jsonInvalid} onInvalid={setJSONInvalid} stage={(path,value)=>{stage(path,value);if(path==='content/설정/모집링크.json')setRecruitOpen(!!parseFields(value.text).url?.trim());}}/></section>}
     {tab==='소개'&&<section className="admin-panel"><AboutEditor all={all} stage={stage} preview={preview} upload={upload}/></section>}
     {tab==='푸터'&&<section className="admin-panel"><FooterEditor all={all} stage={stage}/></section>}
     {tab==='모집'&&<section className="admin-panel"><RecruitmentEditor all={all} stage={stage} open={recruitOpen} setOpen={setRecruitOpen} preview={preview} upload={upload}/></section>}
     {tab==='사용자'&&!accountView&&<section className="admin-panel"><Members database={readAccounts(all[ADMIN_ACCOUNTS_PATH].text)} currentId={session.userId} busy={busy} onAdd={addMember} onRemove={removeMember} onEditPassword={()=>setAccountView(true)}/></section>}
     {tab==='사용자'&&accountView&&<section className="admin-panel"><OwnAccount currentId={session.userId} busy={busy} onChangePassword={changePassword} onBack={()=>setAccountView(false)}/></section>}
     </fieldset>
-    {count>0&&<div className="admin-bottom"><span>저장하지 않은 파일 {count}개</span><button disabled={busy||dispatchPending} onClick={()=>{if(window.confirm('이 탭의 편집 내용을 모두 되돌릴까요?')){setChanges({});setRecruitOpen(!!meaningfulText(snapshot.files['content/설정/모집링크.txt']?.text||''));setSelected('');setReview(false);setTab('전시');setAccountView(false);}}}>변경사항 되돌리기</button></div>}
+    {count>0&&<div className="admin-bottom"><span>저장하지 않은 파일 {count}개</span><button disabled={busy||dispatchPending} onClick={()=>{if(window.confirm('이 탭의 편집 내용을 모두 되돌릴까요?')){setChanges({});setRecruitOpen(!!parseFields(snapshot.files['content/설정/모집링크.json']?.text).url?.trim());setSelected('');setReview(false);setTab('전시');setAccountView(false);}}}>변경사항 되돌리기</button></div>}
     {review&&<Review changes={changes} snapshot={snapshot} busy={busy} close={()=>setReview(false)} save={save}/>}
   </div>;
 }

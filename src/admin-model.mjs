@@ -1,4 +1,4 @@
-import { parseFields, serializeFields, meaningfulText, validateRecruitmentURL, exhibitionSortNumber } from './content-format.mjs';
+import { parseFields, serializeFields, validateContentRecord, validateRecruitmentURL, exhibitionSortNumber } from './content-format.mjs';
 import { parsePhotoMarkdown } from '../scripts/photo-markdown.mjs';
 import { ADMIN_ACCOUNTS_PATH, readAccounts } from './admin-auth.mjs';
 import { coverImagePaths } from './upload-files.mjs';
@@ -38,21 +38,22 @@ export function serializePhoto(info) {
 }
 function safeSortNumber(info) { try { return exhibitionSortNumber(info); } catch { return 0; } }
 export function recordPaths(files, kind) {
-  const end = kind === '전시' ? '/전시정보.txt' : '/소식.txt';
+  const end = kind === '전시' ? '/전시정보.json' : '/소식.json';
   return Object.keys(files).filter(p => p.startsWith(`content/${kind}/`) && p.endsWith(end)).sort((a,b) => (kind === '전시' ? safeSortNumber(parseFields(files[b].text)) - safeSortNumber(parseFields(files[a].text)) : (parseFields(files[b].text).날짜 || '').localeCompare(parseFields(files[a].text).날짜 || '')) || a.localeCompare(b,'ko'));
 }
 export function validateEdits(files, changes) {
   const all = mergedFiles(files, changes);
   if (Object.hasOwn(changes, ADMIN_ACCOUNTS_PATH) && !all[ADMIN_ACCOUNTS_PATH]) throw Error('최소 1명의 관리자가 남아 있어야 합니다.');
   if (all[ADMIN_ACCOUNTS_PATH]) readAccounts(all[ADMIN_ACCOUNTS_PATH].text);
+  for (const [path,value] of Object.entries(all)) if (path.startsWith('content/') && path.endsWith('.json')) validateContentRecord(path,value.text);
   for (const path of recordPaths(all, '전시').concat(recordPaths(all, '소식'))) {
     const info = parseFields(all[path].text);
     if (!info.제목?.trim()) throw Error('모든 전시와 뉴스에 제목을 입력해 주세요.');
-    if (path.endsWith('/소식.txt') && !info.내용?.trim()) throw Error(`${info.제목}: 뉴스 본문을 입력해 주세요.`);
-    if (path.endsWith('/전시정보.txt')) exhibitionSortNumber(info);
+    if (path.endsWith('/소식.json') && !info.내용?.trim()) throw Error(`${info.제목}: 뉴스 본문을 입력해 주세요.`);
+    if (path.endsWith('/전시정보.json')) exhibitionSortNumber(info);
     if (Object.hasOwn(changes,path) && changes[path]) {
       if (!info.분류?.trim()) throw Error(`${info.제목}: 분류를 입력해 주세요.`);
-      if (path.endsWith('/소식.txt') && !info.날짜?.trim()) throw Error(`${info.제목}: 게시 날짜를 입력해 주세요.`);
+      if (path.endsWith('/소식.json') && !info.날짜?.trim()) throw Error(`${info.제목}: 게시 날짜를 입력해 주세요.`);
     }
     const date = new Date((info.날짜 || '') + 'T00:00:00Z');
     if (info.날짜 && (!/^\d{4}-\d{2}-\d{2}$/.test(info.날짜) || Number.isNaN(date.valueOf()) || date.toISOString().slice(0,10) !== info.날짜)) throw Error(`${info.제목}: 날짜를 확인해 주세요.`);
@@ -61,9 +62,13 @@ export function validateEdits(files, changes) {
       if (url.protocol !== 'https:' || url.username || url.password || /\s/.test(info.출처)) throw Error(`${info.제목}: 출처는 HTTPS 주소여야 합니다.`);
     }
   }
-  validateRecruitmentURL(all['content/설정/모집링크.txt']?.text || '');
+  validateRecruitmentURL(parseFields(all['content/설정/모집링크.json']?.text).url);
   // Check sidecars with the same parser used by the public build.
   for (const [path,value] of Object.entries(changes)) if (value && path.endsWith('.md')) parsePhotoMarkdown(value.text);
   return all;
 }
-export { parseFields, serializeFields, meaningfulText, validateRecruitmentURL, parsePhotoMarkdown, exhibitionSortNumber };
+export { parseFields, serializeFields, validateContentRecord, validateRecruitmentURL, parsePhotoMarkdown, exhibitionSortNumber };
+
+export function updateContentField(text, key, value) {
+  return serializeFields({...parseFields(text), [key]: value});
+}
