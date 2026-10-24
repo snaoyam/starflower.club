@@ -116,7 +116,7 @@ function OwnAccount({ currentId, busy, onChangePassword, onBack }) {
 function Login({ busy, error, onLogin }) {
   const [id,setId]=useState(''),[password,setPassword]=useState('');
   async function submit(e){e.preventDefault();const result=await onLogin(id,password);setPassword('');if(result)setId('');}
-  return <div className="wrap page admin-page"><div className="admin-login"><span className="eyebrow">STARFLOWER ADMIN</span><h1>관리자 로그인</h1><p>관리자 아이디와 비밀번호를 입력하세요.</p><form onSubmit={submit}><Field label="아이디" value={id} onChange={setId} autoComplete="username" required disabled={busy}/><Field label="비밀번호" type="password" value={password} onChange={setPassword} autoComplete="off" required disabled={busy}/><button type="submit" className="primary admin-login-submit" disabled={busy}>{busy?'로그인 및 저장소 확인 중…':'로그인'}</button></form>{error&&<p role="alert" className="admin-error">{error}</p>}</div></div>;
+  return <div className="wrap page admin-page"><div className="admin-login"><span className="eyebrow">STARFLOWER ADMIN</span><h1>관리자 로그인</h1><p>관리자 아이디와 비밀번호를 입력하세요.</p><form onSubmit={submit}><Field label="아이디" value={id} onChange={setId} autoComplete="username" required disabled={busy}/><Field label="비밀번호" type="password" value={password} onChange={setPassword} autoComplete="off" required disabled={busy}/><button type="submit" className="primary admin-login-submit" disabled={busy}>{busy?'로그인 중…':'로그인'}</button></form>{error&&<p role="alert" className="admin-error">{error}</p>}</div></div>;
 }
 
 function Review({ changes, snapshot, busy, close, save }) {
