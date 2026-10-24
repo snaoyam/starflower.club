@@ -82,7 +82,7 @@ test('설명 속 필드 문구·문단·중복 촬영정보를 저장 형식으�
   const photo={title:'별',description:'첫 문단\n\n- 제목: 설명의 일부',category:'사진',metadata:[['촬영자','한 명'],['촬영자','다른 사람'],['비고','여러 줄\n\n  - 메모'],['','[원문](https://example.com/)']],hasAdditionalInfo:true};
   assert.deepEqual(parsePhotoMarkdown(serializePhoto(photo)),photo);
   assert.throws(()=>validateEdits(baseline,{[sourcePath]:{text:'제목: 제목만'}}),/본문/);
-  assert.throws(()=>validateEdits(baseline,{'content/설정/모집링크.txt':{text:'https://evil.test'}}),/모집링크/);
+  assert.throws(()=>validateEdits(baseline,{'content/설정/모집링크.txt':{text:'javascript:alert(1)'}}),/모집링크/);
 });
 test('관리 화면의 추가·모집 변경은 실제 공개 빌드에 반영되고 스냅샷에 비밀 파일을 넣지 않는다',async t=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'starflower-admin-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
@@ -91,11 +91,11 @@ test('관리 화면의 추가·모집 변경은 실제 공개 빌드에 반영�
     'content/전시/new/전시정보.txt':{text:serializeFields({제목:'새 전시',날짜:'2026-10-24',분류:'전시',소개:'첫 문단\n\n둘째 문단',장소:'온라인'})},
     [sourcePath]:{text:serializeFields({제목:'새 소식',내용:'소식 본문',날짜:'2026-10-24',분류:'소식'})},
     'content/설정/사이트정보.txt':{text:serializeFields({모집안내:'새 모집 안내'})},
-    'content/설정/모집링크.txt':{text:'https://forms.gle/example'},
+    'content/설정/모집링크.txt':{text:'https://example.org/apply?term=fall#form'},
   };
   validateEdits({},changes);for(const[p,v]of Object.entries(changes))await write(p,v.text);
   await write('content/설정/token.json','secret');await write('content/소식/_숨김/소식.txt','제목: 비공개');
-  const data=await generateContent({root,quiet:true});assert.equal(data.news[0].title,'새 소식');assert.equal(data.settings.모집안내,'새 모집 안내');assert.equal(data.exhibitions[0].description,'첫 문단\n\n둘째 문단');assert.equal(data.recruitmentUrl,'https://forms.gle/example');
+  const data=await generateContent({root,quiet:true});assert.equal(data.news[0].title,'새 소식');assert.equal(data.settings.모집안내,'새 모집 안내');assert.equal(data.exhibitions[0].description,'첫 문단\n\n둘째 문단');assert.equal(data.recruitmentUrl,'https://example.org/apply?term=fall#form');
   const snapshot=JSON.parse(await fs.readFile(path.join(root,'public/data/admin.json'),'utf8'));
   assert.equal(snapshot.files[sourcePath].sha.length,40);assert.equal(Object.keys(snapshot.files).length,4);assert.ok(!JSON.stringify(snapshot).includes('secret'));
 });

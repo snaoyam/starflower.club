@@ -19,9 +19,9 @@ export function validateRecruitmentURL(text) {
   if (!value) return '';
   if (/\s/.test(value)) throw new Error('모집링크.txt: 주소 하나만 한 줄로 입력해 주세요.');
   let url;
-  try { url = new URL(value); } catch { throw new Error('모집링크.txt: Google Form 주소를 한 줄로 입력해 주세요.'); }
-  if (url.protocol !== 'https:' || url.username || url.password || !((url.hostname === 'forms.gle' && url.pathname.length > 1) || (url.hostname === 'docs.google.com' && url.pathname.startsWith('/forms/')))) {
-    throw new Error('모집링크.txt: https://forms.gle/... 또는 https://docs.google.com/forms/... 주소만 사용할 수 있습니다.');
+  try { url = new URL(value); } catch { throw new Error('모집링크.txt: http:// 또는 https://로 시작하는 올바른 주소를 입력해 주세요.'); }
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+    throw new Error('모집링크.txt: http:// 또는 https://로 시작하고 로그인 정보가 포함되지 않은 웹주소를 입력해 주세요.');
   }
   return url.href;
 }

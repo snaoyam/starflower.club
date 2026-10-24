@@ -19,11 +19,13 @@ test('텍스트 설명의 여러 문단, 윈도 줄바꿈과 UTF-8 BOM을 보존
  assert.deepEqual(parseFields('\uFEFF# 안내\r\n제목: 오리온\r\n설명: 첫 문단\r\n\r\n둘째 문단\r\n작가: 별바라기'),{제목:'오리온',설명:'첫 문단\n\n둘째 문단',작가:'별바라기'});
  assert.equal(parseFAQ('질문: 가입?\n답변: 가능해요.\n\n질문: 장비?\n답변: 함께 써요.').length,2);
 });
-test('모집 주소는 비워 두거나 Google Form으로 설정할 수 있고 잘못된 주소는 거부한다',()=>{
+test('모집 주소는 모든 HTTP·HTTPS 웹주소를 허용하고 잘못된 주소는 거부한다',()=>{
  assert.equal(validateRecruitmentURL('# 모집 준비중\n'), '');
  assert.equal(validateRecruitmentURL('https://forms.gle/testForm'), 'https://forms.gle/testForm');
  assert.equal(validateRecruitmentURL('https://docs.google.com/forms/d/e/example/viewform'),'https://docs.google.com/forms/d/e/example/viewform');
- for(const url of ['javascript:alert(1)','http://forms.gle/test','https://forms.gle.evil.test/form','https://example.com','https://forms.gle/one\nhttps://forms.gle/two'])assert.throws(()=>validateRecruitmentURL(url));
+ for(const url of ['http://example.org/apply','https://example.org/apply?term=fall#form','https://forms.gle.evil.test/form'])assert.equal(validateRecruitmentURL(url),url);
+ assert.equal(validateRecruitmentURL('https://example.com'),'https://example.com/');
+ for(const url of ['javascript:alert(1)','data:text/html,test','file:///tmp/form','ftp://example.com/form','example.com/apply','https://','https://user:pass@example.com','https://forms.gle/one\nhttps://forms.gle/two'])assert.throws(()=>validateRecruitmentURL(url));
 });
 test('전시·작품·활동사진·소식을 파일만 추가/삭제해서 반영하고 사용하지 않는 이미지를 정리한다',async t=>{
  const {root,write,photo}=await fixture(t);
