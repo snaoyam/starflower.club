@@ -99,6 +99,8 @@ function ExhibitionDetail({ id, data, onOpen }) {
  return <DetailContent key={exhibition.detailPath} record={exhibition} kind="exhibitions">{item=><ExhibitionArticle exhibition={item} onOpen={onOpen}/>}</DetailContent>;
 }
 function ExhibitionArticle({ exhibition, onOpen }) {
+ const period = (exhibition.period || '').trim();
+ const location = (exhibition.location || '').trim();
  const hasArtworks = exhibition.artworks.length > 0;
  const description = <div className="exhibition-description">{paragraphs(exhibition.description)}<PhotoInfo rows={exhibition.source ? [['링크', `[${exhibition.source}](${exhibition.source})`]] : []}/></div>;
  return <div className="wrap page">
@@ -107,12 +109,12 @@ function ExhibitionArticle({ exhibition, onOpen }) {
    <div>
     <h1>{exhibition.title}</h1>
     {!hasArtworks ? <>
-     {(exhibition.period || exhibition.location) && <dl className="exhibition-facts">
-      {exhibition.period && <div><dt>기간</dt><dd>{exhibition.period}</dd></div>}
-      {exhibition.location && <div><dt>장소</dt><dd>{exhibition.location}</dd></div>}
+     {(period || location) && <dl className="exhibition-facts">
+      {period && <div><dt>기간</dt><dd>{period}</dd></div>}
+      {location && <div><dt>장소</dt><dd>{location}</dd></div>}
      </dl>}
      {description}
-    </> : <p>{exhibition.period}<span className="dot-separator">·</span>{exhibition.location}</p>}
+    </> : (period || location) && <p className="exhibition-meta">{period && <span className="exhibition-meta-item">{period}</span>}{location && <span className="exhibition-meta-item">{period && <span className="dot-separator" aria-hidden="true">·</span>}<span>{location}</span></span>}</p>}
    </div>
    {!hasArtworks ? <figure className="exhibition-poster"><Photo image={exhibition.cover} full eager alt={`${exhibition.title} 전시 포스터`}/></figure> : description}
   </header>

@@ -179,3 +179,9 @@
 .lightbox .icon-button:focus-visible{outline-offset:2px}
 .lightbox .lightbox-controls{height:44px}
 .lightbox .lightbox-controls .lightbox-next{margin-left:auto}
+
+/* Wrap whole metadata items instead of leaving dates or the separator on their own. */
+.exhibition-meta{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.exhibition-meta-item{display:inline-flex;align-items:baseline;gap:12px;min-width:0;max-width:100%;word-break:keep-all;overflow-wrap:anywhere}
+.exhibition-meta-item>span:last-child{min-width:0}
+.exhibition-meta .dot-separator{flex:none;margin:0}
