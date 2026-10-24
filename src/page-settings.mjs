@@ -38,8 +38,8 @@ export function validatePageSettings(name, info) {
     if (Object.hasOwn(info,'활동링크아이콘') && !LINK_ICONS.some(([key]) => key === info.활동링크아이콘)) throw Error('활동사진 버튼 아이콘을 선택해 주세요.');
     if (info.활동링크?.trim()) linkURL(info.활동링크, {webOnly:true});
   }
-  if (name === '푸터.json' && Object.hasOwn(info,'링크')) {
-    if (!Array.isArray(info.링크)) throw Error('푸터 링크는 배열이어야 합니다.');
+  if (name === '하단영역.json' && Object.hasOwn(info,'링크')) {
+    if (!Array.isArray(info.링크)) throw Error('하단영역 링크는 배열이어야 합니다.');
     for (const [i, item] of info.링크.entries()) {
       if (!item || typeof item.이름 !== 'string' || !item.이름.trim()) throw Error(`링크 ${i+1}: 표시 이름을 입력해 주세요.`);
       try { linkURL(item.주소); } catch (error) { throw Error(`링크 ${i+1}: ${error.message}`); }

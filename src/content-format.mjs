@@ -16,7 +16,7 @@ export function validateContentRecord(path, text) {
       '전시정보.json': ['제목', '날짜', '분류', '기간', '장소', '소개', '링크'],
       '소식.json': ['제목', '날짜', '분류', '내용', '링크'],
       '사이트정보.json': ['이름', '영문이름', '인스타그램', '유튜브', '활동배경', '모집안내'],
-      '소개.json': ['내용'], '푸터.json': ['내용'], '모집링크.json': ['url'],
+      '소개.json': ['내용'], '하단영역.json': ['내용'], '모집링크.json': ['url'],
     }[name] || [];
     for (const key of stringFields) if (Object.hasOwn(info,key) && typeof info[key] !== 'string') throw Error(`${key} 값은 문자열이어야 합니다.`);
     validatePageSettings(name, info);

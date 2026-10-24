@@ -70,7 +70,7 @@
 @media(max-width:900px){.site-header nav{border-radius:0 0 var(--radius) var(--radius)}.activity-band{padding:36px 32px;min-height:340px}.activity-copy{width:60%}.activity-copy h2{font-size:28px}}
 @media(max-width:600px){.activity-band{min-height:330px;padding:34px 24px}.activity-copy{width:100%;max-width:300px}.activity-copy h2{font-size:26px;margin:14px 0}.activity-copy p{font-size:12px}.activity-backdrop{left:0}.activity-backdrop img{object-position:64% 53%}.activity-backdrop:after{background:linear-gradient(90deg,#121c20f2 0%,#121c20c9 45%,#121c2060 100%)}.activity-copy .instagram-link{font-size:12px;gap:8px}}
 
-/* 전시 안내, 모집 사진과 간결한 목록·푸터 */
+/* 전시 안내, 모집 사진과 간결한 목록·하단영역 */
 .exhibition-facts{display:grid;gap:12px;border-top:1px solid var(--line);padding-top:22px;margin:24px 0 0}
 .exhibition-facts>div{display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;align-items:baseline}
 .exhibition-facts dt{font-size:12px;color:var(--accent)}

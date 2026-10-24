@@ -223,9 +223,9 @@ test('모집 사진 교체·형식 변경·제거는 공개 빌드에 반영되�
   assert.deepEqual(data.introductionImage,introductionImage);
 });
 
-test('푸터 안내를 저장·빌드·관리자 재편집할 때 줄바꿈과 빈 내용이 유지된다',async t=>{
+test('하단영역 안내를 저장·빌드·관리자 재편집할 때 줄바꿈과 빈 내용이 유지된다',async t=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'starflower-footer-'));t.after(()=>fs.rm(root,{recursive:true,force:true}));
-  const footerPath='content/설정/푸터.json';
+  const footerPath='content/설정/하단영역.json';
   const text='새 소속\n새 주소\n\n담당자: 별바라기\ncontact@example.test\n계좌 안내';
   const json=serializeFields({내용:text});
   const changes={[footerPath]:{text:json}};

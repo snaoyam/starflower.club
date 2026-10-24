@@ -116,7 +116,7 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
     news.push({ id: folder.name, title: info.제목, date: date(info.날짜, `소식/${folder.name}`), category: info.분류 || '소식', body: stripEmoji(info.내용), metadata, source, cover: await cover(dir) || gallery[0]?.image || null, photos: gallery });
   }
   news.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title, 'ko'));
-  const footer = await jsonFile(path.join(content, '설정', '푸터.json'));
+  const footer = await jsonFile(path.join(content, '설정', '하단영역.json'));
   const homeCopy = homeSettings(await jsonFile(path.join(content, '설정', '홈.json')), settings);
   homeCopy.활동링크 = homeCopy.활동링크.trim() ? linkURL(homeCopy.활동링크,{webOnly:true}) : '';
   const data = { settings, footerText: footer.내용 || '', footerLinks: footerLinks(footer, settings).map(item => ({...item, 주소:linkURL(item.주소)})), recruitmentUrl, introduction: (await jsonFile(path.join(content, '소개.json'))).내용 || '', faqs: parseFAQ(await textFile(path.join(content, 'FAQ.json'), '{}')), exhibitions, activities: await photos(path.join(content, '활동사진')), news };

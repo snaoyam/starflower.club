@@ -10,10 +10,10 @@ import { isContentPath } from '../src/admin-github.mjs';
 import { createUploadName, coverImagePaths } from '../src/upload-files.mjs';
 import { generateContent } from './build-content.mjs';
 
-test('홈 편집과 두 배경 교체, 푸터 링크 변경이 공개 빌드와 재편집 자료에 반영된다', async t => {
+test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌드와 재편집 자료에 반영된다', async t => {
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'starflower-pages-'));
   t.after(()=>fs.rm(root,{recursive:true,force:true}));
-  const homePath='content/설정/홈.json', footerPath='content/설정/푸터.json';
+  const homePath='content/설정/홈.json', footerPath='content/설정/하단영역.json';
   const files={
     [homePath]:{text:JSON.stringify({대표문구:'기존',추가값:{보존:true}})},
     [footerPath]:{text:JSON.stringify({내용:'주소\n연락처',추가값:42})},
@@ -78,8 +78,8 @@ test('기존 설정을 유지하면서 빈 링크 배열과 빈 홈 문구는 �
 });
 
 test('관리자 저장에서 잘못된 링크·아이콘·홈 값과 허용 범위 밖 사진 경로를 거부한다',()=>{
-  for(const 주소 of ['javascript:alert(1)','data:text/html,test','https://user:pass@example.com','https://example.com/\nfoo']) assert.throws(()=>validateEdits({}, {'content/설정/푸터.json':{text:JSON.stringify({링크:[{이름:'링크',주소,아이콘:'link'}]})}}));
-  for(const 링크 of [null,[{이름:'',주소:'https://example.com',아이콘:'link'}],[{이름:'링크',주소:'https://example.com',아이콘:'unknown'}]]) assert.throws(()=>validateEdits({}, {'content/설정/푸터.json':{text:JSON.stringify({링크})}}));
+  for(const 주소 of ['javascript:alert(1)','data:text/html,test','https://user:pass@example.com','https://example.com/\nfoo']) assert.throws(()=>validateEdits({}, {'content/설정/하단영역.json':{text:JSON.stringify({링크:[{이름:'링크',주소,아이콘:'link'}]})}}));
+  for(const 링크 of [null,[{이름:'',주소:'https://example.com',아이콘:'link'}],[{이름:'링크',주소:'https://example.com',아이콘:'unknown'}]]) assert.throws(()=>validateEdits({}, {'content/설정/하단영역.json':{text:JSON.stringify({링크})}}));
   assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"대표문구":42}'}}));
   assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크":"mailto:test@example.com"}'}}));
   assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크아이콘":"unknown"}'}}));
