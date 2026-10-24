@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
-import { createGitHubClient, parseTokenFile, ADMIN_TARGET, isContentPath, assertUnchanged } from '../src/admin-github.mjs';
+import { createGitHubClient, parseTokenFile, ADMIN_TARGET, isContentPath, assertUnchanged, LOGIN_STATE_MISMATCH_MESSAGE } from '../src/admin-github.mjs';
 import { assertRasterImage, aboutImagePath, recruitmentImagePath, mergedFiles, exhibitionSortNumber, recordPaths, serializeFields, parseFields, serializePhoto, parsePhotoMarkdown, validateEdits } from '../src/admin-model.mjs';
 import { generateContent } from './build-content.mjs';
 
@@ -295,7 +295,9 @@ test('로그인 사전 확인은 수정·추가·삭제·계정 변경·불완�
   ];
   for(const remoteTree of trees){
     const {client,calls}=fixture({remoteTree});
-    await assert.rejects(client.checkCurrent(baseline),/편집을 시작할 수 없습니다/);
+    await assert.rejects(client.checkCurrent(baseline), remoteTree.truncated
+      ? {name:'Error',message:'저장소 파일 목록을 모두 확인할 수 없어 편집을 시작할 수 없습니다.'}
+      : {name:'Error',message:LOGIN_STATE_MISMATCH_MESSAGE});
     assert.ok(calls.every(c=>c.method==='GET'));
   }
 });
