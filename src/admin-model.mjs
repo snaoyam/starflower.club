@@ -48,8 +48,8 @@ export function validateEdits(files, changes) {
   for (const [path,value] of Object.entries(all)) if (path.startsWith('content/') && path.endsWith('.json')) validateContentRecord(path,value.text);
   for (const path of recordPaths(all, '전시').concat(recordPaths(all, '소식'))) {
     const info = parseFields(all[path].text);
-    if (!info.제목?.trim()) throw Error('모든 전시와 뉴스에 제목을 입력해 주세요.');
-    if (path.endsWith('/소식.json') && !info.내용?.trim()) throw Error(`${info.제목}: 뉴스 본문을 입력해 주세요.`);
+    if (!info.제목?.trim()) throw Error('모든 전시와 소식에 제목을 입력해 주세요.');
+    if (path.endsWith('/소식.json') && !info.내용?.trim()) throw Error(`${info.제목}: 소식 본문을 입력해 주세요.`);
     if (path.endsWith('/전시정보.json')) exhibitionSortNumber(info);
     if (Object.hasOwn(changes,path) && changes[path]) {
       if (!info.분류?.trim()) throw Error(`${info.제목}: 분류를 입력해 주세요.`);

@@ -4,6 +4,7 @@ export const HOME_DEFAULTS = Object.freeze({
   활동제목: '별바라기 활동사진',
   활동설명: '동아리 활동사진과 최신 소식은\n별바라기 Instagram을 확인해 주세요.',
   활동링크이름: 'Instagram',
+  활동링크아이콘: 'instagram',
   활동링크: 'https://www.instagram.com/kaist_starflower/',
   모집표제: 'RECRUITMENT',
   모집제목: '밤하늘이 궁금하다면, 별바라기로',
@@ -34,6 +35,7 @@ export function footerLinks(info = {}, settings = {}) {
 export function validatePageSettings(name, info) {
   if (name === '홈.json') {
     for (const key of Object.keys(HOME_DEFAULTS)) if (Object.hasOwn(info,key) && typeof info[key] !== 'string') throw Error(`${key} 값은 문자열이어야 합니다.`);
+    if (Object.hasOwn(info,'활동링크아이콘') && !LINK_ICONS.some(([key]) => key === info.활동링크아이콘)) throw Error('활동사진 버튼 아이콘을 선택해 주세요.');
     if (info.활동링크?.trim()) linkURL(info.활동링크, {webOnly:true});
   }
   if (name === '푸터.json' && Object.hasOwn(info,'링크')) {

@@ -21,7 +21,7 @@ test('홈 편집과 두 배경 교체, 푸터 링크 변경이 공개 빌드와 
   };
   const changes={};
   changes[homePath]={text:updateContentField(files[homePath].text,'대표문구','새 첫 문장\n두 번째 줄')};
-  for(const [key,value] of Object.entries({활동표제:'활동',활동제목:'새 활동 제목',활동설명:'활동 설명\n다음 줄',활동링크:'https://example.com/activity',활동링크이름:'활동 보기',모집표제:'지원',모집제목:'새 모집 제목',모집설명:'새 모집 설명',모집버튼:'지원 안내'})) changes[homePath].text=updateContentField(changes[homePath].text,key,value);
+  for(const [key,value] of Object.entries({활동표제:'활동',활동제목:'새 활동 제목',활동설명:'활동 설명\n다음 줄',활동링크:'https://example.com/activity',활동링크이름:'활동 보기',활동링크아이콘:'youtube',모집표제:'지원',모집제목:'새 모집 제목',모집설명:'새 모집 설명',모집버튼:'지원 안내'})) changes[homePath].text=updateContentField(changes[homePath].text,key,value);
   const links=[{이름:'문의',주소:'mailto:test@example.com',아이콘:'email',추가값:'보존'},{이름:'홈페이지',주소:'https://example.com',아이콘:'none'}];
   changes[footerPath]={text:updateContentField(files[footerPath].text,'링크',links)};
   for(const [folder,color] of [['대표','blue'],['활동','red']]) {
@@ -44,6 +44,7 @@ test('홈 편집과 두 배경 교체, 푸터 링크 변경이 공개 빌드와 
   assert.equal(catalog.home.copy.대표문구,'새 첫 문장\n두 번째 줄');
   assert.equal(catalog.home.copy.모집제목,'새 모집 제목');
   assert.equal(catalog.home.copy.활동링크,'https://example.com/activity');
+  assert.equal(catalog.home.copy.활동링크아이콘,'youtube');
   assert.notEqual(catalog.home.hero.image.src,catalog.home.activity.image.src);
   assert.deepEqual(catalog.footerLinks,links.map(item=>({...item,주소:linkURL(item.주소)})));
   const snapshot=JSON.parse(await fs.readFile(path.join(root,'public/data/admin.json'),'utf8'));
@@ -71,6 +72,9 @@ test('기존 설정을 유지하면서 빈 링크 배열과 빈 홈 문구는 �
   assert.deepEqual(footerLinks({링크:[]},settings),[]);
   assert.equal(homeSettings({대표문구:''},settings).대표문구,'');
   assert.equal(homeSettings({},settings).활동링크,settings.인스타그램);
+  assert.equal(homeSettings({},settings).활동링크아이콘,'instagram');
+  assert.equal(homeSettings({활동링크아이콘:'none'},settings).활동링크아이콘,'none');
+  assert.doesNotThrow(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크아이콘":"none"}'}}));
 });
 
 test('관리자 저장에서 잘못된 링크·아이콘·홈 값과 허용 범위 밖 사진 경로를 거부한다',()=>{
@@ -78,5 +82,6 @@ test('관리자 저장에서 잘못된 링크·아이콘·홈 값과 허용 범�
   for(const 링크 of [null,[{이름:'',주소:'https://example.com',아이콘:'link'}],[{이름:'링크',주소:'https://example.com',아이콘:'unknown'}]]) assert.throws(()=>validateEdits({}, {'content/설정/푸터.json':{text:JSON.stringify({링크})}}));
   assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"대표문구":42}'}}));
   assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크":"mailto:test@example.com"}'}}));
+  assert.throws(()=>validateEdits({}, {'content/설정/홈.json':{text:'{"활동링크아이콘":"unknown"}'}}));
   for(const p of ['content/홈/대표/커버.svg','content/홈/활동/../커버.jpg','content/홈/임의/커버.png','content/설정/홈.txt']) assert.equal(isContentPath(p),false,p);
 });

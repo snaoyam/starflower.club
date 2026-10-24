@@ -77,7 +77,7 @@ test('삭제는 null 트리 항목으로 기록하고 네트워크 오류에서 
   await assert.rejects(fail.dispatch(),e=>!e.message.includes(credentials.token));
 });
 test('설명 속 필드 문구·문단·중복 촬영정보를 저장 형식으로 안전하게 왕복한다',()=>{
-  const info={제목:'뉴스',날짜:'2026-10-24',내용:'첫 문단\n\n제목: 본문 속 제목\n날짜: 본문 속 날짜\n# 본문 메모',작가:'원래 작가'};
+  const info={제목:'소식',날짜:'2026-10-24',내용:'첫 문단\n\n제목: 본문 속 제목\n날짜: 본문 속 날짜\n# 본문 메모',작가:'원래 작가'};
   assert.deepEqual(parseFields(serializeFields(info)),info);
   const photo={title:'별',description:'첫 문단\n\n- 제목: 설명의 일부',category:'사진',metadata:[['촬영자','한 명'],['촬영자','다른 사람'],['비고','여러 줄\n\n  - 메모'],['','[원문](https://example.com/)']],hasAdditionalInfo:true};
   assert.deepEqual(parsePhotoMarkdown(serializePhoto(photo)),photo);
@@ -120,8 +120,8 @@ test('전시 정렬숫자는 날짜 8자리로 기본값을 만들고 숫자 크
   };
   assert.equal(recordPaths(files,'전시')[0],'content/전시/b/전시정보.json');
 });
-test('수정한 뉴스의 필수 항목과 전시 정렬숫자를 저장 전에 검증한다',()=>{
-  const complete={제목:'뉴스',날짜:'2026-10-24',분류:'이벤트',내용:'본문'};
+test('수정한 소식의 필수 항목과 전시 정렬숫자를 저장 전에 검증한다',()=>{
+  const complete={제목:'소식',날짜:'2026-10-24',분류:'이벤트',내용:'본문'};
   for(const [key,pattern]of [['제목',/제목/],['날짜',/날짜/],['분류',/분류/],['내용',/본문/]]) {
     assert.throws(()=>validateEdits({}, {[sourcePath]:{text:serializeFields({...complete,[key]:''})}}),pattern);
   }

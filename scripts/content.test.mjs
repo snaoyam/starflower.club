@@ -154,7 +154,7 @@ test('공개 목록에서 본문·작품 정보를 분리하고 상세·관리�
  await write('전시/별/전시정보.json',"{\"제목\":\"별 전시\",\"날짜\":\"2026-09-30\",\"소개\":\"전시 설명\",\"장소\":\"로비\"}");
  await photo('전시/별/작품/01.jpg');
  await write('전시/별/작품/01.md','- 제목: 대표 사진\n- 설명: 작품 이야기\n- 추가정보\n  - 촬영자: 관측자');
- await write('소식/새 소식/소식.json',"{\"제목\":\"소식 제목\",\"날짜\":\"2026-10-22\",\"내용\":\"뉴스 본문\",\"작가\":\"관측자\"}");
+ await write('소식/새 소식/소식.json',"{\"제목\":\"소식 제목\",\"날짜\":\"2026-10-22\",\"내용\":\"소식 본문\",\"작가\":\"관측자\"}");
  await photo('소식/새 소식/사진/01.jpg');
  await photo('활동사진/활동.jpg');
  const data=await generateContent({root,quiet:true});
@@ -170,7 +170,7 @@ test('공개 목록에서 본문·작품 정보를 분리하고 상세·관리�
  assert.deepEqual(catalog.home.activity,catalog.home.hero);
  assert.deepEqual(catalog.activities[0],{id:data.activities[0].id,title:data.activities[0].title,image:data.activities[0].image});
  const admin=await read('data/admin.json');
- assert.match(admin.files['content/소식/새 소식/소식.json'].text,/뉴스 본문/);
+ assert.match(admin.files['content/소식/새 소식/소식.json'].text,/소식 본문/);
  await generateContent({root,quiet:true});
  assert.deepEqual(await read('data/site.json'),catalog);
  await write('소식/새 소식/소식.json',"{\"제목\":\"소식 제목\",\"날짜\":\"2026-10-22\",\"내용\":\"수정한 본문\"}");
