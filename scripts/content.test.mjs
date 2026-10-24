@@ -59,9 +59,9 @@ test('사진 설명 없이도 파일 이름으로 표시하고 숨긴 폴더는 
  const data=await generateContent({root,quiet:true});
  assert.equal(data.activities[0].title,'함께 본 별');assert.equal(data.exhibitions.length,0);
 });
-test('소식의 여러 사진과 출처를 반영하고 첫 사진 삭제 시 커버를 교체한다',async t=>{
+test('소식의 여러 사진과 링크를 반영하고 첫 사진 삭제 시 커버를 교체한다',async t=>{
  const {root,write,photo}=await fixture(t);
- await write('소식/관측/소식.json',"{\"제목\":\"관측회\",\"날짜\":\"2026-10-22\",\"내용\":\"관측 기록\",\"출처\":\"https://www.instagram.com/p/example/\"}");
+ await write('소식/관측/소식.json',"{\"제목\":\"관측회\",\"날짜\":\"2026-10-22\",\"내용\":\"관측 기록\",\"링크\":\"https://www.instagram.com/p/example/\"}");
  await photo('소식/관측/사진/01.jpg','purple');await photo('소식/관측/사진/02.jpg','yellow');
  await write('소식/관측/사진/01.md','- 제목: 첫 사진\n- 설명: 이 사진의 개별 설명\n\n- 추가정보\n  - 링크: [원문](https://www.instagram.com/p/example/)');
  let data=await generateContent({root,quiet:true});
@@ -72,8 +72,8 @@ test('소식의 여러 사진과 출처를 반영하고 첫 사진 삭제 시 �
  await fs.unlink(path.join(root,'content/소식/관측/사진/01.jpg'));
  data=await generateContent({root,quiet:true});assert.equal(data.news[0].photos.length,1);assert.equal(data.news[0].cover.src,second);
  await assert.rejects(fs.access(path.join(root,'public',first)));
- await write('소식/관측/소식.json',"{\"제목\":\"관측회\",\"내용\":\"관측 기록\",\"출처\":\"javascript:alert(1)\"}");
- await assert.rejects(generateContent({root,quiet:true}),/출처는 https/);
+ await write('소식/관측/소식.json',"{\"제목\":\"관측회\",\"내용\":\"관측 기록\",\"링크\":\"javascript:alert(1)\"}");
+ await assert.rejects(generateContent({root,quiet:true}),/링크는 https/);
 });
 test('창립연도와 천체사진 분류, 활동 카드 분류를 파일에서 읽는다',async t=>{
  const {root,write,photo}=await fixture(t);
@@ -84,7 +84,7 @@ test('창립연도와 천체사진 분류, 활동 카드 분류를 파일에서 
  await write('설정/사이트정보.json',"{\"창립연도\":\"1987년\"}");await assert.rejects(generateContent({root,quiet:true}),/네 자리 숫자/);
 });
 test('들여쓴 촬영정보의 날짜가 작품 날짜나 소식 게시일을 덮어쓰지 않는다',()=>{
- const parsed=parseFields("{\"제목\":\"별\",\"날짜\":\"2026-10-22\",\"내용\":\"사진 소개\\n날짜: 6/2\\n장소: 학교\\n#별바라기 #천체사진\",\"출처\":\"https://example.com/\"}");
+ const parsed=parseFields("{\"제목\":\"별\",\"날짜\":\"2026-10-22\",\"내용\":\"사진 소개\\n날짜: 6/2\\n장소: 학교\\n#별바라기 #천체사진\",\"링크\":\"https://example.com/\"}");
  assert.equal(parsed.날짜,'2026-10-22');assert.equal(parsed.내용,'사진 소개\n날짜: 6/2\n장소: 학교\n#별바라기 #천체사진');
 });
 test('천체 설명의 이모지만 지우고 수치·문장·촬영정보를 유지한다',async()=>{
@@ -113,7 +113,7 @@ test('추가정보 링크는 항목 이름에 관계없이 웹 링크만 연결�
  for(const href of ['javascript:alert(1)','data:text/html,test','https://user:pass@example.com/'])assert.ok(markdownLinks(`[링크](${href})`).every(p=>!p.href));
  assert.deepEqual(markdownLinks('<img src=x onerror=alert(1)>'),[{text:'<img src=x onerror=alert(1)>'}]);
 });
-test('사진 md 수정은 반영되고 작가·날짜·출처는 별도 필드로 생성하지 않는다',async t=>{
+test('사진 md 수정은 반영되고 작가·날짜·링크는 별도 필드로 생성하지 않는다',async t=>{
  const {root,write,photo}=await fixture(t);
  await photo('활동사진/01.jpg');
  await write('활동사진/01.txt',"{\"제목\":\"사용하지 않는 옛 파일\"}");
@@ -127,7 +127,7 @@ test('사진 md 수정은 반영되고 작가·날짜·출처는 별도 필드�
 });
 test('소식 사진의 추가정보 생략은 상속하고 빈 블록은 상속 없이 숨긴다',async t=>{
  const {root,write,photo}=await fixture(t);
- await write('소식/test/소식.json',"{\"제목\":\"소식\",\"내용\":\"이야기\",\"작가\":\"관측자\",\"출처\":\"https://example.com/\"}");
+ await write('소식/test/소식.json',"{\"제목\":\"소식\",\"내용\":\"이야기\",\"작가\":\"관측자\",\"링크\":\"https://example.com/\"}");
  await photo('소식/test/사진/01.jpg');await photo('소식/test/사진/02.jpg');
  await write('소식/test/사진/01.md','- 제목: 상속');
  await write('소식/test/사진/02.md','- 제목: 빈 추가정보\n- 추가정보');

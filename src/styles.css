@@ -172,3 +172,10 @@
 .footer-identity>.footer-details{margin-top:22px}
 .footer-links{flex-shrink:0}
 @media(max-width:900px){.footer-identity{flex-basis:100%}}
+
+/* Keep viewer icons centered independently of native button styles and font metrics. */
+.lightbox .icon-button{-webkit-appearance:none;appearance:none;display:flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:0;line-height:1}
+.lightbox .icon-button>svg{display:block;flex:none;width:24px;height:24px;margin:0;pointer-events:none}
+.lightbox .icon-button:focus-visible{outline-offset:2px}
+.lightbox .lightbox-controls{height:44px}
+.lightbox .lightbox-controls .lightbox-next{margin-left:auto}

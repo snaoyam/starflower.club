@@ -42,7 +42,7 @@ function Navigation({ route, data }) {
   const [open, setOpen] = useState(false);
   useEffect(() => { setOpen(false); }, [route]);
   useEffect(() => { function escape(e) { if(e.key === 'Escape') setOpen(false); } document.addEventListener('keydown', escape); return () => document.removeEventListener('keydown', escape); }, []);
-  const links = [['/', '홈'], ['/about', '동아리 소개'], ['/exhibitions', '전시목록'], ['/recruitment', '신입부원 모집'], ['/news', '소식']];
+  const links = [['/', '홈'], ['/about', '동아리 소개'], ['/exhibitions', '천체사진 전시'], ['/recruitment', '신입부원 모집'], ['/news', '소식']];
   return <header className="site-header"><Brand settings={data.settings}/><button className="menu-toggle" aria-label={open ? '메뉴 닫기' : '메뉴 열기'} aria-expanded={open} aria-controls="primary-nav" onClick={() => setOpen(!open)}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={open ? 'M6 6l12 12M18 6 6 18' : 'M4 6h16M4 12h16M4 18h16'} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg></button><nav id="primary-nav" className={open ? 'is-open' : ''} aria-label="주요 메뉴" onClick={e=>{if(e.target.closest('a'))setOpen(false);}}>{links.map(([path, label]) => <a key={path} href={`#${path}`} className={route === path || (path !== '/' && route.startsWith(path + '/')) ? 'active' : ''} aria-current={route === path ? 'page' : undefined}>{label}</a>)}</nav></header>;
 }
 function Home({ data }) {
@@ -83,7 +83,7 @@ function DelayedNotice({ active = true }) {
 function RoutePlaceholder({ route, data }) {
  const kind=route.startsWith('/news/')?'news':'exhibitions';
  const record=data[kind].find(item=>route===`/${kind}/${item.id}`);
- return <div className="wrap page" aria-busy="true">{record && <><a className="back-link" href={`#/${kind}`}>← {kind==='news'?'소식 목록':'전시목록'}</a><PageHeader title={record.title}/></>}<DelayedNotice/></div>;
+ return <div className="wrap page" aria-busy="true">{record && <><a className="back-link" href={`#/${kind}`}>← {kind==='news'?'소식 목록':'천체사진 전시'}</a><PageHeader title={record.title}/></>}<DelayedNotice/></div>;
 }
 function DetailContent({ record, kind, children }) {
  const [,setAttempt]=useState(0);
@@ -91,7 +91,7 @@ function DetailContent({ record, kind, children }) {
  const state=loadSiteData.read(record.detailPath);
  if(state.data) return children(state.data);
  const retry=()=>{loadSiteData.retry(record.detailPath).catch(()=>{});retryTransition(()=>setAttempt(n=>n+1));};
- return <div className="wrap page"><a className="back-link" href={`#/${kind}`}>← {kind==='news'?'소식 목록':'전시목록'}</a><div className="empty"><Star/><h1>{record.title}</h1><p role="alert">내용을 불러오지 못했습니다. 다시 시도해 주세요.</p><button className="button outline" onClick={retry}>다시 시도</button></div></div>;
+ return <div className="wrap page"><a className="back-link" href={`#/${kind}`}>← {kind==='news'?'소식 목록':'천체사진 전시'}</a><div className="empty"><Star/><h1>{record.title}</h1><p role="alert">내용을 불러오지 못했습니다. 다시 시도해 주세요.</p><button className="button outline" onClick={retry}>다시 시도</button></div></div>;
 }
 function ExhibitionDetail({ id, data, onOpen }) {
  const exhibition = data.exhibitions.find(e=>e.id===id);
@@ -102,7 +102,7 @@ function ExhibitionArticle({ exhibition, onOpen }) {
  const hasArtworks = exhibition.artworks.length > 0;
  const description = <div className="exhibition-description">{paragraphs(exhibition.description)}<PhotoInfo rows={exhibition.source ? [['링크', `[${exhibition.source}](${exhibition.source})`]] : []}/></div>;
  return <div className="wrap page">
-  <a className="back-link" href="#/exhibitions">← 전시목록</a>
+  <a className="back-link" href="#/exhibitions">← 천체사진 전시</a>
   <header className={`exhibition-detail-header${!hasArtworks ? ' poster-exhibition-header' : ''}`}>
    <div>
     <h1>{exhibition.title}</h1>
@@ -122,7 +122,7 @@ function ExhibitionArticle({ exhibition, onOpen }) {
   </>}
  </div>;
 }
-function Recruitment({ data }) { return <div className="wrap page"><div className="recruit-hero"><div className="recruit-photo"><Photo image={data.recruitmentImage} full eager alt="별바라기 신입부원 모집 사진"/></div><div className="recruit-copy"><span className="eyebrow">RECRUITMENT</span><h1>신입부원 모집</h1><p>{data.settings.모집안내}</p>{data.recruitmentUrl && <><a className="button primary" href={data.recruitmentUrl} target="_blank" rel="noreferrer">신입부원 지원하기<Arrow diagonal/></a><small>지원 페이지가 새 창으로 열립니다.</small></>}</div></div><section className="faq-section"><div><span className="eyebrow">FAQ</span><h2>자주 묻는 질문</h2><p>지원과 동아리 활동에 관한 안내입니다.</p></div><div className="faq-list">{data.faqs.map((faq,i)=><details key={i}><summary><span className="faq-number">{String(i+1).padStart(2,'0')}</span><span>{faq.question}</span><span className="faq-plus" aria-hidden="true">+</span></summary><div className="faq-answer">{paragraphs(faq.answer)}</div></details>)}</div></section></div>; }
+function Recruitment({ data }) { return <div className="wrap page"><div className="recruit-hero"><div className="recruit-photo"><Photo image={data.recruitmentImage} full eager alt="별바라기 신입부원 모집 사진"/></div><div className="recruit-copy"><span className="eyebrow">RECRUITMENT</span><h1>신입부원 모집</h1><p>{data.settings.모집안내}</p>{data.recruitmentUrl && <><a className="button primary" href={data.recruitmentUrl} target="_blank" rel="noreferrer">신입부원 지원하기<Arrow diagonal/></a></>}</div></div><section className="faq-section"><div><span className="eyebrow">FAQ</span><h2>자주 묻는 질문</h2><p>지원과 동아리 활동에 관한 안내입니다.</p></div><div className="faq-list">{data.faqs.map((faq,i)=><details key={i}><summary><span className="faq-number">{String(i+1).padStart(2,'0')}</span><span>{faq.question}</span><span className="faq-plus" aria-hidden="true">+</span></summary><div className="faq-answer">{paragraphs(faq.answer)}</div></details>)}</div></section></div>; }
 function NewsDetail({ data, id, onOpen }) {
  const item=data.news.find(n=>n.id===id);
  if(!item) return <div className="wrap page"><Empty title="소식을 찾을 수 없습니다." link="#/news" label="소식 목록으로">삭제되었거나 이동한 소식입니다.</Empty></div>;
@@ -134,6 +134,10 @@ function NewsArticle({ item, onOpen }) {
 function News({ data, limit, onLoadMore }) {
  const items=data.news;
  return <div className="wrap page"><PageHeader eyebrow="NEWS & EVENTS" title="소식"/>{items.length ? <NewsRows items={items.slice(0,limit)}/> : <Empty title="등록된 소식이 없습니다." link={null}>동아리 소식과 행사 안내를 이곳에서 전합니다.</Empty>}{items.length>limit && <div className="load-more"><button className="button outline" onClick={onLoadMore}><span>더보기</span><Arrow className="arrow-down"/></button></div>}</div>;
+}
+function LightboxIcon({ direction }) {
+ const path = direction === 'previous' ? 'M20 12H4m6-6-6 6 6 6' : direction === 'next' ? 'M4 12h16m-6-6 6 6-6 6' : 'm6 6 12 12M18 6 6 18';
+ return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d={path} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
 function Lightbox({ collection, index: initialIndex, onClose }) {
  const dialog=useRef(null), navigation=useRef(null);
@@ -157,9 +161,9 @@ function Lightbox({ collection, index: initialIndex, onClose }) {
  function keys(e) { if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();move(e.key==='ArrowLeft'?-1:1);} }
  return <dialog className="lightbox" ref={dialog} onCancel={e=>{e.preventDefault();onClose();}} onKeyDown={keys} aria-label={`${item.title} 작품 상세`} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
   <div className="lightbox-shell">
-   <div className="lightbox-top"><span>STARFLOWER <i>/</i> {String(view.index+1).padStart(2,'0')} — {String(collection.length).padStart(2,'0')}</span><button className="icon-button" onClick={onClose} aria-label="작품 상세 닫기">✕</button></div>
+   <div className="lightbox-top"><span>STARFLOWER <i>/</i> {String(view.index+1).padStart(2,'0')} — {String(collection.length).padStart(2,'0')}</span><button type="button" className="icon-button" onClick={onClose} aria-label="작품 상세 닫기"><LightboxIcon/></button></div>
    <div className="lightbox-body" aria-busy={view.loading}>
-    <div className={`lightbox-image${item.trimFooter ? ' trim-footer' : ''}`}><Photo key={item.image.src} image={item.image} full eager decoding="sync" fetchPriority="high" alt={item.title}/><div className="lightbox-controls"><>{view.index>0 && <button key="previous" ref={previousButton} className="icon-button" aria-label="이전 사진" onClick={()=>move(-1)}>←</button>}{view.index<collection.length-1 && <button key="next" ref={nextButton} className="icon-button lightbox-next" aria-label="다음 사진" onClick={()=>move(1)}>→</button>}</></div><div className="lightbox-status" role="status">{view.loading ? '사진을 불러오는 중…' : view.error}</div></div>
+    <div className={`lightbox-image${item.trimFooter ? ' trim-footer' : ''}`}><Photo key={item.image.src} image={item.image} full eager decoding="sync" fetchPriority="high" alt={item.title}/><div className="lightbox-controls"><>{view.index>0 && <button type="button" key="previous" ref={previousButton} className="icon-button" aria-label="이전 사진" onClick={()=>move(-1)}><LightboxIcon direction="previous"/></button>}{view.index<collection.length-1 && <button type="button" key="next" ref={nextButton} className="icon-button lightbox-next" aria-label="다음 사진" onClick={()=>move(1)}><LightboxIcon direction="next"/></button>}</></div><div className="lightbox-status" role="status">{view.loading ? '사진을 불러오는 중…' : view.error}</div></div>
     <div className="lightbox-info"><span className="eyebrow">PHOTO</span>{!item.hideTitle && <h2>{item.title}</h2>}<div className="prose">{paragraphs(item.description)}</div><PhotoInfo rows={item.metadata}/><a className="text-link" href={asset(item.image.src)} target="_blank" rel="noreferrer">사진 크게 열기<Arrow diagonal/></a></div>
    </div>
   </div>
@@ -175,7 +179,7 @@ function App(){
  useEffect(()=>{loadSiteData('data/site.json').then(setData).catch(()=>setError('사이트 내용을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'));},[]);
  useEffect(()=>{const listener=()=>{const next=getRoute();setGallery(null);startNavigation(()=>setRoute(next));};window.addEventListener('hashchange',listener);return()=>window.removeEventListener('hashchange',listener);},[]);
  useEffect(()=>{if(!data)return;window.scrollTo({top:route==='/news'?newsScroll.current:0,left:0,behavior:'instant'});const frame=requestAnimationFrame(()=>main.current?.focus({preventScroll:true}));return()=>{if(route==='/news')newsScroll.current=window.scrollY;cancelAnimationFrame(frame);};},[route,data]);
- useEffect(()=>{const titles={'/admin':'사이트 관리','/':'KAIST 천체관측 동아리','/about':'동아리 소개','/exhibitions':'전시목록','/recruitment':'신입부원 모집','/news':'소식'};document.title=`${titles[route] || '천체사진과 소식'} — 별바라기`;},[route]);
+ useEffect(()=>{const titles={'/admin':'사이트 관리','/':'KAIST 천체관측 동아리','/about':'동아리 소개','/exhibitions':'천체사진 전시','/recruitment':'신입부원 모집','/news':'소식'};document.title=`${titles[route] || '천체사진과 소식'} — 별바라기`;},[route]);
  if(error) return <main className="loading"><Star/><p>{error}</p><button className="button primary" onClick={()=>location.reload()}>다시 시도</button></main>;
  if(!data) return <main className="loading" aria-busy="true"><DelayedNotice/></main>;
  const onOpen=(collection,index)=>setGallery({collection,index}); let page;

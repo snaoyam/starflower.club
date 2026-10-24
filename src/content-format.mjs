@@ -12,8 +12,8 @@ export function validateContentRecord(path, text) {
     const info = parseFields(text);
     const name = path.normalize('NFC').split('/').at(-1);
     const stringFields = {
-      '전시정보.json': ['제목', '날짜', '분류', '기간', '장소', '소개', '출처'],
-      '소식.json': ['제목', '날짜', '분류', '내용', '출처'],
+      '전시정보.json': ['제목', '날짜', '분류', '기간', '장소', '소개', '링크'],
+      '소식.json': ['제목', '날짜', '분류', '내용', '링크'],
       '사이트정보.json': ['이름', '영문이름', '인스타그램', '유튜브', '활동배경', '모집안내'],
       '소개.json': ['내용'], '푸터.json': ['내용'], '모집링크.json': ['url'],
     }[name] || [];

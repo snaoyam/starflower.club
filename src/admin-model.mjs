@@ -57,9 +57,9 @@ export function validateEdits(files, changes) {
     }
     const date = new Date((info.날짜 || '') + 'T00:00:00Z');
     if (info.날짜 && (!/^\d{4}-\d{2}-\d{2}$/.test(info.날짜) || Number.isNaN(date.valueOf()) || date.toISOString().slice(0,10) !== info.날짜)) throw Error(`${info.제목}: 날짜를 확인해 주세요.`);
-    if (info.출처) {
-      let url; try { url = new URL(info.출처); } catch { throw Error(`${info.제목}: 출처 주소를 확인해 주세요.`); }
-      if (url.protocol !== 'https:' || url.username || url.password || /\s/.test(info.출처)) throw Error(`${info.제목}: 출처는 HTTPS 주소여야 합니다.`);
+    if (info.링크) {
+      let url; try { url = new URL(info.링크); } catch { throw Error(`${info.제목}: 링크 주소를 확인해 주세요.`); }
+      if (url.protocol !== 'https:' || url.username || url.password || /\s/.test(info.링크)) throw Error(`${info.제목}: 링크는 HTTPS 주소여야 합니다.`);
     }
   }
   validateRecruitmentURL(parseFields(all['content/설정/모집링크.json']?.text).url);

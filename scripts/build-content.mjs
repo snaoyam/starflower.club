@@ -40,8 +40,8 @@ function date(value, label) {
 function sourceURL(value, label) {
   if (!value) return '';
   let url;
-  try { url = new URL(value); } catch { throw new Error(`${label}: 출처는 https://로 시작하는 웹 주소여야 합니다.`); }
-  if (url.protocol !== 'https:' || url.username || url.password || /\s/.test(value)) throw new Error(`${label}: 출처는 https://로 시작하는 웹 주소여야 합니다.`);
+  try { url = new URL(value); } catch { throw new Error(`${label}: 링크는 https://로 시작하는 웹 주소여야 합니다.`); }
+  if (url.protocol !== 'https:' || url.username || url.password || /\s/.test(value)) throw new Error(`${label}: 링크는 https://로 시작하는 웹 주소여야 합니다.`);
   return url.href;
 }
 async function textFile(file, fallback = '') {
@@ -99,7 +99,7 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
     const info = await jsonFile(path.join(dir, '전시정보.json'));
     if (!info.제목) throw new Error(`전시/${folder.name}/전시정보.json에 제목 속성을 입력해 주세요.`);
     const artworks = await photos(path.join(dir, '작품'));
-    exhibitions.push({ sortNumber: exhibitionSortNumber(info), id: folder.name, title: info.제목, category: info.분류 || '전시', date: date(info.날짜, `전시/${folder.name}`), period: info.기간 || '', location: info.장소 || '', description: info.소개 || '', source: sourceURL(info.출처, `전시/${folder.name}`), cover: await cover(dir) || artworks[0]?.image || null, artworks });
+    exhibitions.push({ sortNumber: exhibitionSortNumber(info), id: folder.name, title: info.제목, category: info.분류 || '전시', date: date(info.날짜, `전시/${folder.name}`), period: info.기간 || '', location: info.장소 || '', description: info.소개 || '', source: sourceURL(info.링크, `전시/${folder.name}`), cover: await cover(dir) || artworks[0]?.image || null, artworks });
   }
   exhibitions.sort((a, b) => b.sortNumber - a.sortNumber || a.title.localeCompare(b.title, 'ko'));
   const news = [];
@@ -109,7 +109,7 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
     const info = await jsonFile(path.join(dir, '소식.json'));
     if (!info.제목 || !info.내용) throw new Error(`소식/${folder.name}/소식.json에 제목과 내용을 입력해 주세요.`);
     const metadata = photoMetadata(info, { dateFallback: false });
-    const source = sourceURL(info.출처, `소식/${folder.name}`);
+    const source = sourceURL(info.링크, `소식/${folder.name}`);
     if (source) metadata.push(['링크', `[${source}](${source})`]);
     const gallery = await photos(path.join(dir, '사진'), { description: info.내용, metadata });
     news.push({ id: folder.name, title: info.제목, date: date(info.날짜, `소식/${folder.name}`), category: info.분류 || '소식', body: stripEmoji(info.내용), metadata, source, cover: await cover(dir) || gallery[0]?.image || null, photos: gallery });
