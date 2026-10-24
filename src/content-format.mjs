@@ -1,3 +1,4 @@
+import { validatePageSettings } from './page-settings.mjs';
 // JSON keys are unrestricted. Only values used by the site have a defined shape.
 export function parseFields(text = '{}') {
   let value;
@@ -18,6 +19,7 @@ export function validateContentRecord(path, text) {
       '소개.json': ['내용'], '푸터.json': ['내용'], '모집링크.json': ['url'],
     }[name] || [];
     for (const key of stringFields) if (Object.hasOwn(info,key) && typeof info[key] !== 'string') throw Error(`${key} 값은 문자열이어야 합니다.`);
+    validatePageSettings(name, info);
     if (name === '전시정보.json') exhibitionSortNumber(info);
     if (name === '사이트정보.json' && Object.hasOwn(info,'창립연도') && (!['string','number'].includes(typeof info.창립연도) || !/^\d{4}$/.test(info.창립연도))) throw Error('창립연도는 네 자리 숫자로 입력해 주세요.');
     if (name === '모집링크.json') validateRecruitmentURL(info.url);

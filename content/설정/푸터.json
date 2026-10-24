@@ -1,3 +1,15 @@
 {
-  "내용": "KAIST 학부 동아리연합회 전시창작분과 소속\n대전 유성구 대학로 291 한국과학기술원 태울관 3101호\n회장 이현민 (010-8696-4091)\nstarflower.kaist@gmail.com\n우리은행 1006-401-528528 (별바라기)"
+  "내용": "KAIST 학부 동아리연합회 전시창작분과 소속\n대전 유성구 대학로 291 한국과학기술원 태울관 3101호\n회장 이현민 (010-8696-4091)\nstarflower.kaist@gmail.com\n우리은행 1006-401-528528 (별바라기)",
+  "링크": [
+    {
+      "이름": "Instagram",
+      "주소": "https://www.instagram.com/kaist_starflower/",
+      "아이콘": "instagram"
+    },
+    {
+      "이름": "YouTube",
+      "주소": "https://www.youtube.com/channel/UCA_LR9LUj4xLiwzxHbNWXVg",
+      "아이콘": "youtube"
+    }
+  ]
 }

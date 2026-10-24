@@ -32,3 +32,14 @@
 .admin-member:hover{background:#15252e}
 .admin-member-status{display:inline-flex;align-items:center;padding:3px 9px;border:1px solid #806527;border-radius:4px;color:var(--accent);background:#ffbf2e12;font-size:12px;white-space:nowrap}
 @media(max-width:600px){.admin-members table{font-size:13px}.admin-members th,.admin-members td{padding:12px 10px}.admin-members thead th:first-child{width:28%}.admin-members thead th:nth-child(2){width:28%}.admin-member-status{font-size:11px;padding:3px 6px}.admin-member-actions{gap:8px}.admin-member-actions button{font-size:12px;padding:9px 10px}}
+
+.admin-home-section{margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+.admin-home-section h3{margin:0 0 20px}
+.admin-footer-links{display:grid;gap:16px;margin-top:20px}
+.admin-footer-link{padding:20px;border:1px solid var(--line);border-radius:4px;background:#101b22;min-width:0}
+.admin-link-preview{display:flex;gap:10px;align-items:center;overflow-wrap:anywhere}
+.admin-link-preview svg{flex:none}
+.admin-link-fields{display:grid;grid-template-columns:1fr 2fr 1fr;gap:16px}
+.admin-page select{width:100%;min-width:0;padding:12px;border:1px solid #3b4c56;border-radius:4px;background:#091217;color:var(--text);font:inherit}
+.admin-link-fields .admin-field{min-width:0}
+@media(max-width:700px){.admin-link-fields{grid-template-columns:1fr}.admin-footer-link{padding:16px}}

@@ -1,3 +1,4 @@
+import { homeSettings, footerLinks, linkURL } from '../src/page-settings.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -115,7 +116,10 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
     news.push({ id: folder.name, title: info.제목, date: date(info.날짜, `소식/${folder.name}`), category: info.분류 || '소식', body: stripEmoji(info.내용), metadata, source, cover: await cover(dir) || gallery[0]?.image || null, photos: gallery });
   }
   news.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title, 'ko'));
-  const data = { settings, footerText: (await jsonFile(path.join(content, '설정', '푸터.json'))).내용 || '', recruitmentUrl, introduction: (await jsonFile(path.join(content, '소개.json'))).내용 || '', faqs: parseFAQ(await textFile(path.join(content, 'FAQ.json'), '{}')), exhibitions, activities: await photos(path.join(content, '활동사진')), news };
+  const footer = await jsonFile(path.join(content, '설정', '푸터.json'));
+  const homeCopy = homeSettings(await jsonFile(path.join(content, '설정', '홈.json')), settings);
+  homeCopy.활동링크 = homeCopy.활동링크.trim() ? linkURL(homeCopy.활동링크,{webOnly:true}) : '';
+  const data = { settings, footerText: footer.내용 || '', footerLinks: footerLinks(footer, settings).map(item => ({...item, 주소:linkURL(item.주소)})), recruitmentUrl, introduction: (await jsonFile(path.join(content, '소개.json'))).내용 || '', faqs: parseFAQ(await textFile(path.join(content, 'FAQ.json'), '{}')), exhibitions, activities: await photos(path.join(content, '활동사진')), news };
   data.introductionImage = await cover(path.join(content, '소개')) || data.activities[0]?.image || null;
   data.recruitmentImage = await cover(path.join(content, '모집')) || data.activities.find(item=>item.id==='02-천체사진-촬영장비')?.image || data.activities[0]?.image || null;
   // Lists stay small; bodies and photo metadata are fetched only on detail pages.
@@ -136,10 +140,13 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
   const [activityExhibitionId, activityPhotoId] = (settings.활동배경 || '').split('/');
   const activity = exhibitions.find(e => e.id === activityExhibitionId)?.artworks.find(p => p.id === activityPhotoId) || hero;
   const homePhoto = photo => photo ? { title: photo.title, image: photo.image } : null;
+  const heroImage = await cover(path.join(content, '홈', '대표'));
+  const activityImage = await cover(path.join(content, '홈', '활동'));
+  data.home = { copy:homeCopy, hero:heroImage ? {title:'', image:heroImage} : homePhoto(hero), activity:activityImage ? {title:'', image:activityImage} : homePhoto(activity) };
   const catalog = {
     ...data,
     version: 2,
-    home: { hero: homePhoto(hero), activity: homePhoto(activity) },
+    home: data.home,
     activities: data.activities.map(({ id, title, image }) => ({ id, title, image })),
     exhibitions: await Promise.all(exhibitions.map(async ({ id, title, category, date, period, cover, ...rest }) => ({
       id, title, category, date, period, cover,

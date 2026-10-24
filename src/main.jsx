@@ -1,3 +1,5 @@
+import { homeSettings, footerLinks, linkURL } from './page-settings.mjs';
+import LinkIcon from './LinkIcon.jsx';
 import React, { Suspense, lazy, useEffect, useRef, useState, useTransition } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
@@ -49,17 +51,18 @@ function Home({ data }) {
   const latest = data.exhibitions[0];
   const heroArt = data.home.hero;
   const activityArt = data.home.activity;
+  const copy = homeSettings(data.home.copy, data.settings);
   return <>
     <section className="hero" style={{'--hero-image': heroArt?.image || latest?.cover ? `url("${asset((heroArt?.image || latest.cover).src)}")` : 'none'}}>
       <div className="hero-photo"><Photo image={heroArt?.image || latest?.cover} full eager alt={heroArt?.title || '별바라기 부원이 촬영한 천체사진'}/></div>
       <div className="hero-orbit" aria-hidden="true"/>
-      <div className="hero-content"><span className="eyebrow"><span className="tiny-star">✦</span> KAIST ASTRONOMY CLUB · SINCE {data.settings.창립연도 || '1987'}</span><h1><span className="hero-club-name">KAIST 천체관측 동아리</span><br/><em>별바라기</em></h1><p>별이 좋아 모인 사람들과<br/>밤하늘을 보고, 사진으로 남깁니다.</p><div className="hero-actions"><a className="button primary" href="#/exhibitions">천체사진·전시 보기<Arrow/></a><a className="button outline" href="#/about">별바라기 알아보기<Arrow diagonal/></a></div></div>
+      <div className="hero-content"><span className="eyebrow"><span className="tiny-star">✦</span> KAIST ASTRONOMY CLUB · SINCE {data.settings.창립연도 || '1987'}</span><h1><span className="hero-club-name">KAIST 천체관측 동아리</span><br/><em>별바라기</em></h1><p className="home-copy">{copy.대표문구}</p><div className="hero-actions"><a className="button primary" href="#/exhibitions">천체사진·전시 보기<Arrow/></a><a className="button outline" href="#/about">별바라기 알아보기<Arrow diagonal/></a></div></div>
       <div className="hero-bottom"><span>KAIST STARFLOWER</span>{heroArt && <span className="hero-credit">{heroArt.title}</span>}</div>
     </section>
     <section className="wrap section"><div className="section-heading"><div><span className="eyebrow">EXHIBITION ARCHIVE</span><h2>천체사진과 전시</h2></div><TextLink to="#/exhibitions">전시 전체보기</TextLink></div><div className="exhibition-grid">{data.exhibitions.slice(0, 3).map(e => <ExhibitionCard key={e.id} exhibition={e}/>)}</div>{!data.exhibitions.length && <Empty title="등록된 전시가 없습니다." link={null}>지난 전시와 천체사진을 이곳에서 소개합니다.</Empty>}</section>
-    <section className="activity-band wrap"><div className="activity-backdrop" aria-hidden="true"><Photo image={activityArt?.image || latest?.cover} full alt=""/></div><div className="activity-copy"><span className="eyebrow">CLUB LIFE</span><h2>별바라기 활동사진</h2><p>동아리 활동사진과 최신 소식은<br/>별바라기 Instagram을 확인해 주세요.</p><InstagramLink settings={data.settings}/></div></section>
+    <section className="activity-band wrap"><div className="activity-backdrop" aria-hidden="true"><Photo image={activityArt?.image || latest?.cover} full alt=""/></div><div className="activity-copy"><span className="eyebrow">{copy.활동표제}</span><h2>{copy.활동제목}</h2><p className="home-copy">{copy.활동설명}</p>{copy.활동링크 && <a className="text-link instagram-link" href={linkURL(copy.활동링크,{webOnly:true})} target="_blank" rel="noreferrer"><InstagramIcon/><span>{copy.활동링크이름}</span><Arrow diagonal/></a>}</div></section>
     <section className="wrap section"><div className="section-heading"><div><span className="eyebrow">NEWS & EVENTS</span><h2>별바라기의 소식</h2></div><TextLink to="#/news">소식 전체보기</TextLink></div>{data.news.length ? <NewsRows items={data.news.slice(0, 3)}/> : <p className="muted">등록된 소식이 없습니다.</p>}</section>
-    <section className="join-banner wrap"><div><span className="eyebrow">RECRUITMENT</span><h2>밤하늘이 궁금하다면, 별바라기로</h2><p>천문학에 관심이 많은 사람, 그냥 별이 좋은 사람, 밤하늘이 예쁘다고 생각하는 사람이라면 지금 바로 지원해주세요!</p></div><a className="button primary" href="#/recruitment">신입부원 모집 안내<Arrow diagonal/></a></section>
+    <section className="join-banner wrap"><div><span className="eyebrow">{copy.모집표제}</span><h2>{copy.모집제목}</h2><p className="home-copy">{copy.모집설명}</p></div><a className="button primary" href="#/recruitment">{copy.모집버튼}<Arrow diagonal/></a></section>
   </>;
 }
 function About({ data }) {
@@ -171,7 +174,7 @@ function Lightbox({ collection, index: initialIndex, onClose }) {
   </div>
  </dialog>;
 }
-function Footer({ data }) { const settings=data.settings; return <footer className="site-footer wrap"><div className="footer-main"><div className="footer-identity"><Brand settings={settings}/>{data.footerText && <p className="footer-details">{data.footerText}</p>}</div><div className="footer-links">{[['인스타그램','Instagram','instagram'],['유튜브','YouTube','youtube']].map(([key,label,type])=>settings[key] && /^https:\/\//.test(settings[key]) && <a key={key} href={settings[key]} target="_blank" rel="noreferrer">{type==='instagram' ? <InstagramIcon/> : <SocialIcon type={type}/>}<span>{label}</span></a>)}</div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} KAIST STARFLOWER</span><span>SINCE {settings.창립연도 || '1987'}</span></div></footer>; }
+function Footer({ data }) { const settings=data.settings; return <footer className="site-footer wrap"><div className="footer-main"><div className="footer-identity"><Brand settings={settings}/>{data.footerText && <p className="footer-details">{data.footerText}</p>}</div><div className="footer-links">{(data.footerLinks ?? footerLinks({},settings)).map((item,i)=><a key={i} href={linkURL(item.주소)} {...(/^https?:/.test(item.주소)?{target:'_blank',rel:'noreferrer'}:{})}><LinkIcon type={item.아이콘}/><span>{item.이름}</span></a>)}</div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} KAIST STARFLOWER</span><span>SINCE {settings.창립연도 || '1987'}</span></div></footer>; }
 function getRoute(){ try {return decodeURIComponent(location.hash.slice(1).split('?')[0] || '/');}catch{return '/not-found';} }
 function App(){
  const [data,setData]=useState(null),[error,setError]=useState(''),[route,setRoute]=useState(getRoute),[gallery,setGallery]=useState(null);const main=useRef(null);
@@ -186,7 +189,7 @@ function App(){
  if(!data) return <main className="loading" aria-busy="true"><DelayedNotice/></main>;
  const onOpen=(collection,index)=>setGallery({collection,index}); let page;
  if(route==='/')page=<Home data={data}/>;
- else if(route==='/admin')page=<Admin/>;
+ else if(route==='/admin')page=<Admin home={data.home}/>;
  else if(route==='/about')page=<About data={data}/>;
  else if(route==='/exhibitions')page=<Exhibitions data={data}/>;
  else if(route.startsWith('/exhibitions/'))page=<ExhibitionDetail key={route} id={route.slice('/exhibitions/'.length)} data={data} onOpen={onOpen}/>;

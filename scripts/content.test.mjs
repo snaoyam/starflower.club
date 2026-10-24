@@ -201,5 +201,6 @@ test('홈 대표 사진과 지정한 활동 배경을 상세 파일 없이 표�
  assert.equal(catalog.home.hero.title,'사진 7');assert.equal(catalog.home.activity.title,'사진 2');
  await fs.rm(path.join(root,'content/전시/사진'),{recursive:true});
  await generateContent({root,quiet:true});catalog=await read();
- assert.deepEqual(catalog.home,{hero:null,activity:null});
+ assert.equal(catalog.home.hero,null);assert.equal(catalog.home.activity,null);
+ assert.equal(typeof catalog.home.copy.대표문구,'string');
 });

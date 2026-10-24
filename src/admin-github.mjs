@@ -11,7 +11,7 @@ export function parseTokenFile(text, filename = 'starflower.token') {
 export function isContentPath(path) {
   if (path === ADMIN_ACCOUNTS_PATH) return true;
   if (typeof path !== 'string' || /[\\\x00-\x1f]/.test(path) || path.split('/').some(p => !p || p.startsWith('.') || p.startsWith('_'))) return false;
-  return /^content\/(설정\/(사이트정보|모집링크|푸터)\.json|(소개|FAQ)\.json|(소개|모집)\/커버(?:-[a-f0-9]{64})?\.(jpg|jpeg|png|webp|avif)|활동사진\/[^/]+\.(md|jpg|jpeg|png|webp|avif)|(전시|소식)\/[^/]+\/(전시정보\.json|소식\.json|커버(?:-[a-f0-9]{64})?\.(jpg|jpeg|png|webp|avif)|(작품|사진)\/[^/]+\.(md|jpg|jpeg|png|webp|avif)))$/i.test(path);
+  return /^content\/(설정\/(사이트정보|모집링크|푸터|홈)\.json|(소개|FAQ)\.json|(소개|모집|홈\/(대표|활동))\/커버(?:-[a-f0-9]{64})?\.(jpg|jpeg|png|webp|avif)|활동사진\/[^/]+\.(md|jpg|jpeg|png|webp|avif)|(전시|소식)\/[^/]+\/(전시정보\.json|소식\.json|커버(?:-[a-f0-9]{64})?\.(jpg|jpeg|png|webp|avif)|(작품|사진)\/[^/]+\.(md|jpg|jpeg|png|webp|avif)))$/i.test(path);
 }
 export function assertContentPath(path) {
   if (!isContentPath(path)) throw Error('허용된 콘텐츠 파일만 저장할 수 있습니다.');

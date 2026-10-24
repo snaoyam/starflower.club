@@ -185,3 +185,5 @@
 .exhibition-meta-item{display:inline-flex;align-items:baseline;gap:12px;min-width:0;max-width:100%;word-break:keep-all;overflow-wrap:anywhere}
 .exhibition-meta-item>span:last-child{min-width:0}
 .exhibition-meta .dot-separator{flex:none;margin:0}
+
+.home-copy{white-space:pre-line}
