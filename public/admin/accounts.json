@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "accounts": [
+    {
+      "id": "starflower",
+      "kdf": "PBKDF2-SHA256",
+      "iterations": 600000,
+      "salt": "Rp750ZVrY5LriZm9Tluiww==",
+      "iv": "p0ylywCtB8IGpnbj",
+      "ciphertext": "sy4tO+5eKao0rbejNp3LGsxKvWds9kQbkF3Ro1RxekC1TFa8K6+BmPfjXs/vt1GcrrCB03m1vNlPQ2T2Yh9+962y4lhYmWANVd+BCxVIG3xZNfhCAECt8n6LlcVY3Cf7JsvArGIsuKF5wfEhJw=="
+    }
+  ]
+}

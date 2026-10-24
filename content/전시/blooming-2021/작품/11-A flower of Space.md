@@ -1,0 +1,11 @@
+- 제목: A flower of Space
+- 설명: The Rosette Nebula, along with the Horsehead Nebula and Orion Nebula, are famous nebulae that are thought of when the word nebula comes up. The nebula surrounding the open cluster in the center makes it look just like a rose. Due to past limitations, this nebula has many names, but it is normally called NGC 2237. If you couldn’t look at the flowers last year due to COVID, why don’t you go look at the beautiful rose brightening the night sky?
+
+- 추가정보
+  - 촬영자: Gyeol Kim
+  - 촬영일시: 2020-12-25
+  - 촬영장소: KAIST, Deajeon
+  - 망원경: SDT80 (D=80mm, FL=480mm)
+  - 카메라: ZWO ASI294MC-Pro (-30°C)
+  - 가대: IEQ45 Pro
+  - 노출: L 29×300s (Total 145min)

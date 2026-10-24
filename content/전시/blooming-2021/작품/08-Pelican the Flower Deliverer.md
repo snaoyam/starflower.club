@@ -1,0 +1,11 @@
+- 제목: Pelican the Flower Deliverer
+- 설명: The Pelican nebula is located in the constellation Cygnus, and is located roughly 1,800 light-years from Earth. The particularly red area in the image is where new stars are actively created. It’s almost as if thousands of flowers are blooming all at once.
+
+- 추가정보
+  - 촬영자: Gyeol Kim
+  - 촬영일시: 2020-12-09
+  - 촬영장소: KAIST, Deajeon
+  - 망원경: SDT80 (D=80mm, FL=480mm)
+  - 카메라: ZWO ASI294MC-Pro (-30°C)
+  - 가대: IEQ45 Pro
+  - 노출: L 30×300s (Total 150min)

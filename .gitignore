@@ -1,0 +1,12 @@
+node_modules/
+dist/
+public/media/
+public/data/
+.DS_Store
+.sites-runtime/
+.openai/
+*.token
+*.token.json
+*-token.json
+token.json
+tokens/

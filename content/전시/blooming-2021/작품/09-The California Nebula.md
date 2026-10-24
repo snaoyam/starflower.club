@@ -1,0 +1,11 @@
+- 제목: The California Nebula
+- 설명: The California Nebula, discovered by E. E. Barnard in 1844, gets its name from the fact that it resembles the outline of the US State of California. Because the nebula cannot emit its own light, it receives energy from Menkib, a blue giant in the constellation Perseus, in order to paint the night sky. The beautiful cloud appears to be smooth as silk.
+
+- 추가정보
+  - 촬영자: Gyeol Kim
+  - 촬영일시: 2021-01-03
+  - 촬영장소: KAIST, Deajeon
+  - 망원경: SDT80 (D=80mm, FL=480mm)
+  - 카메라: ZWO ASI294MC-Pro (-30°C)
+  - 가대: IEQ45 Pro
+  - 노출: L 38×300s (Total 190min)

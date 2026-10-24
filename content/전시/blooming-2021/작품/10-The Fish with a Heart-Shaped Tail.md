@@ -1,0 +1,11 @@
+- 제목: The Fish with a Heart-Shaped Tail
+- 설명: The Heart Nebula is a red emission nebula located in the constellation Cassiopeia. The red glow is from ionized hydrogen gas, and at the center of the heart is an open cluster. A shape resembling the head of a fish is also observable at the end of the heart.
+
+- 추가정보
+  - 촬영자: Gyeol Kim
+  - 촬영일시: 2021-01-03
+  - 촬영장소: KAIST, Deajeon
+  - 망원경: SDT80 (D=80mm, FL=480mm)
+  - 카메라: ZWO ASI294MC-Pro (-30°C)
+  - 가대: IEQ45 Pro
+  - 노출: L 29×300s (Total 145min)

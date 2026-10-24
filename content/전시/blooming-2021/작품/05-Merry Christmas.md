@@ -1,0 +1,11 @@
+- 제목: Merry Christmas
+- 설명: Observed near Monocerotis (V838) is NGC 2264. Around 2600 light years away. the star cluster is still violently giving birth to new stars. Deeply reddened by the strong UV rays, the Nebula and star cluster from a Christmas tree-like shape. Since it is visible in the winter sky, we call it the Christmas Tree Cluster. This winter, let's spend the Christmas night with our loved ones with the Christmas Tree Cluster! May the blessing of the Christmas Tree Cluster be with you~
+
+- 추가정보
+  - 촬영자: HyeongCheol Kim
+  - 촬영일시: 2020-12-25
+  - 촬영장소: KAIST, Deajeon
+  - 망원경: SDT80 (D=80mm, FL=480mm)
+  - 카메라: ZWO ASI294MC-Pro (-30°C)
+  - 가대: IEQ45 Pro
+  - 노출: L 30×300s (Total 150min)

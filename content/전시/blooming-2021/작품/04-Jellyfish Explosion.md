@@ -1,0 +1,11 @@
+- 제목: Jellyfish Explosion
+- 설명: Jellyfish Nebula is situated around 5000 light years away from Earth. The jellyfish-like shape is caused by the supernova, and the gas around the nebula is still expanding as the result of the burst. The neutron star that caused the supernova sits inside the nebula.
+
+- 추가정보
+  - 촬영자: Gyeol Kim
+  - 촬영일시: 2021-01-04
+  - 촬영장소: KAIST, Deajeon
+  - 망원경: SDT80 (D=80mm, FL=480mm)
+  - 카메라: ZWO ASI294MC-Pro (-30°C)
+  - 가대: IEQ45 Pro
+  - 노출: L 45×300s (Total 225min)
