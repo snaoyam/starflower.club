@@ -22,7 +22,7 @@ test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌�
   };
   const changes={};
   changes[homePath]={text:updateContentField(files[homePath].text,'대표문구','새 첫 문장\n두 번째 줄')};
-  for(const [key,value] of Object.entries({대표사진설명:'새 배경사진 설명',활동표제:'활동',활동제목:'새 활동 제목',활동설명:'활동 설명\n다음 줄',활동링크:'https://example.com/activity',활동링크이름:'활동 보기',활동링크아이콘:'youtube',모집표제:'지원',모집제목:'새 모집 제목',모집설명:'새 모집 설명',모집버튼:'지원 안내'})) changes[homePath].text=updateContentField(changes[homePath].text,key,value);
+  for(const [key,value] of Object.entries({대표사진설명:'새 배경사진 설명',활동표제:'활동',활동제목:'새 활동 제목',활동설명:'활동 설명\n다음 줄',활동링크:'https://example.com/activity',활동링크이름:'활동 보기',활동링크아이콘:'youtube',모집표제:'지원',모집제목:'새 모집 제목',모집설명:'새 모집 설명',모집버튼:'지원 안내',모집링크:'#/recruitment'})) changes[homePath].text=updateContentField(changes[homePath].text,key,value);
   const links=[{이름:'문의',주소:'mailto:test@example.com',아이콘:'email',추가값:'보존'},{이름:'홈페이지',주소:'https://example.com',아이콘:'none'}];
   changes[footerPath]={text:updateContentField(files[footerPath].text,'링크',links)};
   for(const [folder,color] of [['대표','blue'],['활동','red']]) {
@@ -45,12 +45,14 @@ test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌�
   assert.equal(catalog.home.copy.대표문구,'새 첫 문장\n두 번째 줄');
   assert.equal(catalog.home.copy.대표사진설명,'새 배경사진 설명');
   assert.equal(catalog.home.copy.모집제목,'새 모집 제목');
+  assert.equal(catalog.home.copy.모집링크,'#/recruitment');
   assert.equal(catalog.home.copy.활동링크,'https://example.com/activity');
   assert.equal(catalog.home.copy.활동링크아이콘,'youtube');
   assert.notEqual(catalog.home.hero.image.src,catalog.home.activity.image.src);
   assert.deepEqual(catalog.footerLinks,links.map(item=>({...item,주소:linkURL(item.주소)})));
   const snapshot=JSON.parse(await fs.readFile(path.join(root,'public/data/admin.json'),'utf8'));
   assert.equal(parseFields(snapshot.files[homePath].text).대표사진설명,'새 배경사진 설명');
+  assert.equal(parseFields(snapshot.files[homePath].text).모집링크,'#/recruitment');
   assert.deepEqual(parseFields(snapshot.files[homePath].text).추가값,{보존:true});
   assert.equal(parseFields(snapshot.files[footerPath].text).추가값,42);
   for(const folder of ['대표','활동']) {
@@ -62,9 +64,14 @@ test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌�
   const replacement='content/홈/대표/커버.jpg';
   const next={[footerPath]:{text:updateContentField(snapshot.files[footerPath].text,'링크',[])},[oldPath]:null,[replacement]:{base64:(await sharp({create:{width:9,height:9,channels:3,background:'green'}}).jpeg().toBuffer()).toString('base64')}};
   all=validateEdits(all,next);
+  const bannerChange={[homePath]:{text:updateContentField(all[homePath].text,'모집링크','https://example.com/apply?term=fall#form')}};
+  all=validateEdits(all,bannerChange);
   await fs.unlink(path.join(root,oldPath));await writeAll(all);
   data=await generateContent({root,quiet:true});
   assert.deepEqual(data.footerLinks,[]);assert.notEqual(data.home.hero.image.src,prior);
+  assert.equal(data.home.copy.모집링크,'https://example.com/apply?term=fall#form');
+  const refreshed=JSON.parse(await fs.readFile(path.join(root,'public/data/admin.json'),'utf8'));
+  assert.equal(parseFields(refreshed.files[homePath].text).모집링크,'https://example.com/apply?term=fall#form');
   assert.equal(data.home.hero.image.width,9);
   await assert.rejects(fs.access(path.join(root,'public',prior)));
 });
@@ -78,8 +85,17 @@ test('기존 설정을 유지하면서 빈 링크 배열과 빈 홈 문구는 �
   assert.equal(homeSettings({대표문구:''},settings).대표문구,'');
   assert.equal(homeSettings({},settings).활동링크,settings.인스타그램);
   assert.equal(homeSettings({},settings).활동링크아이콘,'instagram');
+  assert.equal(homeSettings({},settings).모집링크,'#/recruitment');
   assert.equal(homeSettings({활동링크아이콘:'none'},settings).활동링크아이콘,'none');
   assert.doesNotThrow(()=>validateEdits({}, {'content/설정/홈.md':{text:"- 활동링크아이콘: none\n"}}));
+});
+
+test('모집 배너는 내부 페이지와 웹주소를 허용하고 실행 코드와 잘못된 주소는 거부한다',()=>{
+  const edit=모집링크=>validateEdits({}, {'content/설정/홈.md':{text:serializeFields({모집링크})}});
+  for(const url of ['#/recruitment','#/news','https://example.com/apply','http://example.com/apply']) assert.doesNotThrow(()=>edit(url));
+  for(const url of ['', 'javascript:alert(1)','data:text/html,test','mailto:test@example.com','//example.com','example.com','https://user:pass@example.com','#/recruitment\ninvalid']) assert.throws(()=>edit(url));
+  assert.equal(linkURL(' #/recruitment ',{webOnly:true,allowHash:true}),'#/recruitment');
+  assert.throws(()=>linkURL('#/recruitment',{webOnly:true}));
 });
 
 test('관리자 저장에서 잘못된 링크·아이콘·홈 값과 허용 범위 밖 사진 경로를 거부한다',()=>{

@@ -11,6 +11,7 @@ export const HOME_DEFAULTS = Object.freeze({
   모집제목: '밤하늘이 궁금하다면, 별바라기로',
   모집설명: '천문학에 관심이 많은 사람, 그냥 별이 좋은 사람, 밤하늘이 예쁘다고 생각하는 사람이라면 지금 바로 지원해주세요!',
   모집버튼: '신입부원 모집 안내',
+  모집링크: '#/recruitment',
 });
 export function homeSettings(info = {}, settings = {}, heroTitle = '') {
   return {...HOME_DEFAULTS, 대표사진설명:heroTitle, ...(settings.인스타그램 ? {활동링크: settings.인스타그램} : {}), ...info};
@@ -19,8 +20,9 @@ export const LINK_ICONS = Object.freeze([
   ['instagram', 'Instagram'], ['youtube', 'YouTube'], ['facebook', 'Facebook'],
   ['email', '이메일'], ['link', '링크'], ['none', '아이콘 없음'],
 ]);
-export function linkURL(value, {webOnly = false} = {}) {
+export function linkURL(value, {webOnly = false, allowHash = false} = {}) {
   if (typeof value !== 'string' || !value.trim() || /[\s\x00-\x1f\x7f]/.test(value.trim())) throw Error('올바른 링크 주소를 입력해 주세요.');
+  if (allowHash && value.trim().startsWith('#/')) return value.trim();
   let url;
   try { url = new URL(value.trim()); } catch { throw Error('올바른 링크 주소를 입력해 주세요.'); }
   const protocols = webOnly ? ['http:', 'https:'] : ['http:', 'https:', 'mailto:', 'tel:'];
@@ -38,6 +40,7 @@ export function validatePageSettings(name, info) {
     for (const key of Object.keys(HOME_DEFAULTS)) if (Object.hasOwn(info,key) && typeof info[key] !== 'string') throw Error(`${key} 값은 문자열이어야 합니다.`);
     if (Object.hasOwn(info,'활동링크아이콘') && !LINK_ICONS.some(([key]) => key === info.활동링크아이콘)) throw Error('활동사진 버튼 아이콘을 선택해 주세요.');
     if (info.활동링크?.trim()) linkURL(info.활동링크, {webOnly:true});
+    if (Object.hasOwn(info,'모집링크')) linkURL(info.모집링크, {webOnly:true,allowHash:true});
   }
   if (name === '하단영역.md' && Object.hasOwn(info,'링크')) {
     if (!Array.isArray(info.링크)) throw Error('하단영역 링크는 배열이어야 합니다.');

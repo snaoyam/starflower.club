@@ -143,6 +143,7 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
   const activityImage = await cover(path.join(content, '홈', '활동'));
   const homeCopy = homeSettings(await contentFile(path.join(content, '설정', '홈.md')), settings, heroImage ? '' : hero?.title || '');
   homeCopy.활동링크 = homeCopy.활동링크.trim() ? linkURL(homeCopy.활동링크,{webOnly:true}) : '';
+  homeCopy.모집링크 = linkURL(homeCopy.모집링크,{webOnly:true,allowHash:true});
   data.home = { copy:homeCopy, hero:heroImage ? {title:'', image:heroImage} : homePhoto(hero), activity:activityImage ? {title:'', image:activityImage} : homePhoto(activity) };
   const catalog = {
     ...data,

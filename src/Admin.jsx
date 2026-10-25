@@ -70,7 +70,8 @@ export function HomeEditor({ all, stage, preview, upload, home }) {
       <PagePhotoEditor label="중간 배너 배경" path={coverImagePaths(all,'content/홈/활동/')[0]} directory="content/홈/활동/" preview={preview} upload={upload} fallback={home?.activity?.image}/>
     </section>
     <section className="admin-home-section"><h3>모집 안내 배너</h3>
-      {fields([['모집표제','모집 배너 상단 문구'],['모집제목','모집 배너 제목'],['모집설명','모집 배너 안내 문구',true],['모집버튼','모집 안내 버튼 이름']])}
+      {fields([['모집표제','모집 배너 상단 문구'],['모집제목','모집 배너 제목'],['모집설명','모집 배너 안내 문구',true],['모집버튼','모집 안내 버튼 이름'],['모집링크','모집 배너 링크 주소']])}
+      <p className="muted">사이트 안의 페이지는 #/recruitment처럼, 외부 페이지는 https://로 시작하는 주소를 입력하세요.</p>
     </section>
   </>;
 }
