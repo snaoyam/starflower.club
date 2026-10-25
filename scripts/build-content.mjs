@@ -118,8 +118,6 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
   }
   news.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title, 'ko'));
   const footer = await contentFile(path.join(content, '설정', '하단영역.md'));
-  const homeCopy = homeSettings(await contentFile(path.join(content, '설정', '홈.md')), settings);
-  homeCopy.활동링크 = homeCopy.활동링크.trim() ? linkURL(homeCopy.활동링크,{webOnly:true}) : '';
   const data = { settings, footerText: footer.내용 || '', footerLinks: footerLinks(footer, settings).map(item => ({...item, 주소:linkURL(item.주소)})), recruitmentUrl, introduction: (await contentFile(path.join(content, '소개.md'))).내용 || '', faqs: parseFAQ(await textFile(path.join(content, 'FAQ.md'), '')), exhibitions, activities: await photos(path.join(content, '활동사진')), news };
   data.introductionImage = await cover(path.join(content, '소개')) || data.activities[0]?.image || null;
   data.recruitmentImage = await cover(path.join(content, '모집')) || data.activities.find(item=>item.id==='02-천체사진-촬영장비')?.image || data.activities[0]?.image || null;
@@ -143,6 +141,8 @@ export async function generateContent({ root = projectRoot, quiet = false } = {}
   const homePhoto = photo => photo ? { title: photo.title, image: photo.image } : null;
   const heroImage = await cover(path.join(content, '홈', '대표'));
   const activityImage = await cover(path.join(content, '홈', '활동'));
+  const homeCopy = homeSettings(await contentFile(path.join(content, '설정', '홈.md')), settings, heroImage ? '' : hero?.title || '');
+  homeCopy.활동링크 = homeCopy.활동링크.trim() ? linkURL(homeCopy.활동링크,{webOnly:true}) : '';
   data.home = { copy:homeCopy, hero:heroImage ? {title:'', image:heroImage} : homePhoto(hero), activity:activityImage ? {title:'', image:activityImage} : homePhoto(activity) };
   const catalog = {
     ...data,

@@ -22,7 +22,7 @@ test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌�
   };
   const changes={};
   changes[homePath]={text:updateContentField(files[homePath].text,'대표문구','새 첫 문장\n두 번째 줄')};
-  for(const [key,value] of Object.entries({활동표제:'활동',활동제목:'새 활동 제목',활동설명:'활동 설명\n다음 줄',활동링크:'https://example.com/activity',활동링크이름:'활동 보기',활동링크아이콘:'youtube',모집표제:'지원',모집제목:'새 모집 제목',모집설명:'새 모집 설명',모집버튼:'지원 안내'})) changes[homePath].text=updateContentField(changes[homePath].text,key,value);
+  for(const [key,value] of Object.entries({대표사진설명:'새 배경사진 설명',활동표제:'활동',활동제목:'새 활동 제목',활동설명:'활동 설명\n다음 줄',활동링크:'https://example.com/activity',활동링크이름:'활동 보기',활동링크아이콘:'youtube',모집표제:'지원',모집제목:'새 모집 제목',모집설명:'새 모집 설명',모집버튼:'지원 안내'})) changes[homePath].text=updateContentField(changes[homePath].text,key,value);
   const links=[{이름:'문의',주소:'mailto:test@example.com',아이콘:'email',추가값:'보존'},{이름:'홈페이지',주소:'https://example.com',아이콘:'none'}];
   changes[footerPath]={text:updateContentField(files[footerPath].text,'링크',links)};
   for(const [folder,color] of [['대표','blue'],['활동','red']]) {
@@ -43,12 +43,14 @@ test('홈 편집과 두 배경 교체, 하단영역 링크 변경이 공개 빌�
   let data=await generateContent({root,quiet:true});
   let catalog=JSON.parse(await fs.readFile(path.join(root,'public/data/site.json'),'utf8'));
   assert.equal(catalog.home.copy.대표문구,'새 첫 문장\n두 번째 줄');
+  assert.equal(catalog.home.copy.대표사진설명,'새 배경사진 설명');
   assert.equal(catalog.home.copy.모집제목,'새 모집 제목');
   assert.equal(catalog.home.copy.활동링크,'https://example.com/activity');
   assert.equal(catalog.home.copy.활동링크아이콘,'youtube');
   assert.notEqual(catalog.home.hero.image.src,catalog.home.activity.image.src);
   assert.deepEqual(catalog.footerLinks,links.map(item=>({...item,주소:linkURL(item.주소)})));
   const snapshot=JSON.parse(await fs.readFile(path.join(root,'public/data/admin.json'),'utf8'));
+  assert.equal(parseFields(snapshot.files[homePath].text).대표사진설명,'새 배경사진 설명');
   assert.deepEqual(parseFields(snapshot.files[homePath].text).추가값,{보존:true});
   assert.equal(parseFields(snapshot.files[footerPath].text).추가값,42);
   for(const folder of ['대표','활동']) {
@@ -71,6 +73,8 @@ test('기존 설정을 유지하면서 빈 링크 배열과 빈 홈 문구는 �
   const settings={인스타그램:'https://instagram.com/test'};
   assert.equal(footerLinks({},settings).length,1);
   assert.deepEqual(footerLinks({링크:[]},settings),[]);
+  assert.equal(homeSettings({},settings,'기존 사진 제목').대표사진설명,'기존 사진 제목');
+  assert.equal(homeSettings({대표사진설명:''},settings,'기존 사진 제목').대표사진설명,'');
   assert.equal(homeSettings({대표문구:''},settings).대표문구,'');
   assert.equal(homeSettings({},settings).활동링크,settings.인스타그램);
   assert.equal(homeSettings({},settings).활동링크아이콘,'instagram');

@@ -51,13 +51,13 @@ function Home({ data }) {
   const latest = data.exhibitions[0];
   const heroArt = data.home.hero;
   const activityArt = data.home.activity;
-  const copy = homeSettings(data.home.copy, data.settings);
+  const copy = homeSettings(data.home.copy, data.settings, heroArt?.title || '');
   return <>
     <section className="hero" style={{'--hero-image': heroArt?.image || latest?.cover ? `url("${asset((heroArt?.image || latest.cover).src)}")` : 'none'}}>
       <div className="hero-photo"><Photo image={heroArt?.image || latest?.cover} full eager alt={heroArt?.title || '별바라기 부원이 촬영한 천체사진'}/></div>
       <div className="hero-orbit" aria-hidden="true"/>
       <div className="hero-content"><span className="eyebrow"><span className="tiny-star">✦</span> KAIST ASTRONOMY CLUB · SINCE {data.settings.창립연도 || '1987'}</span><h1><span className="hero-club-name">KAIST 천체관측 동아리</span><br/><em>별바라기</em></h1><p className="home-copy"><InlineLinks text={copy.대표문구}/></p><div className="hero-actions"><a className="button primary" href="#/exhibitions">천체사진·전시 보기<Arrow/></a><a className="button outline" href="#/about">별바라기 알아보기<Arrow diagonal/></a></div></div>
-      <div className="hero-bottom"><span>KAIST STARFLOWER</span>{heroArt && <span className="hero-credit">{heroArt.title}</span>}</div>
+      <div className="hero-bottom"><span>KAIST STARFLOWER</span>{copy.대표사진설명 && <span className="hero-credit">{copy.대표사진설명}</span>}</div>
     </section>
     <section className="wrap section"><div className="section-heading"><div><span className="eyebrow">EXHIBITION ARCHIVE</span><h2>천체사진과 전시</h2></div><TextLink to="#/exhibitions">전시 전체보기</TextLink></div><div className="exhibition-grid">{data.exhibitions.slice(0, 3).map(e => <ExhibitionCard key={e.id} exhibition={e}/>)}</div>{!data.exhibitions.length && <Empty title="등록된 전시가 없습니다." link={null}>지난 전시와 천체사진을 이곳에서 소개합니다.</Empty>}</section>
     <section className="activity-band wrap"><div className="activity-backdrop" aria-hidden="true"><Photo image={activityArt?.image || latest?.cover} full alt=""/></div><div className="activity-copy"><span className="eyebrow">{copy.활동표제}</span><h2>{copy.활동제목}</h2><p className="home-copy"><InlineLinks text={copy.활동설명}/></p>{copy.활동링크 && <a className="text-link instagram-link" href={linkURL(copy.활동링크,{webOnly:true})} target="_blank" rel="noreferrer"><LinkIcon type={copy.활동링크아이콘}/><span>{copy.활동링크이름}</span><Arrow diagonal/></a>}</div></section>

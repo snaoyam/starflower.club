@@ -55,12 +55,12 @@ function AboutEditor({ all, stage, preview, upload }) {
 }
 export function HomeEditor({ all, stage, preview, upload, home }) {
   const path='content/설정/홈.md';
-  const copy=homeSettings(parseFields(all[path]?.text),parseFields(all['content/설정/사이트정보.md']?.text));
+  const copy=homeSettings(parseFields(all[path]?.text),parseFields(all['content/설정/사이트정보.md']?.text),home?.hero?.title || '');
   const edit=(key,value)=>stage(path,{text:updateContentField(all[path]?.text,key,value)});
   const fields=(items)=>items.map(([key,label,multiline=false])=><Field key={key} label={label} value={copy[key]} multiline={multiline} rows={3} onChange={value=>edit(key,value)}/>);
   return <><h2>홈 편집</h2><p className="muted">문구의 줄바꿈과 선택한 사진은 저장 및 배포 후 홈에 반영됩니다.</p>
     <section className="admin-home-section"><h3>첫 화면</h3>
-      {fields([['대표문구','첫 화면 안내 문구',true]])}
+      {fields([['대표문구','첫 화면 안내 문구',true],['대표사진설명','배경사진 설명 (오른쪽 아래)']])}
       <PagePhotoEditor label="첫 화면 배경 사진" path={coverImagePaths(all,'content/홈/대표/')[0]} directory="content/홈/대표/" preview={preview} upload={upload} fallback={home?.hero?.image}/>
     </section>
     <section className="admin-home-section"><h3>중간 안내 배너</h3>

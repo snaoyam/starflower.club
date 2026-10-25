@@ -1,4 +1,5 @@
 export const HOME_DEFAULTS = Object.freeze({
+  대표사진설명: '',
   대표문구: '별이 좋아 모인 사람들과\n밤하늘을 보고, 사진으로 남깁니다.',
   활동표제: 'CLUB LIFE',
   활동제목: '별바라기 활동사진',
@@ -11,8 +12,8 @@ export const HOME_DEFAULTS = Object.freeze({
   모집설명: '천문학에 관심이 많은 사람, 그냥 별이 좋은 사람, 밤하늘이 예쁘다고 생각하는 사람이라면 지금 바로 지원해주세요!',
   모집버튼: '신입부원 모집 안내',
 });
-export function homeSettings(info = {}, settings = {}) {
-  return {...HOME_DEFAULTS, ...(settings.인스타그램 ? {활동링크: settings.인스타그램} : {}), ...info};
+export function homeSettings(info = {}, settings = {}, heroTitle = '') {
+  return {...HOME_DEFAULTS, 대표사진설명:heroTitle, ...(settings.인스타그램 ? {활동링크: settings.인스타그램} : {}), ...info};
 }
 export const LINK_ICONS = Object.freeze([
   ['instagram', 'Instagram'], ['youtube', 'YouTube'], ['facebook', 'Facebook'],
