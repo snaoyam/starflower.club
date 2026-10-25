@@ -127,10 +127,10 @@ function Review({ changes, snapshot, busy, close, save }) {
 }
 
 export function EditingStatus({ state, busy, onRefresh }) {
-  const checking=state.kind==='checking';
-  return <section className={`admin-edit-status is-${state.kind}`} aria-label="수정 상태" aria-busy={checking}>
-    <div role="status" aria-live="polite"><strong>{checking?'수정 상태 확인 중…':state.kind==='ready'?'수정 가능':'수정 불가'}</strong><p>{state.message}</p></div>
-    <div className="admin-actions"><button type="button" disabled={busy||checking} onClick={onRefresh}>수정 상태 새로고침</button><a className="content-link" href={DEPLOYMENT_STATUS_URL} target="_blank" rel="noopener noreferrer">배포 상태 조회하기</a></div>
+  if(state.kind!=='blocked')return null;
+  return <section className="admin-edit-status is-blocked" aria-label="수정 상태">
+    <div role="status" aria-live="polite"><strong>수정 불가</strong><p>{state.message}</p></div>
+    <div className="admin-actions"><button type="button" disabled={busy} onClick={onRefresh}>수정 상태 새로고침</button><a className="content-link" href={DEPLOYMENT_STATUS_URL} target="_blank" rel="noopener noreferrer">배포 상태 조회하기</a></div>
   </section>;
 }
 

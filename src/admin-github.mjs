@@ -2,7 +2,7 @@
 import { ADMIN_ACCOUNTS_PATH, readAccounts } from './admin-auth.mjs';
 export const ADMIN_TARGET = Object.freeze({ repository: 'snaoyam/starflower.club', branch: 'main' });
 export const DEPLOYMENT_STATUS_URL = `https://github.com/${ADMIN_TARGET.repository}/actions/workflows/deploy.yml`;
-export const EDIT_STATE_MISMATCH_MESSAGE = '편집 자료와 GitHub 저장소의 파일 상태가 다릅니다. 최신 배포가 완료된 뒤 수정 상태를 새로고침해 주세요.';
+export const EDIT_STATE_MISMATCH_MESSAGE = '편집 자료와 GitHub 저장소의 파일 상태가 다릅니다. 최신 배포가 완료된 뒤 수정 상태를 새로고침해 주세요. 만약 배포가 완료된 후에도 수정불가로 표시되는 경우, 웹페이지를 새로고침(F5) 한 후 다시 시도해보세요.';
 export function parseTokenFile(text, filename = 'starflower.token') {
   if (filename !== 'starflower.token') throw Error('파일 이름을 starflower.token으로 저장해 주세요.');
   const token = typeof text === 'string' ? text.replace(/^\uFEFF/, '').trim() : '';
