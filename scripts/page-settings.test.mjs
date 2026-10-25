@@ -90,7 +90,7 @@ test('기존 설정을 유지하면서 빈 링크 배열과 빈 홈 문구는 �
   assert.doesNotThrow(()=>validateEdits({}, {'content/설정/홈.md':{text:"- 활동링크아이콘: none\n"}}));
 });
 
-test('모집 배너는 내부 페이지와 웹주소를 허용하고 실행 코드와 잘못된 주소는 거부한다',()=>{
+test('하단 배너는 내부 페이지와 웹주소를 허용하고 실행 코드와 잘못된 주소는 거부한다',()=>{
   const edit=모집링크=>validateEdits({}, {'content/설정/홈.md':{text:serializeFields({모집링크})}});
   for(const url of ['#/recruitment','#/news','https://example.com/apply','http://example.com/apply']) assert.doesNotThrow(()=>edit(url));
   for(const url of ['', 'javascript:alert(1)','data:text/html,test','mailto:test@example.com','//example.com','example.com','https://user:pass@example.com','#/recruitment\ninvalid']) assert.throws(()=>edit(url));
