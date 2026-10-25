@@ -35,7 +35,7 @@
 .instagram-link{gap:10px;min-height:44px;white-space:normal}
 .instagram-link>span{min-width:0}
 .instagram-link>svg:last-child{margin-left:6px}
-.instagram-link:hover .instagram-icon{transform:none}
+.instagram-link:hover .instagram-icon,.instagram-link:hover .social-icon{transform:none}
 
 /* Show the entire introduction photo at its original aspect ratio. */
 .activity-photo{display:block;width:100%;height:auto;max-height:720px;object-fit:contain;object-position:top center}
