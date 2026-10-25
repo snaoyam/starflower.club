@@ -2,7 +2,7 @@
 import { ADMIN_ACCOUNTS_PATH, readAccounts } from './admin-auth.mjs';
 export const ADMIN_TARGET = Object.freeze({ repository: 'snaoyam/starflower.club', branch: 'main' });
 export const DEPLOYMENT_STATUS_URL = `https://github.com/${ADMIN_TARGET.repository}/actions/workflows/deploy.yml`;
-export const LOGIN_STATE_MISMATCH_MESSAGE = '배포 진행중에는 편집이 불가능합니다. 변경사항의 배포가 완료된 뒤 새로고침하고 다시 로그인해 주세요.';
+export const EDIT_STATE_MISMATCH_MESSAGE = '편집 자료와 GitHub 저장소의 파일 상태가 다릅니다. 최신 배포가 완료된 뒤 수정 상태를 새로고침해 주세요.';
 export function parseTokenFile(text, filename = 'starflower.token') {
   if (filename !== 'starflower.token') throw Error('파일 이름을 starflower.token으로 저장해 주세요.');
   const token = typeof text === 'string' ? text.replace(/^\uFEFF/, '').trim() : '';
@@ -19,11 +19,11 @@ export function assertContentPath(path) {
   if (!isContentPath(path)) throw Error('허용된 콘텐츠 파일만 저장할 수 있습니다.');
 }
 export function assertUnchanged(files, tree, phase = 'save') {
-  if (tree.truncated) throw Error(phase === 'login' ? '저장소 파일 목록을 모두 확인할 수 없어 편집을 시작할 수 없습니다.' : '저장소 목록이 너무 큽니다. 저장하지 않았습니다.');
+  if (tree.truncated) throw Error(phase === 'edit' ? '저장소 파일 목록을 모두 확인할 수 없어 편집을 시작할 수 없습니다.' : '저장소 목록이 너무 큽니다. 저장하지 않았습니다.');
   const remote = Object.fromEntries(tree.tree.filter(f => isContentPath(f.path)).map(f => [f.path, f]));
   const paths = new Set([...Object.keys(files), ...Object.keys(remote)]);
   for (const path of paths) {
-    if (files[path]?.sha !== remote[path]?.sha || (remote[path] && remote[path].mode !== '100644')) throw Error(phase === 'login' ? LOGIN_STATE_MISMATCH_MESSAGE : '다른 변경사항이 먼저 저장되었습니다. 편집 내용을 복사해 둔 뒤 배포 완료 후 새로고침해 주세요. 덮어쓰지 않았습니다.');
+    if (files[path]?.sha !== remote[path]?.sha || (remote[path] && remote[path].mode !== '100644')) throw Error(phase === 'edit' ? EDIT_STATE_MISMATCH_MESSAGE : '다른 변경사항이 먼저 저장되었습니다. 편집 내용을 복사해 둔 뒤 배포 완료 후 새로고침해 주세요. 덮어쓰지 않았습니다.');
   }
 }
 export function createGitHubClient({ token }, fetcher = fetch) {
@@ -56,7 +56,7 @@ export function createGitHubClient({ token }, fetcher = fetch) {
     actionsURL: DEPLOYMENT_STATUS_URL,
     async checkCurrent(files) {
       const {tree} = await repositoryState();
-      assertUnchanged(files, tree, 'login');
+      assertUnchanged(files, tree, 'edit');
     },
     async publish(files, changes, progress = () => {}) {
       const entries = Object.entries(changes);

@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
-import { createGitHubClient, parseTokenFile, ADMIN_TARGET, isContentPath, assertUnchanged, LOGIN_STATE_MISMATCH_MESSAGE } from '../src/admin-github.mjs';
+import { createGitHubClient, parseTokenFile, ADMIN_TARGET, isContentPath, assertUnchanged, EDIT_STATE_MISMATCH_MESSAGE } from '../src/admin-github.mjs';
 import { assertRasterImage, aboutImagePath, recruitmentImagePath, mergedFiles, exhibitionSortNumber, recordPaths, serializeFields, parseFields, serializePhoto, parsePhotoMarkdown, validateEdits } from '../src/admin-model.mjs';
 import { generateContent } from './build-content.mjs';
 
@@ -275,7 +275,7 @@ test('관리자 배포 요청은 사용자 지정 키를 포함한 Markdown 파�
   assert.deepEqual(parseFields(saved.files[sourcePath].text),custom);
 });
 
-test('로그인 사전 확인은 현재 GitHub 파일을 읽어 비교하고 저장·배포를 실행하지 않는다',async()=>{
+test('수정 상태 확인은 현재 GitHub 파일을 읽어 비교하고 저장·배포를 실행하지 않는다',async()=>{
   const {client,calls}=fixture();
   await client.checkCurrent(baseline);
   assert.equal(calls.length,3);
@@ -283,7 +283,7 @@ test('로그인 사전 확인은 현재 GitHub 파일을 읽어 비교하고 저
   assert.ok(calls.at(-1).url.endsWith('/git/trees/base-tree?recursive=1'));
 });
 
-test('로그인 사전 확인은 수정·추가·삭제·계정 변경·불완전한 목록을 차단한다',async()=>{
+test('수정 상태 확인은 수정·추가·삭제·계정 변경·불완전한 목록을 차단한다',async()=>{
   const original={path:sourcePath,type:'blob',mode:'100644',sha:'old-file'};
   const trees=[
     {tree:[{...original,sha:'new-file'}]},
@@ -297,12 +297,12 @@ test('로그인 사전 확인은 수정·추가·삭제·계정 변경·불완�
     const {client,calls}=fixture({remoteTree});
     await assert.rejects(client.checkCurrent(baseline), remoteTree.truncated
       ? {name:'Error',message:'저장소 파일 목록을 모두 확인할 수 없어 편집을 시작할 수 없습니다.'}
-      : {name:'Error',message:LOGIN_STATE_MISMATCH_MESSAGE});
+      : {name:'Error',message:EDIT_STATE_MISMATCH_MESSAGE});
     assert.ok(calls.every(c=>c.method==='GET'));
   }
 });
 
-test('로그인 사전 확인은 권한·통신 오류를 통과시키지 않고 재시도할 수 있다',async()=>{
+test('수정 상태 확인은 권한·통신 오류를 통과시키지 않고 재시도할 수 있다',async()=>{
   for(const status of [401,403,404]){
     const {client,calls}=fixture({status});
     await assert.rejects(client.checkCurrent(baseline),new RegExp(`GitHub ${status}`));
@@ -317,7 +317,7 @@ test('로그인 사전 확인은 권한·통신 오류를 통과시키지 않고
   await client.checkCurrent(baseline);
 });
 
-test('로그인 확인 후 변경된 파일도 저장 직전에 다시 확인해 덮어쓰지 않는다',async()=>{
+test('수정 상태 확인 후 변경된 파일도 저장 직전에 다시 확인해 덮어쓰지 않는다',async()=>{
   const remoteTree={tree:[{path:sourcePath,type:'blob',mode:'100644',sha:'old-file'}]};
   const {client,calls}=fixture({remoteTree});
   await client.checkCurrent(baseline);

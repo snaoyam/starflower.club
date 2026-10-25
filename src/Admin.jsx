@@ -1,11 +1,12 @@
 import { homeSettings, footerLinks, LINK_ICONS } from './page-settings.mjs';
 import LinkIcon from './LinkIcon.jsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { createGitHubClient, ADMIN_TARGET, DEPLOYMENT_STATUS_URL, LOGIN_STATE_MISMATCH_MESSAGE } from './admin-github.mjs';
+import { createGitHubClient, ADMIN_TARGET, DEPLOYMENT_STATUS_URL } from './admin-github.mjs';
 import { createUploadName, coverImagePaths } from './upload-files.mjs';
 import { ADMIN_ACCOUNTS_PATH, readAccounts, serializeAccounts, decryptAdmin, addAdmin, removeAdmin, normalizeAdminId, changeAdminPassword } from './admin-auth.mjs';
 import { isImage, aboutImagePath, recruitmentImagePath, assertRasterImage, mergedFiles, recordPaths, parseFields, serializeFields, parsePhotoMarkdown, serializePhoto, updateContentField, validateEdits, exhibitionSortNumber } from './admin-model.mjs';
 import './admin.css';
+import { refreshEditingSnapshot } from './admin-edit-status.mjs';
 
 const asset = value => new URL(`${import.meta.env.BASE_URL}${value}`, document.baseURI).href;
 const today = () => new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
@@ -116,7 +117,7 @@ function OwnAccount({ currentId, busy, onChangePassword, onBack }) {
 function Login({ busy, error, onLogin }) {
   const [id,setId]=useState(''),[password,setPassword]=useState('');
   async function submit(e){e.preventDefault();const result=await onLogin(id,password);setPassword('');if(result)setId('');}
-  return <div className="wrap page admin-page"><div className="admin-login"><span className="eyebrow">STARFLOWER ADMIN</span><h1>관리자 로그인</h1><p>관리자 아이디와 비밀번호를 입력하세요.</p><form onSubmit={submit}><Field label="아이디" value={id} onChange={setId} autoComplete="username" required disabled={busy}/><Field label="비밀번호" type="password" value={password} onChange={setPassword} autoComplete="off" required disabled={busy}/><button type="submit" className="primary admin-login-submit" disabled={busy}>{busy?'로그인 중…':'로그인'}</button></form>{error&&<p role="alert" className="admin-error">{error}{error===LOGIN_STATE_MISMATCH_MESSAGE&&<><br/><a className="content-link" href={DEPLOYMENT_STATUS_URL} target="_blank" rel="noopener noreferrer">배포 상태 조회하기</a></>}</p>}</div></div>;
+  return <div className="wrap page admin-page"><div className="admin-login"><span className="eyebrow">STARFLOWER ADMIN</span><h1>관리자 로그인</h1><p>관리자 아이디와 비밀번호를 입력하세요.</p><form onSubmit={submit}><Field label="아이디" value={id} onChange={setId} autoComplete="username" required disabled={busy}/><Field label="비밀번호" type="password" value={password} onChange={setPassword} autoComplete="off" required disabled={busy}/><button type="submit" className="primary admin-login-submit" disabled={busy}>{busy?'로그인 중…':'로그인'}</button></form>{error&&<p role="alert" className="admin-error">{error}</p>}</div></div>;
 }
 
 function Review({ changes, snapshot, busy, close, save }) {
@@ -125,9 +126,22 @@ function Review({ changes, snapshot, busy, close, save }) {
   return <dialog ref={dialog} className="admin-review admin-page" aria-labelledby="admin-review-title" onCancel={e=>{e.preventDefault();if(!busy)close();}}><h2 id="admin-review-title">변경사항 저장</h2><p>지금까지 수정사항을 저장하고 배포하시겠습니까?</p><ul>{Object.entries(changes).map(([p,v])=><li key={p}><span>{v===null?'삭제':snapshot.files[p]?'수정':'추가'}</span> {p===ADMIN_ACCOUNTS_PATH?'사이트 관리자':p==='content/설정/하단영역.md'?'하단영역 문구·링크':p==='content/설정/홈.md'?'홈 문구':p.startsWith('content/홈/')?'홈 배경 사진':p==='content/소개.md'?'동아리 소개 글':p.startsWith('content/소개/')?'동아리 소개 사진':p.startsWith('content/모집/')?'신입부원 모집 사진':p.replace('content/','')}</li>)}</ul><div className="admin-actions"><button disabled={busy} onClick={close}>취소</button><button className="primary" disabled={busy} onClick={save}>배포하기</button></div></dialog>;
 }
 
+export function EditingStatus({ state, busy, onRefresh }) {
+  const checking=state.kind==='checking';
+  return <section className={`admin-edit-status is-${state.kind}`} aria-label="수정 상태" aria-busy={checking}>
+    <div role="status" aria-live="polite"><strong>{checking?'수정 상태 확인 중…':state.kind==='ready'?'수정 가능':'수정 불가'}</strong><p>{state.message}</p></div>
+    <div className="admin-actions"><button type="button" disabled={busy||checking} onClick={onRefresh}>수정 상태 새로고침</button><a className="content-link" href={DEPLOYMENT_STATUS_URL} target="_blank" rel="noopener noreferrer">배포 상태 조회하기</a></div>
+  </section>;
+}
+
 export default function Admin({ home }) {
   const credentials=useRef(null), urls=useRef(new Set()), active=useRef(true);
   const [session,setSession]=useState(null),[snapshot,setSnapshot]=useState(null),[changes,setChanges]=useState({}),[tab,setTab]=useState('전시'),[selected,setSelected]=useState(''),[status,setStatus]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[review,setReview]=useState(false),[dispatchPending,setDispatchPending]=useState(false),[recruitOpen,setRecruitOpen]=useState(false),[accountView,setAccountView]=useState(false);
+  const [editState,setEditState]=useState({kind:'checking',message:'GitHub 저장소와 편집 자료를 확인하고 있습니다.'});
+  const [editorVersion,setEditorVersion]=useState(0);
+  const checkingState=useRef(false);
+  const canEdit=editState.kind==='ready'&&!dispatchPending;
+  const editDisabled=busy||!canEdit;
   const count=Object.keys(changes).length;
   const all=useMemo(()=>mergedFiles(snapshot?.files || {},changes),[snapshot,changes]);
   useEffect(()=>{ active.current=true;return()=>{active.current=false;credentials.current=null;for(const url of urls.current)URL.revokeObjectURL(url);};},[]);
@@ -141,22 +155,43 @@ export default function Admin({ home }) {
     }
     document.addEventListener('click',guard,true);return()=>document.removeEventListener('click',guard,true);
   },[count,dispatchPending,busy]);
+  useEffect(()=>{if(session)refreshEditStatus();},[session]);
+  async function loadSnapshot() {
+    const response=await fetch(asset('data/admin.json'),{cache:'no-store'});
+    if(!response.ok)throw Error('편집용 자료를 불러오지 못했습니다. 사이트를 다시 배포해 주세요.');
+    const data=await response.json();
+    if(data?.version!==1||!data.files||typeof data.files!=='object'||Array.isArray(data.files))throw Error('편집용 자료 형식을 확인해 주세요.');
+    return data;
+  }
+  async function refreshEditStatus() {
+    if(checkingState.current||!credentials.current)return;
+    if(dispatchPending){setEditState({kind:'blocked',message:'배포 요청을 완료하지 못했습니다. 아래의 배포 다시 요청 버튼을 눌러 주세요.'});return;}
+    checkingState.current=true;
+    setReview(false);setEditState({kind:'checking',message:'GitHub 저장소와 배포된 편집 자료를 확인하고 있습니다.'});
+    try {
+      const next=await refreshEditingSnapshot({client:createGitHubClient(credentials.current),loadSnapshot,snapshot,hasChanges:count>0});
+      if(!active.current)return;
+      if(!readAccounts(next.files[ADMIN_ACCOUNTS_PATH]?.text).accounts.some(account=>account.id===session.userId))throw Error('관리자 계정이 변경되었습니다. 페이지를 새로고침하고 다시 로그인해 주세요.');
+      if(!count){
+        setSnapshot(next);setRecruitOpen(!!parseFields(next.files['content/설정/모집링크.md']?.text).url?.trim());setEditorVersion(n=>n+1);
+        for(const url of urls.current)URL.revokeObjectURL(url);urls.current.clear();
+      }
+      setEditState({kind:'ready',message:'편집 자료가 최신 상태입니다. 수정할 수 있습니다.'});
+    } catch(e) {if(active.current)setEditState({kind:'blocked',message:e.message});}
+    finally {checkingState.current=false;}
+  }
   async function run(task) {setBusy(true);setError('');try{return await task();}catch(e){if(active.current)setError(e.message);}finally{if(active.current)setBusy(false);}}
-  function stage(path,value) {setStatus('');setReview(false);setChanges(previous=>{const next={...previous};if(value?.text!==undefined && value.text===snapshot?.files[path]?.text)delete next[path];else if(value===null&&!snapshot?.files[path])delete next[path];else next[path]=value;return next;});}
+  function stage(path,value) {if(!canEdit)return;setStatus('');setReview(false);setChanges(previous=>{const next={...previous};if(value?.text!==undefined && value.text===snapshot?.files[path]?.text)delete next[path];else if(value===null&&!snapshot?.files[path])delete next[path];else next[path]=value;return next;});}
   async function login(id,password) {
     return run(async()=>{
-      const response=await fetch(asset('data/admin.json'),{cache:'no-store'});
-      if(!response.ok)throw Error('편집용 자료를 불러오지 못했습니다. 사이트를 다시 배포해 주세요.');
-      const data=await response.json();
-      if(data.version!==1||!data.files)throw Error('편집용 자료 형식을 확인해 주세요.');
+      const data=await loadSnapshot();
       const accountText=data.files[ADMIN_ACCOUNTS_PATH]?.text;
       if(!accountText)throw Error('관리자 계정 설정을 찾을 수 없습니다. 최신 버전을 배포해 주세요.');
       const token=await decryptAdmin(readAccounts(accountText),id,password);
       if(!active.current)return false;
       const connection={...ADMIN_TARGET,token};
-      await createGitHubClient(connection).checkCurrent(data.files);
-      if(!active.current)return false;
       credentials.current=connection;
+      setEditState({kind:'checking',message:'GitHub 저장소와 편집 자료를 확인하고 있습니다.'});
       setRecruitOpen(!!parseFields(data.files['content/설정/모집링크.md']?.text).url?.trim());setSnapshot(data);setSession({...ADMIN_TARGET,userId:normalizeAdminId(id)});setStatus('');
       return true;
     });
@@ -181,7 +216,7 @@ export default function Admin({ home }) {
     });
   }
   function revertChanges() {
-    if(busy||dispatchPending||!count)return;
+    if(editDisabled||!count)return;
     if(!window.confirm('이 탭의 편집 내용을 모두 되돌릴까요?'))return;
     setChanges({});setRecruitOpen(!!parseFields(snapshot.files['content/설정/모집링크.md']?.text).url?.trim());setSelected('');setReview(false);setTab('전시');setAccountView(false);
   }
@@ -220,7 +255,7 @@ export default function Admin({ home }) {
       for(const [path,value,title]of prepared){stage(path,value);if(!cover)stage(path.replace(/\.[^.]+$/,'.md'),{text:serializePhoto({title,description:'',category:'',metadata:[],hasAdditionalInfo:false})});}
     });
   }
-  function prepareSave(){setError('');try{validateEdits(snapshot.files,changes);const r=parseFields(all['content/설정/모집링크.md']?.text).url?.trim();if(recruitOpen&&!r)throw Error('모집 중으로 표시하려면 지원서 주소를 입력해 주세요.');setReview(true);}catch(e){setError(e.message);}}
+  function prepareSave(){if(editDisabled)return;setError('');try{validateEdits(snapshot.files,changes);const r=parseFields(all['content/설정/모집링크.md']?.text).url?.trim();if(recruitOpen&&!r)throw Error('모집 중으로 표시하려면 지원서 주소를 입력해 주세요.');setReview(true);}catch(e){setError(e.message);}}
   function deploymentRequested(message,files=snapshot.files) {
     setDispatchPending(false);
     if(!readAccounts(files[ADMIN_ACCOUNTS_PATH].text).accounts.some(account=>account.id===session.userId)){
@@ -228,12 +263,16 @@ export default function Admin({ home }) {
     } else setStatus(message);
   }
   async function save() {
+    if(editDisabled)return;
     setReview(false);
     await run(async()=>{
       validateEdits(snapshot.files,changes);
       const client=createGitHubClient(credentials.current);
-      const result=await client.publish(snapshot.files,changes,message=>{if(active.current)setStatus(message);});
+      let result;
+      try {result=await client.publish(snapshot.files,changes,message=>{if(active.current)setStatus(message);});}
+      catch(e){if(active.current)setEditState({kind:'blocked',message:'저장을 완료하지 못했습니다. 수정 상태를 새로고침한 뒤 다시 시도해 주세요.'});throw e;}
       if(!active.current)return;
+      setEditState({kind:'blocked',message:'저장되었습니다. 배포 완료 후 수정 상태를 새로고침해 주세요.'});
       setSnapshot({version:1,files:result.files});setChanges({});setReview(false);setDispatchPending(true);setStatus('변경사항이 저장소에 저장되었습니다. 배포를 요청하고 있습니다…');
       try {await client.dispatch();if(active.current){deploymentRequested('저장 완료. 배포를 시작했습니다. 배포가 완료되면 사이트에 반영됩니다.',result.files);}}
       catch(e){throw Error(`저장소 저장은 완료됐지만 배포 요청에 실패했습니다. ‘배포 다시 요청’을 눌러 주세요. ${e.message}`);}
@@ -248,8 +287,8 @@ export default function Admin({ home }) {
   const cover=path?coverImagePaths(all,prefix)[0]:null;
   const preview=p=>all[p]?.preview?.startsWith('blob:')?all[p].preview:all[p]?.preview?asset(all[p].preview):'';
   if(!session)return <Login busy={busy} error={error} onLogin={login}/>;
-  return <div className="wrap page admin-page"><header className="admin-header"><div><span className="eyebrow">STARFLOWER ADMIN</span><h1>사이트 관리</h1></div><div className="admin-actions"><button disabled={busy||dispatchPending||!count} onClick={revertChanges}>변경사항 되돌리기</button><button className="primary" disabled={busy||!count||dispatchPending} onClick={prepareSave}>저장 및 배포{count?` (${count})`:''}</button></div></header><div className="admin-feedback" aria-live="polite">{status&&<p role="status">{status} {status.includes('완료')&&<a href={client.actionsURL} target="_blank" rel="noreferrer">배포 상태 보기 ↗</a>}</p>}{error&&<p className="admin-error" role="alert">{error}</p>}{dispatchPending&&<button disabled={busy} onClick={()=>run(async()=>{await client.dispatch();deploymentRequested('배포를 다시 요청했습니다. 배포 상태를 확인해 주세요.');})}>배포 다시 요청</button>}</div><nav className="admin-tabs" aria-label="관리 항목">{[['홈','홈'],['소개','동아리 소개'],['전시','천체사진 전시'],['모집','신입부원 모집'],['소식','소식'],['하단영역','하단바'],['사용자','관리자 관리']].map(([key,label])=><button key={key} aria-current={tab===key?'page':undefined} disabled={busy} onClick={()=>{setTab(key);setSelected('');setAccountView(false);}}>{label}</button>)}</nav>
-    <fieldset className="admin-workspace" disabled={busy||dispatchPending}>
+  return <div className="wrap page admin-page"><header className="admin-header"><div><span className="eyebrow">STARFLOWER ADMIN</span><h1>사이트 관리</h1></div><div className="admin-actions"><button disabled={editDisabled||!count} onClick={revertChanges}>변경사항 되돌리기</button><button className="primary" disabled={editDisabled||!count} onClick={prepareSave}>저장 및 배포{count?` (${count})`:''}</button></div></header><EditingStatus state={editState} busy={busy} onRefresh={refreshEditStatus}/><div className="admin-feedback" aria-live="polite">{status&&<p role="status">{status} {status.includes('완료')&&<a href={client.actionsURL} target="_blank" rel="noreferrer">배포 상태 보기 ↗</a>}</p>}{error&&<p className="admin-error" role="alert">{error}</p>}{dispatchPending&&<button disabled={busy} onClick={()=>run(async()=>{await client.dispatch();deploymentRequested('배포를 다시 요청했습니다. 배포 상태를 확인해 주세요.');})}>배포 다시 요청</button>}</div><nav className="admin-tabs" aria-label="관리 항목">{[['홈','홈'],['소개','동아리 소개'],['전시','천체사진 전시'],['모집','신입부원 모집'],['소식','소식'],['하단영역','하단바'],['사용자','관리자 관리']].map(([key,label])=><button key={key} aria-current={tab===key?'page':undefined} disabled={editDisabled} onClick={()=>{setTab(key);setSelected('');setAccountView(false);}}>{label}</button>)}</nav>
+    <fieldset key={editorVersion} className="admin-workspace" disabled={editDisabled}>
     {(tab==='전시'||tab==='소식')&&<div className="admin-columns"><aside className="admin-list"><button className="admin-add" onClick={addRecord}>{tab==='전시'?'전시':'소식'} 추가 +</button>{paths.map(p=><button key={p} className={path===p?'selected':''} onClick={()=>setSelected(p)}><strong>{titleOf(all,p)}</strong><small>{tab==='전시'?orderLabel(all[p].text):parseFields(all[p].text).날짜 || '날짜 없음'}{changes[p]?' · 편집 중':''}</small></button>)}</aside><section className="admin-editor">{path?<><div className="admin-editor-title"><h2>{tab==='전시'?'전시 편집':'소식 편집'}</h2><button className="admin-danger" onClick={()=>removeRecord(path)}>삭제</button></div><FieldsForm key={path} path={path} text={all[path].text} stage={stage} kind={tab}/><h3>커버·포스터</h3>{cover&&<div className="admin-cover"><img src={preview(cover)} alt="커버 미리보기"/><button onClick={()=>stage(cover,null)}>커버 삭제</button></div>}<label className="admin-file">커버 사진 선택<input type="file" accept="image/jpeg,image/png,image/webp,image/avif" onChange={e=>{upload(e.target.files,prefix,true);e.target.value='';}}/></label><div className="admin-editor-title"><h3>{tab==='전시'?'전시 작품':'소식 사진'} <small>{photos.length}장</small></h3><label className="admin-file">사진 추가 +<input type="file" multiple accept="image/jpeg,image/png,image/webp,image/avif" onChange={e=>{upload(e.target.files,photoPrefix);e.target.value='';}}/></label></div>{photos.map(p=>{const md=p.replace(/\.[^.]+$/,'.md');return <details className="admin-photo" key={p}><summary><img src={preview(p)} alt=""/><span>{parsePhotoMarkdown(all[md]?.text||'').title||p.split('/').at(-1)}</span></summary><PhotoFields path={md} text={all[md]?.text||''} stage={stage}/><button className="admin-danger" onClick={()=>{if(window.confirm('이 사진과 설명을 삭제할까요?')){stage(p,null);if(all[md])stage(md,null);}}}>사진 삭제</button></details>;})}</>:<div className="admin-empty"><span>✦</span><h2>편집할 {tab==='전시'?'전시를':'소식을'} 선택하세요</h2><p>새 항목을 추가하거나 왼쪽 목록에서 선택할 수 있습니다.</p></div>}</section></div>}
     {tab==='홈'&&<section className="admin-panel"><HomeEditor all={all} stage={stage} preview={preview} upload={upload} home={home}/></section>}
     {tab==='소개'&&<section className="admin-panel"><AboutEditor all={all} stage={stage} preview={preview} upload={upload}/></section>}

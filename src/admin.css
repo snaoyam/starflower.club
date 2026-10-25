@@ -43,3 +43,6 @@
 .admin-page select{width:100%;min-width:0;padding:12px;border:1px solid #3b4c56;border-radius:4px;background:#091217;color:var(--text);font:inherit}
 .admin-link-fields .admin-field{min-width:0}
 @media(max-width:700px){.admin-link-fields{grid-template-columns:1fr}.admin-footer-link{padding:16px}}
+
+.admin-edit-status{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:24px 0;padding:20px;border:1px solid #39464e;border-radius:5px;background:#101c22}.admin-edit-status>div:first-child{min-width:0}.admin-edit-status strong{font-size:16px}.admin-edit-status p{font-size:13px;line-height:1.8;color:#bdc6ca;margin:6px 0 0;overflow-wrap:anywhere}.admin-edit-status.is-ready strong{color:#9cdbb3}.admin-edit-status.is-blocked strong{color:var(--accent)}.admin-edit-status .admin-actions{align-items:center;flex-shrink:0}.admin-edit-status a{font-size:13px}.admin-workspace:disabled .admin-file{opacity:.45;cursor:not-allowed}
+@media(max-width:760px){.admin-edit-status{align-items:stretch;flex-direction:column;padding:16px}.admin-edit-status .admin-actions{gap:14px}}
